@@ -1,113 +1,133 @@
-/* Reset + Base */
+/*──────────────────────────*\
+  Fonts & Variables
+\*──────────────────────────*/
+@import url("https://fonts.googleapis.com/css2?
+  family=Syne:wght@700;800&
+  family=Sora:wght@400;500;600;700&
+  display=swap");
+
+:root {
+  --pink:       #ff9de4;
+  --lilac:      #a7b8ff;
+  --neon:       #ff5ea8;
+  --dark:       #222222;
+  --white:      #ffffff;
+  --glass-bg:   rgba(255,255,255,0.2);
+  --glass-blur: blur(16px);
+}
+
+/* Reset */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  margin: 0; padding: 0; box-sizing: border-box;
 }
 body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to right, #e0cfff, #ffe7f0);
-  color: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  font-family: "Sora", sans-serif;
+  background: linear-gradient(135deg, var(--pink), var(--lilac));
+  color: var(--dark);
+  overflow-x: hidden;
 }
 
-/* Glass Container */
-.glass-container {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  width: 90%;
-  max-width: 600px;
-}
-
-/* Header Text */
-.header-text h1 {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #6c55f9;
-  text-align: center;
-}
-.header-text p {
-  font-size: 1rem;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-/* QR Options */
-.qr-type button {
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-  border: none;
-  padding: 0.6rem 1rem;
-  margin: 0.3rem;
-  border-radius: 12px;
-  color: #6c55f9;
-  font-weight: 500;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-.qr-type button:hover {
-  transform: scale(1.05);
-  background: rgba(255, 255, 255, 0.5);
-}
-
-/* Inputs + Selects */
-.qr-input {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-}
-.qr-input input, .qr-input select {
-  padding: 0.6rem;
-  border-radius: 10px;
-  border: none;
-  background: rgba(255, 255, 255, 0.3);
-  color: #333;
-  font-size: 1rem;
+/* Glass Card Utility */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
 }
 
 /* Buttons */
-.buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  margin-top: 1.5rem;
+.btn-gradient {
+  font-family: "Syne", sans-serif;
+  background: linear-gradient(135deg, var(--pink), var(--neon));
+  color: var(--white);
 }
-.buttons button {
-  padding: 0.7rem;
+.btn-glass {
+  font-family: "Syne", sans-serif;
+  background: var(--glass-bg);
+  color: var(--dark);
+}
+button {
   border: none;
-  border-radius: 12px;
-  background: linear-gradient(to right, #fca3ec, #b4f0ff);
-  color: #333;
-  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.8rem 1.6rem;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: transform 0.2s ease;
 }
-.buttons button:hover {
-  background: linear-gradient(to right, #ffe0f7, #d4faff);
-}
-
-/* QR Output */
-.qr-output {
-  margin-top: 2rem;
-  display: flex;
-  justify-content: center;
+button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-  .header-text h1 {
-    font-size: 1.5rem;
-  }
-  .qr-type {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+/* Header */
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 2rem; position: sticky; top: 0; z-index: 100;
+}
+.logo img { height: 40px; }
+.nav-links a {
+  margin-left: 1.2rem; font-weight: 500; color: var(--dark);
+  text-decoration: none;
+}
+.nav-links a:hover { color: var(--neon); }
+
+/* Hero */
+.hero {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4rem 2rem;
+}
+.hero-text h1 {
+  font-family: "Syne", sans-serif;
+  font-size: 3rem; margin-bottom: 1rem; color: var(--dark);
+}
+.hero-buttons button + button { margin-left: 1rem; }
+.hero-image img { max-width: 300px; }
+
+/* QR Generator */
+.qr-generator {
+  padding: 2rem; margin: 2rem auto; max-width: 800px;
+}
+.qr-modes button {
+  margin: 0.3rem; font-size: 0.9rem;
+  color: var(--dark);
+}
+.qr-inputs {
+  display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;
+}
+.qr-inputs input, .qr-inputs select {
+  flex: 1; min-width: 180px; padding: 0.6rem; border-radius: 8px;
+  border: none; background: rgba(255,255,255,0.3);
+}
+
+/* QR Preview */
+.qr-preview {
+  text-align: center; padding: 1.5rem; margin-top: 1.5rem;
+}
+.qr-preview canvas { margin-bottom: 1rem; }
+
+/* Version Bubble */
+.version-bubble {
+  position: fixed; bottom: 20px; right: 20px; padding: 0.5rem 1rem;
+  font-family: "Syne", sans-serif; font-size: 0.8rem;
+}
+.modal {
+  position: fixed; bottom: 70px; right: 20px; padding: 1rem;
+  max-width: 260px; display: none;
+}
+
+/* Chat Panel */
+.chat-panel {
+  position: fixed; bottom: 80px; left: 20px; max-width: 320px;
+  padding: 1rem; display: none;
+}
+.chat-header { display: flex; justify-content: space-between; }
+.chat-content { max-height: 200px; overflow-y: auto; margin: 0.5rem 0; }
+
+/* Footer */
+.footer {
+  text-align: center; padding: 2rem; margin-top: 4rem;
+}
+.footer-nav a {
+  margin: 0 0.8rem; color: var(--dark); text-decoration: none;
 }
