@@ -2,132 +2,75 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>cutit.sbs — Your Vibe. Your Code.</title>
-
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?
-    family=Syne:wght@700;800&
-    family=Sora:wght@400;500;600;700&
-    display=swap"
-    rel="stylesheet"/>
-
-  <link rel="icon" href="assets/favicon.ico" />
-  <link rel="stylesheet" href="css/style.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>cutit.sbs – your vibe. your code.</title>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-
-  <!-- HEADER -->
-  <header class="glass header">
-    <a href="index.html" class="logo">
-      <img src="assets/logo.png" alt="Team cutit.sbs Logo"/>
-    </a>
-    <nav class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="premium.html">Premium</a>
-      <a href="links.html">Links</a>
-      <a href="contact.html">Contact</a>
-      <a href="terms.html">Terms</a>
-      <a href="privacy.html">Privacy</a>
-    </nav>
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container">
+      <h1>your vibe. your code.</h1>
+      <p>Made by cutit.sbs</p>
+      <div class="buttons">
+        <button class="btn btn-primary">Create my QR</button>
+        <button class="btn btn-secondary">Chat with Cutie</button>
+      </div>
+    </div>
   </header>
 
-  <!-- HERO -->
-  <section class="glass hero">
-    <div class="hero-text">
-      <h1>Your Vibe. Your Code.</h1>
-      <div class="hero-buttons">
-        <button id="qrSectionBtn" class="btn-gradient">Create My QR</button>
-        <button id="chatToggleBtn" class="btn-glass">Chat with Cutie</button>
-      </div>
-    </div>
-    <div class="hero-image">
-      <img src="assets/hero-anime-girl.png" alt="Pastel Anime Girl"/>
-    </div>
+  <!-- QR Types -->
+  <section class="qr-types container">
+    <div class="qr-type"><span>🌐</span><p>URL</p></div>
+    <div class="qr-type"><span>📱</span><p>Social</p></div>
+    <div class="qr-type"><span>📶</span><p>Wi-Fi</p></div>
+    <div class="qr-type"><span>🧠</span><p>AI Message</p></div>
+    <div class="qr-type"><span>🔒</span><p>Private</p></div>
+    <div class="qr-type"><span>🎲</span><p>Surprise</p></div>
+    <div class="qr-type"><span>🕵️‍♂️</span><p>Incognito</p></div>
   </section>
 
-  <!-- QR GENERATOR -->
-  <section id="qrSection" class="glass qr-generator">
-    <div class="qr-modes">
-      <button data-mode="url">URL</button>
-      <button data-mode="social">Smart Social</button>
-      <button data-mode="wifi">Wi-Fi</button>
-      <button data-mode="ai">AI Message</button>
-      <button data-mode="private">Private</button>
-      <button data-mode="one-time">One-Time</button>
-      <button data-mode="incognito">Incognito</button>
-    </div>
-
-    <div class="qr-inputs">
-      <input type="text" id="qrData" placeholder="Enter your link or message…" />
-      <select id="themeSelect">
-        <option value="minimal">Minimal</option>
-        <option value="y2k">Y2K</option>
-        <option value="anime">Anime Pastel</option>
-        <option value="cyber">Cyber Minimal</option>
-        <option value="kpop">K-pop Neon</option>
+  <!-- QR Generator Form -->
+  <section class="qr-generator container">
+    <form id="qrForm">
+      <input type="text" placeholder="https://example.com" required />
+      <select>
+        <option>Minimal</option>
+        <option>Y2K</option>
+        <option>Anime Pastel</option>
+        <option>Cyber Minimal</option>
+        <option>K-pop Neon</option>
       </select>
-      <button id="surpriseBtn" class="btn-glass">Surprise Me</button>
-    </div>
 
-    <div class="qr-preview glass">
-      <canvas id="qrCanvas"></canvas>
-      <p class="watermark">made by cutit.sbs ✦ your vibe. your code</p>
-      <div class="qr-actions">
-        <button id="downloadBtn" class="btn-gradient">Download PNG</button>
-        <button id="premiumBtn" class="btn-gradient">₹50 Premium QR</button>
+      <div class="color-pickers">
+        <label>Dot:<input type="color" value="#381A50" /></label>
+        <label>Bg:<input type="color" value="#FFFFFF" /></label>
       </div>
-    </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="btn btn-download">Download PNG</button>
+        <button type="button" class="btn btn-clean">₹ 1 Get Clean QR</button>
+      </div>
+    </form>
   </section>
 
-  <!-- VERSION BUBBLE -->
-  <button id="versionBubble" class="glass version-bubble">
-    v8 — Pastel Anime Edition
-  </button>
-  <div id="versionModal" class="glass modal hidden">
-    <h3>Upcoming Features</h3>
-    <ul>
-      <li>CutieGPT v2 (premium bot)</li>
-      <li>QR Analytics</li>
-      <li>Secret Crush QR</li>
-      <li>QR Frames</li>
-      <li>Editable QRs</li>
-    </ul>
-    <button id="closeVersion" class="btn-glass">Close</button>
-  </div>
-
-  <!-- CHATBOT PANEL -->
-  <div id="chatPanel" class="glass chat-panel hidden">
-    <div class="chat-header">
-      <h3>Cutie Chatbot</h3>
-      <button id="chatClose">&times;</button>
+  <!-- Footer Themes & Links -->
+  <footer class="footer container">
+    <div class="themes">
+      <button>Minimal</button>
+      <button>Y2K</button>
+      <button>Anime Pastel</button>
+      <button>Cyber Minimal</button>
+      <button>K-pop Neon</button>
     </div>
-    <div id="chatContent" class="chat-content">
-      <p><em>Type <code>qr &lt;link&gt;</code> to generate a QR</em></p>
+    <div class="links">
+      <a href="#">About</a> ·
+      <a href="#">Contact</a> ·
+      <a href="#">Terms</a> ·
+      <a href="#">Privacy</a>
     </div>
-    <input type="text" id="chatInput" placeholder="Say hi, bestie!"/>
-  </div>
-
-  <!-- FOOTER -->
-  <footer class="glass footer">
-    <p>Made with love by Team cutit.sbs ✦ your vibe. your code.</p>
-    <nav class="footer-nav">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="premium.html">Premium</a>
-      <a href="links.html">Links</a>
-      <a href="contact.html">Contact</a>
-      <a href="terms.html">Terms</a>
-      <a href="privacy.html">Privacy</a>
-    </nav>
   </footer>
 
-  <script src="js/firebase-config.js"></script>
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <script src="js/razorpay.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>
