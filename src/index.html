@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cutit.sbs ✦ Your vibe. Your code.</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <span class="tagline">your vibe. your code.</span>
+    <span class="brand">made by cutit.sbs</span>
+  </header>
+
+  <main>
+    <section class="qr-icons">
+      <img src="/public/icon-url.png" alt="URL" />
+      <img src="/public/icon-wifi.png" alt="Wi-Fi" />
+      <img src="/public/icon-social.png" alt="Social" />
+      <!-- Add more types -->
+    </section>
+
+    <section class="qr-input-section">
+      <input type="text" id="qrInput" placeholder="Enter your message, link, or mood..." />
+      <select id="themeSelect">
+        <option value="minimal">Minimal</option>
+        <option value="anime">Anime Pastel</option>
+        <option value="cyber">Cyber Minimal</option>
+        <option value="neon">K‑pop Neon</option>
+      </select>
+      <button onclick="generateQR()">✨ Create my QR</button>
+      <button onclick="surpriseMe()">🎁 Surprise Me</button>
+    </section>
+
+    <section class="qr-preview">
+      <canvas id="qrCanvas"></canvas>
+      <p class="watermark">made by cutit.sbs ✦ your vibe. your code</p>
+    </section>
+  </main>
+
+  <div class="chatbot-orb" onclick="toggleChat()">💬</div>
+  <div id="chatWindow" class="chat-modal">
+    <h3>Hey bestie 👀 What can I vibe-check for you?</h3>
+  </div>
+
+  <footer class="about-footer">
+    <h2>About Us</h2>
+    <p>We’re Cutit.sbs—renegades of vibe, maestros of QR chaos, and your go-to Gen-Z icons. This site is built for fun, utility, and surprise sparkle.</p>
+    <small>© 2025 Cutit.sbs ✦ Designed for the moodboard generation</small>
+  </footer>
+
+  <div class="mascot-float">
+    <img src="/public/mascot.png" alt="Mascot" />
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
