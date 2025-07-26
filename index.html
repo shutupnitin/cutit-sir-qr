@@ -19,6 +19,7 @@
     }
 
     body {
+  font-family: 'Antonio', sans-serif;
       margin: 0;
       font-family: 'Antonio', sans-serif;
       background: var(--bg);
@@ -153,6 +154,7 @@
     }
 
     #chat-body {
+  font-family: 'Antonio', sans-serif;
       padding: 1rem;
       font-size: 0.9rem;
       max-height: 200px;
@@ -243,3 +245,15 @@
   </script>
 </body>
 </html>
+
+
+<script>
+function toggleChat() {
+    const chatbox = document.getElementById('chatbox');
+    if (chatbox.style.display === 'none' || chatbox.style.display === '') {
+        chatbox.style.display = 'block';
+    } else {
+        chatbox.style.display = 'none';
+    }
+}
+</script>
