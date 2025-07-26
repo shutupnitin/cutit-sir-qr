@@ -1,81 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cutit.sbs ✦ Your vibe. Your code.</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Generator by Cutit</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="glass-container">
+      <section class="header-text">
+        <h1>Surprise your world with QR ✨</h1>
+        <p>Generate aesthetic QR codes with a touch of magic</p>
+      </section>
 
-  <!-- Floating Emojis -->
-  <div class="floating-emojis">
-    <div class="emoji" style="top:10%; left:20%;">🌈</div>
-    <div class="emoji" style="top:30%; left:70%;">✨</div>
-    <div class="emoji" style="top:60%; left:40%;">💎</div>
-    <div class="emoji" style="top:80%; left:85%;">🦄</div>
-  </div>
+      <section class="qr-options">
+        <div class="qr-type">
+          <button>One-Time QR</button>
+          <button>Mystery Message</button>
+          <button>Party Wi-Fi</button>
+        </div>
+      </section>
 
-  <!-- Header with Theme Toggle -->
-  <header class="topbar glass">
-    <span class="tagline">your vibe. your code.</span>
-    <div class="header-right">
-      <span class="brand">made by cutit.sbs</span>
-      <div class="theme-toggle">
-        <label>Theme:</label>
-        <button id="themeToggleBtn">Pastel Frost / Retro Soda</button>
-      </div>
-    </div>
-  </header>
+      <section class="qr-input">
+        <input type="text" id="qrData" placeholder="Enter your message or link" />
+        <select id="themeSelect">
+          <option value="pastel">Pastel Frost</option>
+          <option value="retro">Retro Soda</option>
+        </select>
+        <select id="colorSelect">
+          <option value="neon">Neon Pink</option>
+          <option value="mint">Mint Green</option>
+          <option value="sky">Sky Blue</option>
+        </select>
+      </section>
 
-  <!-- Main QR Generator Section -->
-  <main class="glass container">
-    <section class="qr-icons">
-      <img src="/public/icon-url.png"   alt="URL" />
-      <img src="/public/icon-wifi.png"  alt="Wi-Fi" />
-      <img src="/public/icon-social.png" alt="Social" />
-    </section>
+      <section class="buttons">
+        <button id="downloadBtn">Download PNG</button>
+        <button id="premiumBtn">₹1 Clean QR</button>
+        <button id="chatBtn">Chat with Cutie</button>
+      </section>
 
-    <section class="qr-input-section">
-      <input type="text" id="qrInput" placeholder="Enter your link, message or mood…" />
-      <select id="themeSelect">
-        <option value="minimal">Minimal</option>
-        <option value="y2k">Y2K</option>
-        <option value="anime-pastel">Anime Pastel</option>
-        <option value="cyber-minimal">Cyber Minimal</option>
-        <option value="k-pop-neon">K-pop Neon</option>
-      </select>
-      <div class="buttons">
-        <button onclick="generateQR()">✨ Create my QR</button>
-        <button onclick="surpriseMe()">🎁 Surprise Me</button>
-      </div>
-    </section>
+      <div id="qrCanvas" class="qr-output"></div>
+    </main>
 
-    <section class="qr-preview">
-      <canvas id="qrCanvas"></canvas>
-      <p class="watermark">made by cutit.sbs ✦ your vibe. your code</p>
-    </section>
-  </main>
-
-  <!-- Chatbot Orb + Modal -->
-  <div class="chatbot-orb" onclick="toggleChat()">💬</div>
-  <div id="chatWindow" class="chat-modal glass">
-    <h3>Hey bestie 👀 What can I vibe-check for you?</h3>
-  </div>
-
-  <!-- Floating Mascot -->
-  <div class="mascot-float">
-    <img src="/public/mascot.png" alt="Mascot" />
-  </div>
-
-  <!-- Footer About -->
-  <footer class="about-footer glass">
-    <h2>About Us</h2>
-    <p>We’re Cutit.sbs—renegades of vibe, maestros of QR chaos, and your go-to Gen-Z icons. This site is built for fun, utility, and surprise sparkle.</p>
-    <small>© 2025 Cutit.sbs ✦ Designed for the moodboard generation</small>
-  </footer>
-
-  <script src="main.js"></script>
-</body>
+    <script src="main.js"></script>
+  </body>
 </html>
