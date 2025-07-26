@@ -2,58 +2,167 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cutit.sbs ✦ Your vibe. Your code.</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your vibe. Your code.</title>
+  <link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-grad: linear-gradient(145deg, #f5d4e6, #c2e9fb);
+      --glass-bg: rgba(255, 255, 255, 0.2);
+      --glass-border: rgba(255, 255, 255, 0.3);
+      --accent: #ff9a9e;
+      --font: 'General Sans', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg-grad);
+      color: #333;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .floating-emojis {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .emoji {
+      position: absolute;
+      font-size: 32px;
+      animation: floaty 6s infinite ease-in-out;
+      opacity: 0.6;
+    }
+
+    @keyframes floaty {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0); }
+    }
+
+    .container {
+      position: relative;
+      max-width: 720px;
+      margin: 80px auto;
+      padding: 40px;
+      background: var(--glass-bg);
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(18px);
+      z-index: 2;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    p.subhead {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .theme-picker {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .pill {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.3);
+      color: #444;
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .pill:hover {
+      background: var(--accent);
+      color: white;
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
 <body>
 
-  <header class="topbar">
-    <span class="tagline">your vibe. your code.</span>
-    <span class="brand">made by cutit.sbs</span>
-  </header>
-
-  <main>
-    <section class="qr-icons">
-      <img src="/public/icon-url.png" alt="URL" />
-      <img src="/public/icon-wifi.png" alt="Wi-Fi" />
-      <img src="/public/icon-social.png" alt="Social" />
-      <!-- Add more types -->
-    </section>
-
-    <section class="qr-input-section">
-      <input type="text" id="qrInput" placeholder="Enter your message, link, or mood..." />
-      <select id="themeSelect">
-        <option value="minimal">Minimal</option>
-        <option value="anime">Anime Pastel</option>
-        <option value="cyber">Cyber Minimal</option>
-        <option value="neon">K‑pop Neon</option>
-      </select>
-      <button onclick="generateQR()">✨ Create my QR</button>
-      <button onclick="surpriseMe()">🎁 Surprise Me</button>
-    </section>
-
-    <section class="qr-preview">
-      <canvas id="qrCanvas"></canvas>
-      <p class="watermark">made by cutit.sbs ✦ your vibe. your code</p>
-    </section>
-  </main>
-
-  <div class="chatbot-orb" onclick="toggleChat()">💬</div>
-  <div id="chatWindow" class="chat-modal">
-    <h3>Hey bestie 👀 What can I vibe-check for you?</h3>
+  <div class="floating-emojis">
+    <div class="emoji" style="top: 10%; left: 20%;">🌈</div>
+    <div class="emoji" style="top: 30%; left: 50%;">✨</div>
+    <div class="emoji" style="top: 60%; left: 80%;">💎</div>
+    <div class="emoji" style="top: 80%; left: 30%;">🦄</div>
   </div>
 
-  <footer class="about-footer">
-    <h2>About Us</h2>
-    <p>We’re Cutit.sbs—renegades of vibe, maestros of QR chaos, and your go-to Gen-Z icons. This site is built for fun, utility, and surprise sparkle.</p>
-    <small>© 2025 Cutit.sbs ✦ Designed for the moodboard generation</small>
-  </footer>
+  <div class="container">
+    <h1>Your vibe. Your code.</h1>
+    <p class="subhead">Made by cutit.sbs</p>
 
-  <div class="mascot-float">
-    <img src="/public/mascot.png" alt="Mascot" />
+    <input type="text" placeholder="Enter your link or message" />
+    <select>
+      <option value="minimal">Minimal</option>
+      <option value="y2k">Y2K</option>
+      <option value="anime-pastel">Anime Pastel</option>
+      <option value="cyber-minimal">Cyber Minimal</option>
+      <option value="k-pop-neon">K-pop Neon</option>
+    </select>
+
+    <div class="buttons">
+      <button>Download PNG</button>
+      <button>₹1 Get Clean QR</button>
+    </div>
+
+    <div class="theme-picker">
+      <div class="pill">Minimal</div>
+      <div class="pill">Y2K</div>
+      <div class="pill">Anime Pastel</div>
+      <div class="pill">Cyber Minimal</div>
+      <div class="pill">K-pop Neon</div>
+    </div>
   </div>
 
-  <script src="main.js"></script>
 </body>
 </html>
