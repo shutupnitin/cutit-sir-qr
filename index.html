@@ -2,75 +2,75 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>cutit.sbs – your vibe. your code.</title>
-  <link rel="stylesheet" href="css/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cutit.sbs — QR Generator</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Hero Section -->
-  <header class="hero">
-    <div class="container">
-      <h1>your vibe. your code.</h1>
-      <p>Made by cutit.sbs</p>
-      <div class="buttons">
-        <button class="btn btn-primary">Create my QR</button>
-        <button class="btn btn-secondary">Chat with Cutie</button>
-      </div>
-    </div>
+  <!-- Header -->
+  <header>
+    <nav>
+      <a href="#" class="logo">cutit.sbs</a>
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#premium">Premium</a></li>
+      </ul>
+    </nav>
   </header>
 
-  <!-- QR Types -->
-  <section class="qr-types container">
-    <div class="qr-type"><span>🌐</span><p>URL</p></div>
-    <div class="qr-type"><span>📱</span><p>Social</p></div>
-    <div class="qr-type"><span>📶</span><p>Wi-Fi</p></div>
-    <div class="qr-type"><span>🧠</span><p>AI Message</p></div>
-    <div class="qr-type"><span>🔒</span><p>Private</p></div>
-    <div class="qr-type"><span>🎲</span><p>Surprise</p></div>
-    <div class="qr-type"><span>🕵️‍♂️</span><p>Incognito</p></div>
+  <!-- Hero Section -->
+  <section id="hero">
+    <h1>Make It Cute. Cut It Quick.</h1>
+    <p>Generate themed QR codes with style and sparkle ✨</p>
+    <button id="generate-btn">Start Generating</button>
   </section>
 
-  <!-- QR Generator Form -->
-  <section class="qr-generator container">
-    <form id="qrForm">
-      <input type="text" placeholder="https://example.com" required />
-      <select>
-        <option>Minimal</option>
-        <option>Y2K</option>
-        <option>Anime Pastel</option>
-        <option>Cyber Minimal</option>
-        <option>K-pop Neon</option>
-      </select>
-
-      <div class="color-pickers">
-        <label>Dot:<input type="color" value="#381A50" /></label>
-        <label>Bg:<input type="color" value="#FFFFFF" /></label>
-      </div>
-
-      <div class="form-buttons">
-        <button type="submit" class="btn btn-download">Download PNG</button>
-        <button type="button" class="btn btn-clean">₹ 1 Get Clean QR</button>
-      </div>
-    </form>
+  <!-- QR Generator -->
+  <section id="qr-generator">
+    <div id="qr-preview"></div>
+    <input type="text" id="qr-input" placeholder="Enter URL or text..." />
+    <select id="theme-picker">
+      <option value="pastel">Anime Pastel</option>
+      <option value="cyber">Neon Cyber</option>
+      <option value="glass">Frosted Glass</option>
+    </select>
+    <button id="qr-submit">Generate QR</button>
+    <div id="watermark-toggle">
+      <label><input type="checkbox" /> Add Cutit watermark</label>
+    </div>
   </section>
 
-  <!-- Footer Themes & Links -->
-  <footer class="footer container">
-    <div class="themes">
-      <button>Minimal</button>
-      <button>Y2K</button>
-      <button>Anime Pastel</button>
-      <button>Cyber Minimal</button>
-      <button>K-pop Neon</button>
-    </div>
-    <div class="links">
-      <a href="#">About</a> ·
-      <a href="#">Contact</a> ·
-      <a href="#">Terms</a> ·
-      <a href="#">Privacy</a>
-    </div>
+  <!-- Premium Unlock -->
+  <section id="premium">
+    <h2>Unlock Premium</h2>
+    <p>Custom themes, watermark removal, and chatbot upgrades 🎁</p>
+    <button id="razorpay-button">Upgrade via Razorpay</button>
+  </section>
+
+  <!-- Cutie Chatbot -->
+  <div id="cutie-bubble">💬</div>
+  <div id="cutie-chat" class="hidden">
+    <div id="cutie-messages"></div>
+    <input type="text" id="cutie-input" placeholder="Talk to Cutie..." />
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 cutit.sbs</p>
+    <a href="#terms">Terms</a>
+    <a href="#privacy">Privacy</a>
+    <span id="version">v1.0</span>
   </footer>
 
-  <script src="js/script.js"></script>
+  <!-- Modals -->
+  <div id="modal-about" class="modal hidden"></div>
+  <div id="modal-contact" class="modal hidden"></div>
+  <div id="modal-terms" class="modal hidden"></div>
+  <div id="modal-privacy" class="modal hidden"></div>
+
+  <script src="script.js"></script>
+  <script src="cutie.js"></script>
+  <script src="razorpay.js"></script>
 </body>
 </html>
