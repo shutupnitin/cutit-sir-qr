@@ -1,142 +1,258 @@
-body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to top left, #fdeff9, #ecf0ff);
-  color: #333;
-  margin: 0;
-  padding: 0;
+/*───────────────────────────────────────────*\
+  Variables for Pastel Frost & Retro Soda
+\*───────────────────────────────────────────*/
+:root {
+  /* Pastel Frost */
+  --pf-bg:       #fef6fb;
+  --pf-text:     #333;
+  --pf-accent:   #ffb3d1;
+  --pf-glass:    rgba(255,255,255,0.6);
+  --pf-blur:     blur(12px);
+
+  /* Retro Soda */
+  --rs-bg:       #121212;
+  --rs-text:     #f0f0f0;
+  --rs-accent:   #00faff;
+  --rs-glass:    rgba(0,0,0,0.7);
+  --rs-blur:     blur(6px);
 }
 
+/*───────────────────────────────────────────*\
+  Base Styles & Theme Toggle
+\*───────────────────────────────────────────*/
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--pf-bg);
+  color: var(--pf-text);
+  transition: all 0.4s ease-in-out;
+  position: relative;
+  overflow-x: hidden;
+}
+body.retro {
+  background: var(--rs-bg);
+  color: var(--rs-text);
+}
+
+/* Glassmorphism Utility */
+.glass {
+  background: var(--pf-glass);
+  backdrop-filter: var(--pf-blur);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  transition: all 0.4s ease-in-out;
+}
+body.retro .glass {
+  background: var(--rs-glass);
+  backdrop-filter: var(--rs-blur);
+}
+
+/*───────────────────────────────────────────*\
+  Floating Emojis
+\*───────────────────────────────────────────*/
+.floating-emojis {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0; left: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+.emoji {
+  position: absolute;
+  font-size: 32px;
+  opacity: 0.6;
+  animation: floaty 6s infinite ease-in-out;
+}
+@keyframes floaty {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-20px); }
+}
+
+/*───────────────────────────────────────────*\
+  Header & Theme Toggle
+\*───────────────────────────────────────────*/
 .topbar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 1rem 2rem;
-  background: rgba(255,255,255,0.3);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   position: sticky;
-  top: 0;
-  z-index: 999;
+  top: 0; z-index: 999;
 }
-.tagline {
-  font-size: 1rem;
-  color: #a855f7;
+.tagline { font-size: 1rem; font-weight: 600; color: var(--pf-accent); }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
-.brand {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #6b7280;
+.brand { font-size: 0.9rem; font-weight: 600; color: var(--pf-text); }
+.theme-toggle label { margin-right: 0.5rem; font-size: 0.9rem; }
+#themeToggleBtn {
+  background: none;
+  border: 1px solid var(--pf-accent);
+  color: var(--pf-accent);
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+#themeToggleBtn:hover {
+  background: var(--pf-accent);
+  color: white;
+}
+body.retro #themeToggleBtn {
+  border-color: var(--rs-accent);
+  color: var(--rs-accent);
+}
+body.retro #themeToggleBtn:hover {
+  background: var(--rs-accent);
 }
 
+/*───────────────────────────────────────────*\
+  QR Generator Container
+\*───────────────────────────────────────────*/
+.container {
+  max-width: 720px;
+  margin: 80px auto;
+  padding: 2rem;
+  text-align: center;
+  z-index: 2;
+}
 .qr-icons {
   display: flex;
   justify-content: center;
   gap: 2rem;
-  margin: 2rem auto;
+  margin-bottom: 2rem;
 }
 .qr-icons img {
   width: 48px;
-  filter: drop-shadow(0 0 4px #d8b4fe);
+  filter: drop-shadow(0 0 4px var(--pf-accent));
+}
+body.retro .qr-icons img {
+  filter: drop-shadow(0 0 4px var(--rs-accent));
 }
 
 .qr-input-section {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 1rem;
+  align-items: center;
   margin-bottom: 2rem;
 }
 .qr-input-section input,
 .qr-input-section select {
+  width: 100%;
+  max-width: 400px;
   padding: 0.8rem;
   border-radius: 12px;
   border: none;
-  width: 80%;
-  max-width: 400px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+  font-size: 1rem;
 }
 .qr-input-section button {
   padding: 0.8rem 1.2rem;
   border: none;
   border-radius: 20px;
-  background: #a855f7;
+  background: var(--pf-accent);
   color: white;
-  font-weight: bold;
-  box-shadow: 0 4px 12px rgba(168,85,247,0.3);
+  font-weight: 600;
+  box-shadow: 0 4px 12px var(--pf-accent);
   cursor: pointer;
+  transition: all 0.3s;
 }
 .qr-input-section button:hover {
-  background: #9333ea;
+  background: #ff8cb0;
+}
+body.retro .qr-input-section button {
+  background: var(--rs-accent);
+  box-shadow: 0 4px 12px var(--rs-accent);
+}
+body.retro .qr-input-section button:hover {
+  background: #00d4f0;
 }
 
+/*───────────────────────────────────────────*\
+  QR Preview & Watermark
+\*───────────────────────────────────────────*/
 .qr-preview {
-  text-align: center;
-  margin-bottom: 2rem;
+  margin-top: 1rem;
 }
 #qrCanvas {
-  margin-top: 1rem;
-  border-radius: 16px;
+  border-radius: 12px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.1);
 }
 .watermark {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--pf-text);
   font-style: italic;
   margin-top: 0.5rem;
 }
+body.retro .watermark {
+  color: var(--rs-text);
+}
 
+/*───────────────────────────────────────────*\
+  Chatbot Orb & Modal
+\*───────────────────────────────────────────*/
 .chatbot-orb {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #a855f7;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  font-size: 1.5rem;
+  bottom: 20px; right: 20px;
+  width: 60px; height: 60px;
+  background: var(--pf-accent);
   color: white;
+  font-size: 1.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 12px rgba(168,85,247,0.6);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--pf-accent);
   cursor: pointer;
+  transition: all 0.3s;
 }
-
+.chatbot-orb:hover {
+  transform: scale(1.1);
+}
+body.retro .chatbot-orb {
+  background: var(--rs-accent);
+  box-shadow: 0 0 12px var(--rs-accent);
+}
 .chat-modal {
   position: fixed;
-  bottom: 90px;
-  right: 20px;
-  background: white;
+  bottom: 100px; right: 20px;
+  width: 280px;
   padding: 1rem;
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  border-radius: 16px;
   display: none;
-  max-width: 320px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
 }
 
-.about-footer {
-  background: linear-gradient(to right, #fdf2ff, #e0f2ff);
-  padding: 3rem 2rem;
-  text-align: center;
-}
-.about-footer h2 {
-  color: #a855f7;
-}
-.about-footer small {
-  display: block;
-  margin-top: 1rem;
-  color: #6b7280;
-}
-
+/*───────────────────────────────────────────*\
+  Mascot Float
+\*───────────────────────────────────────────*/
 .mascot-float {
   position: fixed;
-  top: 80px;
-  left: 20px;
+  top: 100px; left: 20px;
   animation: floatMascot 3s ease-in-out infinite;
 }
 .mascot-float img {
   width: 60px;
 }
 @keyframes floatMascot {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-8px); }
 }
+
+/*───────────────────────────────────────────*\
+  Footer About Us
+\*───────────────────────────────────────────*/
+.about-footer {
+  text-align: center;
+  padding: 3rem 2rem;
+  margin-top: 4rem;
+}
+.about-footer h2 { margin-bottom: 1rem; }
+.about-footer small { display: block; margin-top: 1rem; color: #777; }
