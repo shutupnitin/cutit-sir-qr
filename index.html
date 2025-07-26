@@ -2,71 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CutIt.sbs ✦ Coming Soon</title>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #ffffff;
+      --text: #111111;
+      --subtext: #555;
+      --card: #f9f9f9;
+      --button: #111;
+      --buttonText: #fff;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f0f0f;
+      --text: #fefefe;
+      --subtext: #aaa;
+      --card: #1a1a1a;
+      --button: #fefefe;
+      --buttonText: #000;
+    }
+
     body {
-      font-family: 'Antonio', sans-serif;
-      background: #fcfcfd;
-      color: #111;
       margin: 0;
       padding: 0;
-      text-align: center;
+      font-family: 'Antonio', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      transition: all 0.3s ease;
     }
 
     header {
-      font-size: 1.8rem;
-      padding: 1rem;
       width: 100%;
+      padding: 1rem 2rem;
+      font-size: 1.6rem;
       text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .toggle {
+      font-family: system-ui, sans-serif;
+      font-size: 0.9rem;
+      background: var(--card);
+      padding: 0.4rem 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
     }
 
     h1 {
-      font-size: 2.8rem;
+      font-size: 2.4rem;
       margin-top: 1rem;
     }
 
-    .desc, .features {
+    .desc {
       font-family: system-ui, sans-serif;
-      max-width: 750px;
+      max-width: 600px;
       font-size: 1rem;
       line-height: 1.6;
       padding: 0 1rem;
-      margin: 1rem auto;
-      text-align: left;
-    }
-
-    .features table {
-      width: 100%;
+      text-align: center;
       margin-top: 1rem;
-      border-collapse: collapse;
-    }
-
-    .features th, .features td {
-      border: 1px solid #ddd;
-      padding: 0.5rem;
-      text-align: left;
-      font-size: 0.95rem;
     }
 
     input {
+      margin-top: 2rem;
       padding: 0.6rem;
       font-size: 1rem;
       width: 300px;
       max-width: 90%;
-      margin-top: 2rem;
       border: 1px solid #ccc;
       border-radius: 5px;
+      background: var(--card);
+      color: var(--text);
     }
 
     button {
-      background: #111;
-      color: #fff;
+      background: var(--button);
+      color: var(--buttonText);
       border: none;
       margin-top: 1rem;
       padding: 0.6rem 1.2rem;
@@ -76,88 +96,107 @@
     }
 
     .subtitle {
-      margin-top: 2rem;
       font-family: 'Antonio', sans-serif;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
+      margin-top: 3rem;
+      border-top: 1px solid #ccc;
+      padding-top: 2rem;
     }
 
-    canvas {
+    #qrCanvas {
       margin-top: 1rem;
-      border: 1px solid #ddd;
+      display: none;
+      border: 1px solid #eee;
+    }
+
+    #downloadBtn {
+      display: none;
     }
 
     .footer {
-      margin-top: 2rem;
-      font-size: 1rem;
-      color: #555;
+      margin: 2rem 0 1rem;
+      font-family: system-ui, sans-serif;
+      font-size: 0.9rem;
+      color: var(--subtext);
+    }
+
+    .footer a {
+      color: inherit;
+      text-decoration: underline;
       cursor: pointer;
     }
 
     #contactModal {
       display: none;
       position: fixed;
-      top: 0; left: 0;
+      z-index: 99;
+      left: 0; top: 0;
       width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0,0,0,0.5);
       align-items: center;
       justify-content: center;
     }
 
     #contactModalContent {
-      background: #fff;
+      background: var(--card);
       padding: 2rem;
-      border-radius: 8px;
-      font-family: system-ui, sans-serif;
+      border-radius: 10px;
       max-width: 400px;
-      text-align: left;
+      font-family: system-ui, sans-serif;
     }
 
     #chatBot {
       position: fixed;
       bottom: 1rem;
       right: 1rem;
-      background: #fff;
+      background: var(--card);
       border: 1px solid #ccc;
       padding: 1rem;
-      border-radius: 10px;
+      border-radius: 999px;
       font-family: system-ui, sans-serif;
-      max-width: 300px;
+      max-width: 280px;
+      font-size: 0.9rem;
     }
 
     #chatOutput {
-      max-height: 150px;
+      max-height: 120px;
       overflow-y: auto;
       margin-bottom: 0.5rem;
     }
 
-    #chatBot input {
+    #chatInput {
       width: 100%;
     }
   </style>
 </head>
-<body>
-  <header>CutIt.sbs</header>
+<body data-theme="light">
+  <header>
+    <div>CutIt.sbs</div>
+    <div class="toggle" onclick="toggleTheme()">🌙 Dark Mode</div>
+  </header>
 
   <h1>Coming Soon</h1>
-  <div class="desc">
-    <p>Hey you. Yes, you.</p>
-    <p>Welcome to <strong>CutIt.sbs</strong> — a next-gen QR code experience being built with 🔥, ❤️, and a little desi-tech flair.</p>
-    <p>We’re crafting a <strong>bold, privacy-powered, personality-rich</strong> platform where every code you create says something about <em>you</em>.</p>
-    <p>Stay tuned for something iconic...</p>
-  </div>
 
-  <div class="features">
-    <h3>🚀 Your Feature Set</h3>
-    <table>
-      <tr><th>Feature</th><th>What it Does</th><th>🔥 Add-On Idea</th></tr>
-      <tr><td>🌐 URL</td><td>Links anything</td><td>Preview pop-ups / animated transitions</td></tr>
-      <tr><td>📱 Smart Social</td><td>Auto-links to social profiles</td><td>QR styling per platform (Insta neon, TikTok glitch)</td></tr>
-      <tr><td>📶 Wi‑Fi Connect</td><td>Encodes Wi‑Fi creds</td><td>Custom success animation</td></tr>
-      <tr><td>🧠 AI Message</td><td>Text embeds</td><td>Emoji tags / Voice snippet overlay</td></tr>
-      <tr><td>🔒 Private</td><td>[PRIVATE] prefix</td><td>Scan count lock bar</td></tr>
-      <tr><td>⏳ One-Time</td><td>[ONE-TIME] prefix</td><td>QR melts after scan</td></tr>
-      <tr><td>🕵️ Incognito</td><td>No local history</td><td>Temporary, expiring chat-style QR</td></tr>
-    </table>
+  <div class="desc">
+    Hi there! 👋  
+    <br><br>
+    Welcome to <strong>CutIt.sbs</strong> — a simple, no-nonsense tool made with love (and a bit of chai) for anyone who wants to make long links short and neat.  
+    <br><br>
+    Whether you're a student sharing project links, a creator promoting your content, or someone who likes things clean and tidy – CutIt.sbs is for you.  
+    <br><br>
+    No spam, no clutter, no confusion. Just paste your long link, click, and boom – it’s cut.  
+    <br><br>
+    We’re building a desi yet modern QR code generator, with magic that’s coming soon:
+    <ul style="text-align:left; max-width:500px; margin: 1rem auto;">
+      <li>🌐 Smart URLs with preview-style transitions</li>
+      <li>📱 QR themes for Instagram, TikTok & more</li>
+      <li>📶 Wi-Fi auto-connect with flair</li>
+      <li>🧠 AI mood messages with emoji layers</li>
+      <li>🔒 Private links with scan limits</li>
+      <li>⏳ One-time codes that melt after scan</li>
+      <li>🕵️ Vanishing QR for temporary sharing</li>
+    </ul>
+    Stay tuned. We’re building something different — just for you.
   </div>
 
   <input id="qrInput" placeholder="Paste your link here..." />
@@ -165,45 +204,57 @@
 
   <div class="subtitle">CutIt.sbs ✦ your vibe. your code.</div>
   <canvas id="qrCanvas" width="256" height="256"></canvas>
-  <br />
-  <button onclick="downloadQR()">Download QR</button>
+  <br>
+  <button id="downloadBtn" onclick="downloadQR()">Download QR</button>
 
-  <div class="footer" onclick="showContact()">📩 Contact Us</div>
+  <div class="footer">
+    <a onclick="showContact()">Contact Us</a><br />
+    Made with ❤️ by CutIt.sbs
+  </div>
 
   <div id="contactModal">
     <div id="contactModalContent">
       <h3>Contact Us</h3>
       <p>Email: <strong>team@cutit.sbs</strong></p>
       <p>Instagram: <strong>@cutit.sbs</strong></p>
-      <p>Let’s connect, collab, or just vibe 💛</p>
       <button onclick="closeContact()">Close</button>
     </div>
   </div>
 
   <div id="chatBot">
-    <strong>Cutie 🤖</strong> — your QR BFF<br />
+    <div><strong>Cutie 🤖</strong></div>
     <div id="chatOutput"></div>
-    <input id="chatInput" placeholder="Say 'QR for https://example.com'" onkeydown="handleChat(event)" />
+    <input id="chatInput" placeholder="Say 'QR for https://...'" onkeydown="handleChat(event)" />
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
   <script>
-    function generateQR() {
-      const canvas = document.getElementById('qrCanvas');
-      const ctx = canvas.getContext('2d');
-      const text = document.getElementById('qrInput').value;
+    const canvas = document.getElementById('qrCanvas');
+    const downloadBtn = document.getElementById('downloadBtn');
 
+    function toggleTheme() {
+      const body = document.body;
+      const current = body.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      body.setAttribute('data-theme', next);
+      document.querySelector('.toggle').innerText = next === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+    }
+
+    function generateQR() {
+      const text = document.getElementById('qrInput').value.trim();
+      if (!text) return;
       QRCode.toCanvas(canvas, text, { width: 256 }, function (error) {
         if (error) console.error(error);
-        // Watermark
+        const ctx = canvas.getContext('2d');
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
         ctx.font = '10px Antonio';
         ctx.fillText('made by cutit.sbs ✦ your vibe. your code.', 10, 246);
+        canvas.style.display = 'block';
+        downloadBtn.style.display = 'inline-block';
       });
     }
 
     function downloadQR() {
-      const canvas = document.getElementById('qrCanvas');
       const link = document.createElement('a');
       link.download = 'cutit-qr.png';
       link.href = canvas.toDataURL();
@@ -223,7 +274,6 @@
         const input = document.getElementById('chatInput');
         const msg = input.value.trim();
         const output = document.getElementById('chatOutput');
-
         output.innerHTML += `<div><b>You:</b> ${msg}</div>`;
 
         if (msg.toLowerCase().startsWith('qr for')) {
@@ -233,7 +283,7 @@
             output.scrollTop = output.scrollHeight;
           });
         } else {
-          output.innerHTML += `<div><b>Cutie:</b> Try "QR for https://yourlink.com"</div>`;
+          output.innerHTML += `<div><b>Cutie:</b> Try "QR for https://..."</div>`;
         }
 
         input.value = '';
