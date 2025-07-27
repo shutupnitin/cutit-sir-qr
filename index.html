@@ -1,3 +1,4 @@
+<!-- 🪄 CutIt.sbs // Final UI with Chatbot + Razorpay + Message -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,13 +27,42 @@
     #downloadBtn { margin-top: 1.5rem; padding: 0.7rem 1.4rem; font-size: 1rem; background: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
     .emoji-float { position: fixed; animation: float 6s infinite ease-in-out; pointer-events: none; }
     @keyframes float { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-200px); opacity: 0; } }
-    #cutieBot { position: fixed; bottom: 20px; right: 20px; background: #fff; border-radius: 50%; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; font-size: 24px; }
-    #donateBtn { position: fixed; bottom: 20px; left: 20px; background: #fff; border-radius: 50%; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; font-size: 22px; }
-    footer { margin-top: 3rem; font-size: 0.9rem; opacity: 0.7; }
+    #cutieBot { position: fixed; bottom: 80px; right: 20px; background: #fff; border-radius: 50%; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; font-size: 24px; }
     .footer-links { margin-top: 0.5rem; }
     .footer-links a { margin: 0 0.5rem; color: inherit; text-decoration: underline; }
-    #chatWindow { display: none; position: fixed; bottom: 80px; right: 20px; background: white; width: 300px; max-height: 400px; overflow-y: auto; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.2); padding: 1rem; text-align: left; }
-    #chatInput { width: 100%; margin-top: 10px; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; }
+    footer { margin-top: 3rem; font-size: 0.9rem; opacity: 0.7; }
+
+    #contactModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.2); z-index: 999; max-width: 90vw; width: 400px; }
+    #contactModal h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+    #modalClose { margin-top: 1rem; padding: 0.5rem 1rem; background: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+
+    .dark-mode #contactModal { background: #222; color: #fff; }
+
+    .team-message {
+      font-family: 'Antonio', sans-serif;
+      font-size: 1.05rem;
+      text-align: center;
+      margin: 40px auto 20px;
+      max-width: 600px;
+      padding: 0 20px;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+
+    #donateBtn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 52px;
+      height: 52px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
   </style>
 </head>
 <body>
@@ -46,7 +76,6 @@
   <div class="divider">CutIt.sbs ✦ your vibe. your code.</div>
 
   <input id="linkInput" type="text" placeholder="Paste your link (Spotify, Apple Music, etc.)"/>
-
   <div class="btn-group">
     <button class="theme-btn" onclick="generateQR('default')">🎯 Default</button>
     <button class="theme-btn" onclick="generateQR('music')">🎵 Music</button>
@@ -62,12 +91,18 @@
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
 
-  <div id="cutieBot" onclick="toggleChat()">🤖</div>
-  <div id="donateBtn" onclick="alert('Coming soon via Razorpay!')">💸</div>
+  <!-- Chat & Donate Buttons -->
+  <div id="cutieBot" onclick="chatCutie()">🤖</div>
+  <button id="donateBtn" onclick="openRazorpay()">💸</button>
 
-  <div id="chatWindow">
-    <div id="chatMessages"></div>
-    <input id="chatInput" placeholder="Ask Cutie anything..." onkeypress="handleChatKey(event)"/>
+  <div id="contactModal">
+    <h2>Hi from the CutIt.sbs team 💌</h2>
+    <p>We're crafting something magical just for you. If you have feedback, ideas, or just want to vibe — reach out anytime!</p>
+    <button id="modalClose" onclick="document.getElementById('contactModal').style.display='none'">Close</button>
+  </div>
+
+  <div class="team-message">
+    <p>From all of us at <strong>CutIt.sbs</strong> — we built this with love, creativity, and a bit of chaos 🤪 to help you express yourself, link your vibe, and share it in style. Whether it’s music, moments, memes, or memories — your code is your voice. Let it echo 🎤✨</p>
   </div>
 
   <footer>
@@ -98,16 +133,16 @@
     function generateQR(theme) {
       const link = document.getElementById('linkInput').value.trim();
       if (!link) return alert('Paste a link first!');
+      if (link.includes('spotify.com') || link.includes('music.apple.com')) theme = 'music';
       const canvas = document.getElementById('qrCanvas');
       const qrContainer = document.getElementById('qrContainer');
       qrContainer.style.display = 'block';
       const ctx = canvas.getContext('2d');
-      canvas.width = 300; canvas.height = 300;
+      canvas.width = 300;
+      canvas.height = 300;
       ctx.clearRect(0, 0, 300, 300);
-      ctx.fillStyle = theme === 'music' ? '#3a0f64' :
-                      theme === 'party' ? '#ff00cc' :
-                      theme === 'love' ? '#ffd1dc' :
-                      theme === 'chill' ? '#e0f7fa' :
+      ctx.fillStyle = theme === 'music' ? '#3a0f64' : theme === 'party' ? '#ff00cc' :
+                      theme === 'love' ? '#ffd1dc' : theme === 'chill' ? '#e0f7fa' :
                       theme === 'disney' ? '#0a0a40' : '#ffffff';
       ctx.fillRect(0,0,300,300);
       QRCode.toCanvas(canvas, link, { margin: 1, color: { dark: '#000', light: '#0000' } }, function (error) {
@@ -123,41 +158,25 @@
       link.click();
     }
 
-    function toggleChat() {
-      const chat = document.getElementById("chatWindow");
-      chat.style.display = chat.style.display === "block" ? "none" : "block";
-    }
-
-    async function loadTrainingData() {
-      const res = await fetch("cutie_training_data.txt");
-      return (await res.text()).split("\n").filter(Boolean);
-    }
-
-    let cutieData = [];
-    loadTrainingData().then(data => cutieData = data);
-
-    function getBestMatchResponse(query) {
-      query = query.toLowerCase();
-      let best = cutieData.find(d => d.toLowerCase().startsWith(query));
-      if (best) return best.split("::")[1];
-      let keyword = cutieData.find(d => d.toLowerCase().includes(query));
-      if (keyword) return keyword.split("::")[1];
-      return "Cutie says: Hmm… I'm feeling quirky 🤪 but couldn’t find an exact vibe. Try rewording that?";
-    }
-
-    function handleChatKey(e) {
-      if (e.key === "Enter") {
-        const input = document.getElementById("chatInput");
-        const message = input.value.trim();
-        if (!message) return;
-        const msgDiv = document.createElement("div");
-        msgDiv.textContent = "You: " + message;
-        document.getElementById("chatMessages").appendChild(msgDiv);
-        const reply = document.createElement("div");
-        reply.textContent = "Cutie: " + getBestMatchResponse(message);
-        document.getElementById("chatMessages").appendChild(reply);
-        input.value = "";
+    async function chatCutie() {
+      const userText = prompt("Talk to Cutie 🤖\nAsk me about themes, vibe, or help!");
+      if (!userText) return;
+      const response = await fetch('https://raw.githubusercontent.com/cutit-sir-qr/main/cutie_training_data.txt');
+      const data = await response.text();
+      const lines = data.split('\n').filter(line => line.includes(':'));
+      let bestMatch = "I'm still learning... 🤖 but I’ll try to vibe with you.";
+      for (let line of lines) {
+        const [q, a] = line.split(':');
+        if (userText.toLowerCase().includes(q.trim().toLowerCase())) {
+          bestMatch = a.trim();
+          break;
+        }
       }
+      alert(`Cutie says:\n${bestMatch}`);
+    }
+
+    function openRazorpay() {
+      window.location.href = "https://rzp.io/l/your-custom-donate-link"; // replace if you have direct link
     }
   </script>
 </body>
