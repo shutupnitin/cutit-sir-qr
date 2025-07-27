@@ -37,26 +37,10 @@
     }
     #cutieBot { right: 20px; background: #fff; }
     #donateBtn { left: 20px; background: #000; color: #fff; }
-    #chatBox {
-      position: fixed; bottom: 80px; right: 20px; width: 300px; height: 400px;
-      background: #fff url('https://em-content.zobj.net/thumbs/240/apple/354/graduation-cap_1f393.png') repeat;
-      background-size: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-      display: none; flex-direction: column; overflow: hidden; z-index: 999;
-    }
-    #chatMessages {
-      flex: 1; padding: 1rem; overflow-y: auto; text-align: left;
-    }
-    #chatInput {
-      border-top: 1px solid #ccc; display: flex;
-    }
-    #chatInput input {
-      flex: 1; padding: 0.5rem; border: none; font-family: inherit;
-    }
-    #chatInput button {
-      padding: 0.5rem 1rem; background: #000; color: #fff; border: none; cursor: pointer;
-    }
+
     footer { margin-top: 3rem; font-size: 0.9rem; opacity: 0.7; }
     .footer-links a { margin: 0 0.5rem; color: inherit; text-decoration: underline; }
+
     .team-message { font-size: 1rem; margin-top: 2rem; max-width: 600px; margin-inline: auto; color: #666; }
     #successAnim {
       position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -67,60 +51,134 @@
   </style>
 </head>
 <body>
-  <!-- existing content omitted for brevity -->
-  <div id="cutieBot" onclick="toggleChat()">🤖</div>
-  <div id="donateBtn" onclick="startDonation()">💸</div>
-  <div id="chatBox">
-    <div id="chatMessages"></div>
-    <div id="chatInput">
-      <input type="text" id="userInput" placeholder="Ask Cutie anything..." />
-      <button onclick="sendMessage()">Send</button>
-    </div>
+  <header>
+    <div class="logo">CutIt.sbs</div>
+    <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+  </header>
+
+  <h1>Craft your QR vibe, effortlessly.</h1>
+  <p>From parties to playlists, make every code pop. Just paste your link, pick a mode, and boom — QR magic.</p>
+  <div class="divider">CutIt.sbs ✦ your vibe. your code.</div>
+
+  <div class="mode-group">
+    <button class="mode-btn active" onclick="switchMode('default')">📎 Default</button>
+    <button class="mode-btn" onclick="switchMode('wifi')">📶 Wi-Fi</button>
+    <button class="mode-btn" onclick="switchMode('mobile')">📱 Mobile</button>
+    <button class="mode-btn" onclick="switchMode('email')">✉️ Email</button>
+    <button class="mode-btn" onclick="switchMode('text')">📝 Text</button>
   </div>
+
+  <div id="inputs">
+    <input id="linkInput" placeholder="Paste your link here" />
+  </div>
+
+  <button id="generateBtn" onclick="generateQR()">Generate QR</button>
+
+  <div id="qrContainer">
+    <canvas id="qrCanvas"></canvas>
+    <div class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</div>
+    <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
+  </div>
+
+  <div class="team-message">
+    From all of us at CutIt.sbs — we built this with love, creativity, and a bit of chaos 🤪 to help you express yourself,
+    link your vibe, and share it in style. Whether it’s music, moments, memes, or memories — your code is your voice. Let it echo 🎤✨
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="terms.html">Terms</a> | <a href="privacy.html">Privacy</a> | <a href="contact.html">Contact Us</a>
+    </div>
+    <p>✨ Created with rebellious love by CutIt.sbs – where QR meets pop culture. ✨</p>
+  </footer>
+
+  <div id="cutieBot" onclick="alert('Cutie is being linked soon 🤖')">🤖</div>
+  <div id="donateBtn" onclick="startDonation()">💸</div>
   <div id="successAnim">🎉 Thanks for supporting us! 🎉</div>
 
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
   <script>
-    const chatBox = document.getElementById("chatBox");
-    const chatMessages = document.getElementById("chatMessages");
-
-    function toggleChat() {
-      chatBox.style.display = chatBox.style.display === "flex" ? "none" : "flex";
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
     }
 
-    async function sendMessage() {
-      const input = document.getElementById("userInput");
-      const msg = input.value.trim();
-      if (!msg) return;
-      appendMessage("You", msg);
-      input.value = "";
+    const inputArea = document.getElementById('inputs');
+    let selectedMode = 'default';
 
-      try {
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer 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"
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: msg }]
-          })
-        });
+    function switchMode(mode) {
+      selectedMode = mode;
+      document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      inputArea.innerHTML = '';
 
-        const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content || "Oops! Cutie glitched 😵";
-        appendMessage("Cutie", reply);
-      } catch (err) {
-        appendMessage("Cutie", "Something went wrong. Try again later.");
+      if (mode === 'wifi') {
+        inputArea.innerHTML = '<input id="wifiName" placeholder="Wi-Fi Name (SSID)" /><input id="wifiPass" placeholder="Wi-Fi Password" />';
+      } else if (mode === 'mobile') {
+        inputArea.innerHTML = '<input id="phoneNumber" placeholder="Phone Number" />';
+      } else if (mode === 'email') {
+        inputArea.innerHTML = '<input id="emailAddr" placeholder="Email Address" /><input id="emailSubj" placeholder="Subject" />';
+      } else if (mode === 'text') {
+        inputArea.innerHTML = '<input id="textMsg" placeholder="Message Text" />';
+      } else {
+        inputArea.innerHTML = '<input id="linkInput" placeholder="Paste your link here" />';
       }
     }
 
-    function appendMessage(sender, text) {
-      const msgDiv = document.createElement("div");
-      msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      chatMessages.appendChild(msgDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+    function generateQR() {
+      let data = '';
+      if (selectedMode === 'wifi') {
+        const ssid = document.getElementById('wifiName').value;
+        const pass = document.getElementById('wifiPass').value;
+        data = `WIFI:T:WPA;S:${ssid};P:${pass};;`;
+      } else if (selectedMode === 'mobile') {
+        const phone = document.getElementById('phoneNumber').value;
+        data = `tel:${phone}`;
+      } else if (selectedMode === 'email') {
+        const email = document.getElementById('emailAddr').value;
+        const subj = document.getElementById('emailSubj').value;
+        data = `mailto:${email}?subject=${subj}`;
+      } else if (selectedMode === 'text') {
+        const msg = document.getElementById('textMsg').value;
+        data = msg;
+      } else {
+        data = document.getElementById('linkInput').value.trim();
+      }
+
+      const canvas = document.getElementById('qrCanvas');
+      const qrContainer = document.getElementById('qrContainer');
+      qrContainer.style.display = 'block';
+
+      QRCode.toCanvas(canvas, data, { margin: 1, color: { dark: '#000', light: '#fff' } }, function (error) {
+        if (error) console.error(error);
+      });
+    }
+
+    function downloadQR() {
+      const canvas = document.getElementById('qrCanvas');
+      const link = document.createElement('a');
+      link.download = 'cutit-qr.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    function startDonation() {
+      const options = {
+        key: 'rzp_live_AJEAZ1WJHOpOOQ',
+        amount: 5000,
+        currency: 'INR',
+        name: 'CutIt.sbs',
+        description: 'Support Us',
+        handler: function (response) {
+          document.getElementById('successAnim').style.display = 'block';
+          setTimeout(() => {
+            document.getElementById('successAnim').style.display = 'none';
+          }, 3000);
+        }
+      };
+      const rzp = new Razorpay(options);
+      rzp.open();
     }
   </script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 </html>
