@@ -101,47 +101,81 @@
     setInterval(floatEmoji, 2000);
 
     function generateQR(theme) {
-      const link = document.getElementById('linkInput').value.trim();
-      if (!link) return alert('Paste a link first!');
-      const canvas = document.getElementById('qrCanvas');
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const link = document.getElementById('linkInput').value.trim();
+  if (!link) return alert('Paste a link first!');
+  if (link.includes('spotify.com') || link.includes('music.apple.com')) theme = 'music';
 
-      // Draw theme background
-      if (theme === 'music') {
-        const gradient = ctx.createRadialGradient(160, 160, 30, 160, 160, 150);
-        gradient.addColorStop(0, '#3a0f64');
-        gradient.addColorStop(1, '#1b003b');
-        ctx.fillStyle = gradient;
-      } else if (theme === 'party') {
-        ctx.fillStyle = '#ff00cc';
-      } else if (theme === 'love') {
-        ctx.fillStyle = '#ffd1dc';
-      } else if (theme === 'chill') {
-        ctx.fillStyle = '#e0f7fa';
-      } else if (theme === 'disney') {
-        ctx.fillStyle = '#0a0a40';
-      } else {
-        ctx.fillStyle = '#ffffff';
-      }
+  const canvas = document.getElementById('qrCanvas');
+  const qrContainer = document.getElementById('qrContainer');
+  qrContainer.style.display = 'block';
 
-      ctx.fillRect(0, 0, 320, 360);
+  const ctx = canvas.getContext('2d');
+  canvas.width = 300;
+  canvas.height = 360;
+  ctx.clearRect(0, 0, 300, 360);
 
-      // Generate QR code
-      QRCode.toCanvas(document.createElement('canvas'), link, { margin: 1, width: 200, color: { dark: '#000', light: '#0000' } }, function (err, tempCanvas) {
-        if (err) return console.error(err);
-        ctx.drawImage(tempCanvas, 60, 40, 200, 200);
+  // Background Gradient & Emojis
+  const gradient = ctx.createLinearGradient(0, 0, 300, 300);
+  let emojis = '';
 
-        // Add watermark
-        ctx.font = '16px Antonio';
-        ctx.fillStyle = '#333';
-        ctx.textAlign = 'center';
-        ctx.fillText('Made by CutIt.sbs ✦ your vibe. your code.', 160, 320);
+  switch (theme) {
+    case 'music':
+      gradient.addColorStop(0, '#3a0f64');
+      gradient.addColorStop(1, '#7e57c2');
+      emojis = '🎷🎺🎼';
+      break;
+    case 'party':
+      gradient.addColorStop(0, '#ff00cc');
+      gradient.addColorStop(1, '#3333ff');
+      emojis = '🎈🪅🎊';
+      break;
+    case 'love':
+      gradient.addColorStop(0, '#ff9a9e');
+      gradient.addColorStop(1, '#fad0c4');
+      emojis = '💘🍦🌹';
+      break;
+    case 'chill':
+      gradient.addColorStop(0, '#c9d6ff');
+      gradient.addColorStop(1, '#e2e2e2');
+      emojis = '❄️🏔️🧘‍♂️';
+      break;
+    case 'disney':
+      gradient.addColorStop(0, '#0f0c29');
+      gradient.addColorStop(0.5, '#302b63');
+      gradient.addColorStop(1, '#24243e');
+      emojis = '✨🧙‍♂️🔮';
+      break;
+    default:
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, 300, 300);
+      emojis = '';
+  }
 
-        document.getElementById('qrContainer').style.display = 'block';
-      });
+  if (theme !== 'default') {
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 300, 300);
+    ctx.font = '20px serif';
+    ctx.globalAlpha = 0.3;
+    ctx.fillText(emojis, 10, 25);
+    ctx.fillText(emojis, 220, 290);
+    ctx.globalAlpha = 1.0;
+  }
+
+  QRCode.toCanvas(canvas, link, {
+    margin: 1,
+    color: {
+      dark: '#000000',
+      light: '#0000'
     }
+  }, function (error) {
+    if (error) console.error(error);
 
+    // Add watermark below QR
+    ctx.font = '12px Antonio, sans-serif';
+    ctx.fillStyle = '#555';
+    ctx.fillText('Made by CutIt.sbs ✦ your vibe. your code.', 20, 340);
+  });
+}
     function downloadQR() {
       const canvas = document.getElementById('qrCanvas');
       const link = document.createElement('a');
