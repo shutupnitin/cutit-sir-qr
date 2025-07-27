@@ -1,71 +1,244 @@
+
+<!--
+  FINAL CutIt.sbs ✦ your vibe. your code.
+  Aesthetic, minimal, Gen Z–friendly QR Generator with Cutie AI Bot + Themed Backgrounds.
+  Built with ❤️ for CutIt.sbs
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CutIt.sbs ✦ your vibe. your code.</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CutIt.sbs ✦ QR Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      font-family: 'Antonio', sans-serif;
+    }
+    body {
+      background: #fdfdff;
+      color: #111;
+      text-align: center;
+      padding: 2rem;
+      transition: background 0.3s, color 0.3s;
+    }
+    .dark-mode {
+      background: #111;
+      color: #fdfdff;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #ccc;
+    }
+    .logo {
+      font-size: 2rem;
+    }
+    .toggle-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: 1px solid #999;
+      background: white;
+      cursor: pointer;
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin-top: 2rem;
+    }
+    p {
+      font-size: 1.1rem;
+      margin: 1rem 0 2rem;
+      color: #666;
+    }
+    .divider {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+      color: #000;
+      font-weight: bold;
+    }
+    #linkInput {
+      width: 90%;
+      max-width: 500px;
+      padding: 1rem;
+      font-size: 1.2rem;
+      border: 2px solid #000;
+      border-radius: 8px;
+    }
+    .btn-group {
+      margin: 1.5rem 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .theme-btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #000;
+      color: #fff;
+      transition: background 0.3s;
+    }
+    .theme-btn:hover {
+      background: #444;
+    }
+    #qrContainer {
+      margin-top: 3rem;
+      display: none;
+    }
+    canvas {
+      margin: auto;
+      display: block;
+      max-width: 300px;
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .watermark {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      opacity: 0.6;
+    }
+    #downloadBtn {
+      margin-top: 1.5rem;
+      padding: 0.7rem 1.4rem;
+      font-size: 1rem;
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .emoji-float {
+      position: fixed;
+      animation: float 6s infinite ease-in-out;
+      pointer-events: none;
+    }
+    @keyframes float {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-200px); opacity: 0; }
+    }
+    /* Cutie Chatbot button */
+    #cutieBot {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #fff;
+      border-radius: 50%;
+      padding: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      cursor: pointer;
+      font-size: 24px;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <div class="branding">CutIt.sbs</div>
-    <div class="mode-toggle">
-      <button id="modeSwitch">🌙</button>
-    </div>
+    <div class="logo">CutIt.sbs</div>
+    <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
   </header>
 
-  <main>
-    <section class="intro">
-      <p class="about-message">Welcome to CutIt.sbs – a place where your links become art. We believe QR codes can be as vibey and unique as you are. With smart themes, aesthetic design, and a chatbot that gets you, this is more than a tool. It’s a vibe.</p>
-      <h2 class="tagline">CutIt.sbs ✦ your vibe. your code.</h2>
-    </section>
+  <h1>Craft your QR vibe, effortlessly.</h1>
+  <p>From parties to playlists, make every code pop. Just paste your link, pick a theme, and boom — QR magic.</p>
+  <div class="divider">CutIt.sbs ✦ your vibe. your code.</div>
 
-    <section class="qr-section">
-      <input type="text" id="linkInput" placeholder="Paste your link here" />
-      <div class="qr-options">
-        <button class="qr-mode" data-mode="default">🌐 Default</button>
-        <button class="qr-mode" data-mode="music">🎵 Music</button>
-        <button class="qr-mode" data-mode="party">🎉 Party</button>
-        <button class="qr-mode" data-mode="love">❤️ Love</button>
-        <button class="qr-mode" data-mode="chill">🧊 Chill</button>
-        <button class="qr-mode" data-mode="disney">🌟 Disney</button>
-      </div>
-      <button id="generateQR">Generate QR Code</button>
+  <input id="linkInput" type="text" placeholder="Paste your link (Spotify, Apple Music, etc.)"/>
 
-      <div id="qrResult" class="qr-canvas-container hidden">
-        <canvas id="qrCanvas"></canvas>
-        <p class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</p>
-        <button id="downloadQR">⬇️ Download</button>
-      </div>
-    </section>
-  </main>
-
-  <div id="floatingEmojis">✨🎧💫🪩🍦🎺🧘‍♂️</div>
-
-  <div id="cutie-chatbot">
-    <button id="chatToggle">💬 Cutie</button>
-    <div id="chatWindow" class="hidden">
-      <div id="chatMessages"></div>
-      <input type="text" id="chatInput" placeholder="Ask Cutie anything..." />
-      <button id="sendChat">Send</button>
-    </div>
+  <div class="btn-group">
+    <button class="theme-btn" onclick="generateQR('default')">🎯 Default</button>
+    <button class="theme-btn" onclick="generateQR('music')">🎵 Music</button>
+    <button class="theme-btn" onclick="generateQR('party')">🎉 Party</button>
+    <button class="theme-btn" onclick="generateQR('love')">❤️ Love</button>
+    <button class="theme-btn" onclick="generateQR('chill')">🧊 Chill</button>
+    <button class="theme-btn" onclick="generateQR('disney')">🌟 Disney Magic</button>
   </div>
 
-  <footer>
-    <p><a href="#" id="contactLink">Contact Us</a> | <a href="#">Terms</a> | <a href="#">Privacy</a></p>
-    <p class="footer-love">Made with 🍿, 🎬, and ❤️ by CutIt.sbs</p>
-  </footer>
-
-  <!-- Contact Modal -->
-  <div id="contactModal" class="modal hidden">
-    <div class="modal-content">
-      <span id="closeModal">&times;</span>
-      <h3>Contact Us</h3>
-      <p>We'd love to hear from you! DM us on Instagram @cutit.sbs or email hello@cutit.sbs</p>
-    </div>
+  <div id="qrContainer">
+    <canvas id="qrCanvas"></canvas>
+    <div class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</div>
+    <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
 
-  <script src="script.js"></script>
+  <div id="cutieBot">🤖</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    const emojis = ['🎈','🎊','🎷','❄️','💘','✨','🧙‍♂️'];
+    function floatEmoji() {
+      const emoji = document.createElement('div');
+      emoji.className = 'emoji-float';
+      emoji.style.left = Math.random() * 100 + 'vw';
+      emoji.style.top = '100vh';
+      emoji.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 6000);
+    }
+    setInterval(floatEmoji, 2000);
+
+    function generateQR(theme) {
+      const link = document.getElementById('linkInput').value.trim();
+      if (!link) return alert('Paste a link first!');
+
+      let detected = '';
+      if (link.includes('spotify.com') || link.includes('music.apple.com')) {
+        theme = 'music';
+        detected = '(auto-detected music link)';
+      }
+
+      const canvas = document.getElementById('qrCanvas');
+      const qrContainer = document.getElementById('qrContainer');
+      qrContainer.style.display = 'block';
+
+      const ctx = canvas.getContext('2d');
+      canvas.width = 300;
+      canvas.height = 300;
+
+      ctx.clearRect(0, 0, 300, 300);
+
+      // Theme backgrounds
+      if (theme === 'music') {
+        ctx.fillStyle = '#3a0f64';
+        ctx.fillRect(0,0,300,300);
+        ctx.fillStyle = '#000';
+      } else if (theme === 'party') {
+        ctx.fillStyle = '#ff00cc';
+        ctx.fillRect(0,0,300,300);
+      } else if (theme === 'love') {
+        ctx.fillStyle = '#ffd1dc';
+        ctx.fillRect(0,0,300,300);
+      } else if (theme === 'chill') {
+        ctx.fillStyle = '#e0f7fa';
+        ctx.fillRect(0,0,300,300);
+      } else if (theme === 'disney') {
+        ctx.fillStyle = '#0a0a40';
+        ctx.fillRect(0,0,300,300);
+      } else {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0,0,300,300);
+      }
+
+      QRCode.toCanvas(canvas, link, { margin: 1, color: { dark: '#000', light: '#0000' } }, function (error) {
+        if (error) console.error(error);
+      });
+    }
+
+    function downloadQR() {
+      const canvas = document.getElementById('qrCanvas');
+      const link = document.createElement('a');
+      link.download = 'cutit-qr.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+  </script>
 </body>
 </html>
