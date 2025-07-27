@@ -242,5 +242,121 @@
       chat.scrollTop = chat.scrollHeight;
     }
   </script>
+  <!-- Everything before remains the same... -->
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+  function generateQR(theme, fromChatLink = null) {
+    const link = fromChatLink || document.getElementById('linkInput').value.trim();
+    if (!link) return alert('Paste a link first!');
+
+    if (link.includes('spotify') || link.includes('music')) theme = 'music';
+    else if (link.includes('party') || link.includes('event')) theme = 'party';
+    else if (link.includes('love')) theme = 'love';
+    else theme = 'default';
+
+    const canvas = document.getElementById('qrCanvas');
+    const qrContainer = document.getElementById('qrContainer');
+    qrContainer.style.display = 'block';
+
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0,0,300,300);
+
+    QRCode.toCanvas(canvas, link, { margin: 1 }, function (error) {
+      if (error) console.error(error);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.font = 'bold 10px Antonio';
+      ctx.fillText('Made by CutIt.sbs ✦ your vibe. your code.', 10, 290);
+    });
+
+    if (fromChatLink) {
+      const chat = document.getElementById('chatMessages');
+      chat.innerHTML += `<div><strong>Cutie:</strong> Here's your QR for <code>${link}</code> below 👇</div>`;
+    }
+  }
+
+  function downloadQR() {
+    const canvas = document.getElementById('qrCanvas');
+    const link = document.createElement('a');
+    link.download = 'cutit_qr.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  }
+
+  function openDonate() {
+    try {
+      var options = {
+        "key": "rzp_live_AJEAZ1WJHOpOOQ",
+        "amount": 50000,
+        "currency": "INR",
+        "name": "CutIt.sbs",
+        "description": "Support CutIt 💸",
+        "image": "https://cutit.sbs/logo.png",
+        "handler": function (response) {
+          alert("Thanks for donating ❤️ You just made CutIt more awesome!");
+        },
+        "theme": {
+          "color": "#ff0099"
+        }
+      };
+      var rzp = new Razorpay(options);
+      rzp.open();
+    } catch (e) {
+      alert("Razorpay failed to load. Try on HTTPS hosted site (not file:// or localhost)");
+    }
+  }
+
+  function toggleCutie() {
+    const box = document.getElementById('cutieChatbox');
+    box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+  }
+
+  async function sendChat() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    const chat = document.getElementById('chatMessages');
+    chat.innerHTML += `<div><strong>You:</strong> ${msg}</div>`;
+    input.value = "";
+    chat.innerHTML += `<div><em>Cutie is typing...</em></div>`;
+
+    // Detect if message includes "create qr for"
+    let url = null;
+    const qrMatch = msg.match(/(create|generate)\s+qr\s+(for\s+)?(https?:\/\/[^\s]+)/i);
+    if (qrMatch) url = qrMatch[3];
+
+    const systemPrompt = `You're Cutie, a QR-loving Gen Z chatbot from CutIt.sbs. If user asks for a QR code for a link, you help them and suggest a theme.`;
+    const userPrompt = url ? `Make QR for this: ${url}` : msg;
+
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": "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",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ]
+      })
+    });
+
+    const data = await res.json();
+    const reply = data.choices[0].message.content.trim();
+    chat.innerHTML = chat.innerHTML.replace(`<div><em>Cutie is typing...</em></div>`, "");
+    chat.innerHTML += `<div><strong>Cutie:</strong> ${reply}</div>`;
+
+    if (url) {
+      setTimeout(() => generateQR(null, url), 500); // Add QR after short delay
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+  }
+</script>
 </body>
 </html>
