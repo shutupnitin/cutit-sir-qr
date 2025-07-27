@@ -12,7 +12,7 @@
 
     header {
       display: flex; justify-content: space-between; align-items: center;
-      padding-bottom: 1rem; border-bottom: 1px solid #ccc; margin-bottom: 2rem;
+      padding-bottom: 1rem; border-bottom: 1px solid #ccc; margin-bottom: 1.5rem;
     }
     .logo { font-size: 2rem; }
     .toggle-btn {
@@ -20,8 +20,16 @@
       background: white; cursor: pointer;
     }
 
-    h1 { font-size: 2.5rem; margin-bottom: 1.5rem; }
-    p { font-size: 1.1rem; max-width: 700px; margin: auto; margin-bottom: 1.8rem; color: #444; }
+    .back-btn {
+      display: inline-block; margin-bottom: 2rem; font-size: 1rem;
+      padding: 0.6rem 1.2rem; border-radius: 6px; border: none;
+      background: #000; color: #fff; text-decoration: none;
+      transition: background 0.3s;
+    }
+    .back-btn:hover { background: #333; }
+
+    h1 { font-size: 2.5rem; margin-bottom: 1.2rem; }
+    p { font-size: 1.1rem; max-width: 700px; margin: auto; margin-bottom: 1.5rem; color: #444; }
     .email-link { color: #000; font-weight: bold; text-decoration: underline; }
     .dark-mode .email-link { color: #fdfdff; }
 
@@ -43,6 +51,8 @@
     <div class="logo">CutIt.sbs</div>
     <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
   </header>
+
+  <a href="index.html" class="back-btn">← Back to Generator</a>
 
   <h1>Got something on your mind?</h1>
 
