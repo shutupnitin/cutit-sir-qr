@@ -7,15 +7,42 @@
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
-    body { background: #fdfdff; color: #111; padding: 2rem; text-align: center; line-height: 1.7; }
+    body { background: #fdfdff; color: #111; padding: 2rem; text-align: center; line-height: 1.7; transition: background 0.3s, color 0.3s; }
+    .dark-mode { background: #111; color: #fdfdff; }
+
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 1rem; border-bottom: 1px solid #ccc; margin-bottom: 2rem;
+    }
+    .logo { font-size: 2rem; }
+    .toggle-btn {
+      padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #999;
+      background: white; cursor: pointer;
+    }
+
     h1 { font-size: 2.5rem; margin-bottom: 1.5rem; }
     p { font-size: 1.1rem; max-width: 700px; margin: auto; margin-bottom: 1.8rem; color: #444; }
     .email-link { color: #000; font-weight: bold; text-decoration: underline; }
-    iframe { border: none; margin-top: 2rem; border-radius: 12px; }
-    footer { margin-top: 3rem; font-size: 0.9rem; opacity: 0.6; }
+    .dark-mode .email-link { color: #fdfdff; }
+
+    iframe {
+      border: none; margin-top: 2rem; border-radius: 12px;
+      width: 100%; height: 1100px;
+    }
+
+    footer {
+      margin-top: 3rem; font-size: 0.9rem; opacity: 0.7;
+    }
+    .footer-links a {
+      margin: 0 0.5rem; color: inherit; text-decoration: underline;
+    }
   </style>
 </head>
 <body>
+  <header>
+    <div class="logo">CutIt.sbs</div>
+    <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+  </header>
 
   <h1>Got something on your mind?</h1>
 
@@ -26,8 +53,7 @@
   <p>⏩ Wanna get a quick response?  
   Fill the form below — our team’s faster than a QR scan when it comes to form replies.</p>
 
-  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSddy5neP3JlBPYJEEPTTWD-DwiQ6VpB7y4kYDNFa2DJKVKl4A/viewform?embedded=true" 
-    width="100%" height="1100">
+  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSddy5neP3JlBPYJEEPTTWD-DwiQ6VpB7y4kYDNFa2DJKVKl4A/viewform?embedded=true">
     Loading…
   </iframe>
 
@@ -35,15 +61,24 @@
   our team might just be sipping chai and waiting to help ☕</p>
 
   <footer>
-    ✨ CutIt.sbs ✦ your vibe. your code. Made with rebellious love.
+    <div class="footer-links">
+      <a href="terms.html">Terms</a> | <a href="privacy.html">Privacy</a> | <a href="contact.html">Contact Us</a>
+    </div>
+    ✨ Created with rebellious love by CutIt.sbs – where QR meets pop culture. ✨
   </footer>
 
-  <!-- Zoho SalesIQ Chat Bubble -->
+  <!-- Dark Mode Script -->
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+  </script>
+
+  <!-- Zoho SalesIQ Live Chat -->
   <script>
     window.$zoho=window.$zoho || {};
     $zoho.salesiq = $zoho.salesiq || { ready: function() {} };
   </script>
   <script id="zsiqscript" src="https://salesiq.zohopublic.in/widget?wc=siq75c478e529173b2d56909ed728473601778920eaed652045e9bad0131d53cae0" defer></script>
-
 </body>
 </html>
