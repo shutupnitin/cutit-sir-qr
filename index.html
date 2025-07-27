@@ -93,9 +93,7 @@
     <p>✨ Created with rebellious love by CutIt.sbs — where QR meets pop culture. ✨</p>
   </footer>
 
-  <!-- HEAD AND BODY PART REMAINS SAME... -->
-
-<script>
+  <script>
 function generateQR(theme) {
   const link = document.getElementById('linkInput').value.trim();
   if (!link) return alert('Paste a link first!');
@@ -107,70 +105,56 @@ function generateQR(theme) {
 
   const ctx = canvas.getContext('2d');
   canvas.width = 300;
-  canvas.height = 360;
-  ctx.clearRect(0, 0, 300, 360);
+  canvas.height = 340; // extra space for watermark
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // Draw gradient background
   let gradient = ctx.createLinearGradient(0, 0, 300, 300);
-  let emojiTL = '', emojiTR = '', emojiBL = '', emojiBR = '';
-  let bgColor = '#ffffff';
-
   switch (theme) {
     case 'music':
       gradient.addColorStop(0, '#3a0f64');
-      gradient.addColorStop(1, '#7e57c2');
-      emojiTL = '🎺'; emojiTR = '🎼'; emojiBL = '🎷'; emojiBR = '🎧';
+      gradient.addColorStop(1, '#6e33a5');
       break;
     case 'party':
       gradient.addColorStop(0, '#ff00cc');
       gradient.addColorStop(1, '#3333ff');
-      emojiTL = '🎈'; emojiTR = '🪅'; emojiBL = '🎊'; emojiBR = '🎉';
       break;
     case 'love':
-      gradient.addColorStop(0, '#ff9a9e');
-      gradient.addColorStop(1, '#fad0c4');
-      emojiTL = '💘'; emojiTR = '🍦'; emojiBL = '🌹'; emojiBR = '❤️';
+      gradient.addColorStop(0, '#ffc0cb');
+      gradient.addColorStop(1, '#ffe4e1');
       break;
     case 'chill':
-      gradient.addColorStop(0, '#c9d6ff');
-      gradient.addColorStop(1, '#e2e2e2');
-      emojiTL = '❄️'; emojiTR = '🧊'; emojiBL = '🧘‍♂️'; emojiBR = '🏔️';
+      gradient.addColorStop(0, '#a0e3f0');
+      gradient.addColorStop(1, '#f0f8ff');
       break;
     case 'disney':
-      gradient.addColorStop(0, '#0f0c29');
-      gradient.addColorStop(0.5, '#302b63');
-      gradient.addColorStop(1, '#24243e');
-      emojiTL = '🧙‍♂️'; emojiTR = '✨'; emojiBL = '🔮'; emojiBR = '🌟';
+      gradient.addColorStop(0, '#0a0a40');
+      gradient.addColorStop(1, '#5c6bc0');
       break;
     default:
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, 300, 300);
-      break;
+      gradient = '#ffffff';
   }
 
-  // Background fill
-  if (theme !== 'default') {
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 300, 300);
-  }
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 300, 300);
 
-  // Draw QR Code
-  QRCode.toCanvas(canvas, link, {
+  // Generate QR Code inside a clipped region
+  const qrCanvas = document.createElement('canvas');
+  qrCanvas.width = 300;
+  qrCanvas.height = 300;
+
+  QRCode.toCanvas(qrCanvas, link, {
     margin: 1,
     color: { dark: '#000000', light: '#0000' }
   }, function (error) {
     if (error) console.error(error);
 
-    // Emojis in corners (static)
-    ctx.font = '22px serif';
-    ctx.fillText(emojiTL, 10, 25);
-    ctx.fillText(emojiTR, 265, 25);
-    ctx.fillText(emojiBL, 10, 285);
-    ctx.fillText(emojiBR, 265, 285);
+    ctx.drawImage(qrCanvas, 0, 0);
 
-    // Watermark below
-    ctx.font = '12px Antonio';
+    // Draw watermark below QR
     ctx.fillStyle = '#555';
-    ctx.fillText('Made by CutIt.sbs ✦ your vibe. your code.', 20, 340);
+    ctx.font = '12px Antonio';
+    ctx.fillText('Made by CutIt.sbs ✦ your vibe. your code.', 20, 330);
   });
 }
 </script>
