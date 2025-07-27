@@ -3,360 +3,207 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CutIt.sbs ✦ your vibe. your code.</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@500&display=swap" rel="stylesheet"/>
+  <title>CutIt.sbs ✦ QR Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
   <style>
-    body {
-      margin: 0;
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
+    body { background: #fdfdff; color: #111; text-align: center; padding: 2rem; transition: background 0.3s, color 0.3s; }
+    .dark-mode { background: #111; color: #fdfdff; }
+    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid #ccc; }
+    .logo { font-size: 2rem; }
+    .toggle-btn { padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #999; background: white; cursor: pointer; }
+    h1 { font-size: 2.2rem; margin-top: 2rem; }
+    p { font-size: 1.1rem; margin: 1rem 0 2rem; color: #666; }
+    .divider { font-size: 1.3rem; margin-bottom: 2rem; font-weight: bold; transition: color 0.3s; }
+    .dark-mode .divider { color: #fdfdff; }
+    #linkInput { width: 90%; max-width: 500px; padding: 1rem; font-size: 1.2rem; border: 2px solid #000; border-radius: 8px; }
+    .btn-group { margin: 1.5rem 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 0.8rem; }
+    .theme-btn { padding: 0.6rem 1.2rem; border: none; font-size: 1rem; border-radius: 8px; cursor: pointer; background: #000; color: #fff; transition: background 0.3s; }
+    .theme-btn:hover { background: #444; }
+    #qrContainer { margin-top: 3rem; display: none; }
+    canvas { margin: auto; display: block; max-width: 300px; background: white; border-radius: 12px; padding: 1rem; }
+    .watermark { margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.6; }
+    #downloadBtn { margin-top: 1.5rem; padding: 0.7rem 1.4rem; font-size: 1rem; background: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    #cutieBot { position: fixed; bottom: 20px; right: 20px; background: #fff; border-radius: 50%; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; font-size: 24px; z-index: 999; }
+    footer { margin-top: 3rem; font-size: 0.9rem; opacity: 0.7; }
+    .footer-links { margin-top: 0.5rem; }
+    .footer-links a { margin: 0 0.5rem; color: inherit; text-decoration: underline; }
+    #contactModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.2); z-index: 999; max-width: 90vw; width: 400px; }
+    #contactModal h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+    #modalClose { margin-top: 1rem; padding: 0.5rem 1rem; background: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    .dark-mode #contactModal { background: #222; color: #fff; }
+    .team-message {
       font-family: 'Antonio', sans-serif;
-      background-color: #0d0d0d;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
+      font-size: 1.05rem;
       text-align: center;
+      margin: 40px auto 20px;
+      color: var(--text-color);
+      max-width: 600px;
+      padding: 0 20px;
+      line-height: 1.6;
+      opacity: 0.9;
     }
-    h1 {
-      font-size: 2.5rem;
-    }
-    #qrContainer {
-      margin-top: 20px;
+    #chatPopup {
       display: none;
-    }
-    input {
-      padding: 10px;
-      width: 90%;
-      max-width: 400px;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 5px;
-      background-color: #ff0099;
-      color: white;
-      cursor: pointer;
-    }
-    #footer {
-      margin-top: 40px;
-      font-size: 0.8rem;
-      opacity: 0.7;
-    }
-
-    /* Floating Donate Button */
-    #donateBtn {
       position: fixed;
-      bottom: 90px;
+      bottom: 80px;
       right: 20px;
-      background: #ff0099;
-      color: #fff;
-      padding: 12px 16px;
-      border-radius: 50px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      width: 320px;
+      max-height: 400px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      padding: 1rem;
+      overflow-y: auto;
       z-index: 999;
     }
-
-    /* Cutie Chatbot */
-    #cutieChatbox {
-      position: fixed;
-      bottom: 20px;
-      right: 80px;
-      width: 280px;
-      max-height: 400px;
-      background: #1e1e1e;
-      color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.3);
-      display: none;
-      flex-direction: column;
-      z-index: 1000;
-    }
-    .chat-header {
-      padding: 10px;
-      font-weight: bold;
-      background: #111;
-      border-bottom: 1px solid #333;
-    }
-    .chat-messages {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-      font-size: 0.9rem;
-      max-height: 250px;
-    }
-    #chatInput {
-      border: none;
-      padding: 10px;
-      border-top: 1px solid #333;
+    #chatPopup input {
       width: 100%;
-      outline: none;
-      background: #0f0f0f;
-      color: #fff;
-      font-size: 1rem;
-    }
-    #cutieBotToggle {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #333;
-      color: #fff;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      font-size: 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 1001;
+      padding: 0.6rem;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+      margin-top: 1rem;
     }
   </style>
 </head>
 <body>
-  <h1>CutIt.sbs ✦ your vibe. your code.</h1>
-  <p>Drop your link below to generate a ✦ stylish ✦ QR code</p>
-  <input id="linkInput" type="text" placeholder="Paste your link here..." />
-  <br />
-  <button onclick="generateQR()">✨ Generate QR</button>
+  <header>
+    <div class="logo">CutIt.sbs</div>
+    <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+  </header>
+
+  <h1>Craft your QR vibe, effortlessly.</h1>
+  <p>From parties to playlists, make every code pop. Just paste your link, pick a theme, and boom — QR magic.</p>
+  <div class="divider">CutIt.sbs ✦ your vibe. your code.</div>
+
+  <input id="linkInput" type="text" placeholder="Paste your link (Spotify, Apple Music, etc.)"/>
+
+  <div class="btn-group">
+    <button class="theme-btn" onclick="startPayment('default')">🎯 Default</button>
+    <button class="theme-btn" onclick="startPayment('music')">🎵 Music</button>
+    <button class="theme-btn" onclick="startPayment('party')">🎉 Party</button>
+    <button class="theme-btn" onclick="startPayment('love')">❤️ Love</button>
+    <button class="theme-btn" onclick="startPayment('chill')">🧊 Chill</button>
+    <button class="theme-btn" onclick="startPayment('disney')">🌟 Disney Magic</button>
+  </div>
 
   <div id="qrContainer">
-    <canvas id="qrCanvas" width="300" height="300"></canvas>
-    <br />
-    <button onclick="downloadQR()">⬇️ Download QR</button>
+    <canvas id="qrCanvas"></canvas>
+    <div class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</div>
+    <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
 
-  <div id="footer">
-    <p>Made with ❤️ by CutIt.sbs<br/>
-    Terms | Privacy | Contact Us</p>
+  <div id="cutieBot" onclick="toggleChat()">🤖</div>
+
+  <div id="chatPopup">
+    <p><strong>Cutie:</strong> Yo! Drop a link and say “make QR” 💖</p>
+    <input id="chatInput" placeholder="Type here... (e.g. make QR for https://...)"/>
   </div>
 
-  <!-- Donate Button -->
-  <div id="donateBtn" onclick="openDonate()" title="Support CutIt ❤️">💸</div>
-
-  <!-- Chatbot Trigger -->
-  <div id="cutieBotToggle" onclick="toggleCutie()">🤖</div>
-
-  <!-- Chatbox -->
-  <div id="cutieChatbox">
-    <div class="chat-header">Cutie 🤖</div>
-    <div id="chatMessages" class="chat-messages"></div>
-    <input type="text" id="chatInput" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendChat()"/>
+  <div id="contactModal">
+    <h2>Hi from the CutIt.sbs team 💌</h2>
+    <p>We're crafting something magical just for you. If you have feedback, ideas, or just want to vibe — reach out anytime!</p>
+    <button id="modalClose" onclick="document.getElementById('contactModal').style.display='none'">Close</button>
   </div>
 
-  <!-- Scripts -->
+  <div class="team-message">
+    <p>From all of us at <strong>CutIt.sbs</strong> — we built this with love, creativity, and a bit of chaos 🤪  
+    to help you express yourself, link your vibe, and share it in style.</p>
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="#">Terms</a> | <a href="#">Privacy</a> | <a href="#" onclick="document.getElementById('contactModal').style.display='block'">Contact Us</a>
+    </div>
+    <p>✨ Created with rebellious love by CutIt.sbs — where QR meets pop culture. ✨</p>
+  </footer>
+
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
   <script>
-    function generateQR(theme) {
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    function toggleChat() {
+      const chat = document.getElementById('chatPopup');
+      chat.style.display = (chat.style.display === 'none' || chat.style.display === '') ? 'block' : 'none';
+    }
+
+    document.getElementById("chatInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        const input = e.target.value.trim();
+        if (input.toLowerCase().includes("make qr") && input.includes("http")) {
+          document.getElementById("linkInput").value = input.split("make qr")[1].trim();
+          generateQR("default");
+        }
+      }
+    });
+
+    function startPayment(theme) {
       const link = document.getElementById('linkInput').value.trim();
       if (!link) return alert('Paste a link first!');
+      const options = {
+        key: "rzp_live_AJEAZ1WJHOpOOQ",
+        amount: 5000, // Rs 50 = 5000 paise
+        currency: "INR",
+        name: "CutIt.sbs QR",
+        description: "QR Code Generator",
+        image: "", // optional logo
+        handler: function (response) {
+          generateQR(theme);
+        },
+        prefill: {
+          name: "",
+          email: "",
+          contact: ""
+        },
+        theme: {
+          color: "#000"
+        }
+      };
+      const rzp = new Razorpay(options);
+      rzp.open();
+    }
 
-      // Smart Detection
-      if (link.includes('spotify') || link.includes('music')) theme = 'music';
-      else if (link.includes('party') || link.includes('event')) theme = 'party';
-      else if (link.includes('love')) theme = 'love';
-      else theme = 'default';
+    function generateQR(theme) {
+      const link = document.getElementById('linkInput').value.trim();
+      if (!link) return;
 
       const canvas = document.getElementById('qrCanvas');
       const qrContainer = document.getElementById('qrContainer');
       qrContainer.style.display = 'block';
 
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(0,0,300,300);
+      canvas.width = 300;
+      canvas.height = 300;
+      ctx.clearRect(0, 0, 300, 300);
 
-      QRCode.toCanvas(canvas, link, { margin: 1 }, function (error) {
+      if (theme === 'music') ctx.fillStyle = '#3a0f64';
+      else if (theme === 'party') ctx.fillStyle = '#ff00cc';
+      else if (theme === 'love') ctx.fillStyle = '#ffd1dc';
+      else if (theme === 'chill') ctx.fillStyle = '#e0f7fa';
+      else if (theme === 'disney') ctx.fillStyle = '#0a0a40';
+      else ctx.fillStyle = '#ffffff';
+
+      ctx.fillRect(0, 0, 300, 300);
+
+      QRCode.toCanvas(canvas, link, {
+        margin: 1,
+        color: { dark: '#000', light: '#0000' }
+      }, function (error) {
         if (error) console.error(error);
-        // Watermark
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-        ctx.font = 'bold 10px Antonio';
-        ctx.fillText('Made by CutIt.sbs ✦ your vibe. your code.', 10, 290);
       });
     }
 
     function downloadQR() {
       const canvas = document.getElementById('qrCanvas');
       const link = document.createElement('a');
-      link.download = 'cutit_qr.png';
+      link.download = 'cutit-qr.png';
       link.href = canvas.toDataURL();
       link.click();
     }
-
-    function openDonate() {
-      var options = {
-        "key": "rzp_live_olqceZcjazpob0",
-        "amount": 50000,
-        "currency": "INR",
-        "name": "CutIt.sbs",
-        "description": "Support CutIt 💸",
-        "image": "https://cutit.sbs/logo.png",
-        "handler": function (response) {
-          alert("Thanks for donating ❤️ You just made CutIt more awesome!");
-        },
-        "theme": {
-          "color": "#ff0099"
-        }
-      };
-      var rzp = new Razorpay(options);
-      rzp.open();
-    }
-
-    function toggleCutie() {
-      const box = document.getElementById('cutieChatbox');
-      box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
-    }
-
-    async function sendChat() {
-      const input = document.getElementById('chatInput');
-      const msg = input.value.trim();
-      if (!msg) return;
-      const chat = document.getElementById('chatMessages');
-      chat.innerHTML += `<div><strong>You:</strong> ${msg}</div>`;
-      input.value = "";
-
-      chat.innerHTML += `<div><em>Cutie is typing...</em></div>`;
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer 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",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [{ role: "system", content: "You're Cutie, a fun Gen Z chatbot that helps users generate QR ideas, gives pop culture advice, and flirts with tech." },
-                     { role: "user", content: msg }]
-        })
-      });
-      const data = await res.json();
-      const reply = data.choices[0].message.content.trim();
-      chat.innerHTML = chat.innerHTML.replace(`<div><em>Cutie is typing...</em></div>`, "");
-      chat.innerHTML += `<div><strong>Cutie:</strong> ${reply}</div>`;
-      chat.scrollTop = chat.scrollHeight;
-    }
   </script>
-  <!-- Everything before remains the same... -->
-
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-<script>
-  function generateQR(theme, fromChatLink = null) {
-    const link = fromChatLink || document.getElementById('linkInput').value.trim();
-    if (!link) return alert('Paste a link first!');
-
-    if (link.includes('spotify') || link.includes('music')) theme = 'music';
-    else if (link.includes('party') || link.includes('event')) theme = 'party';
-    else if (link.includes('love')) theme = 'love';
-    else theme = 'default';
-
-    const canvas = document.getElementById('qrCanvas');
-    const qrContainer = document.getElementById('qrContainer');
-    qrContainer.style.display = 'block';
-
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0,0,300,300);
-
-    QRCode.toCanvas(canvas, link, { margin: 1 }, function (error) {
-      if (error) console.error(error);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-      ctx.font = 'bold 10px Antonio';
-      ctx.fillText('Made by CutIt.sbs ✦ your vibe. your code.', 10, 290);
-    });
-
-    if (fromChatLink) {
-      const chat = document.getElementById('chatMessages');
-      chat.innerHTML += `<div><strong>Cutie:</strong> Here's your QR for <code>${link}</code> below 👇</div>`;
-    }
-  }
-
-  function downloadQR() {
-    const canvas = document.getElementById('qrCanvas');
-    const link = document.createElement('a');
-    link.download = 'cutit_qr.png';
-    link.href = canvas.toDataURL();
-    link.click();
-  }
-
-  function openDonate() {
-    try {
-      var options = {
-        "key": "rzp_live_AJEAZ1WJHOpOOQ",
-        "amount": 50000,
-        "currency": "INR",
-        "name": "CutIt.sbs",
-        "description": "Support CutIt 💸",
-        "image": "https://cutit.sbs/logo.png",
-        "handler": function (response) {
-          alert("Thanks for donating ❤️ You just made CutIt more awesome!");
-        },
-        "theme": {
-          "color": "#ff0099"
-        }
-      };
-      var rzp = new Razorpay(options);
-      rzp.open();
-    } catch (e) {
-      alert("Razorpay failed to load. Try on HTTPS hosted site (not file:// or localhost)");
-    }
-  }
-
-  function toggleCutie() {
-    const box = document.getElementById('cutieChatbox');
-    box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
-  }
-
-  async function sendChat() {
-    const input = document.getElementById('chatInput');
-    const msg = input.value.trim();
-    if (!msg) return;
-    const chat = document.getElementById('chatMessages');
-    chat.innerHTML += `<div><strong>You:</strong> ${msg}</div>`;
-    input.value = "";
-    chat.innerHTML += `<div><em>Cutie is typing...</em></div>`;
-
-    // Detect if message includes "create qr for"
-    let url = null;
-    const qrMatch = msg.match(/(create|generate)\s+qr\s+(for\s+)?(https?:\/\/[^\s]+)/i);
-    if (qrMatch) url = qrMatch[3];
-
-    const systemPrompt = `You're Cutie, a QR-loving Gen Z chatbot from CutIt.sbs. If user asks for a QR code for a link, you help them and suggest a theme.`;
-    const userPrompt = url ? `Make QR for this: ${url}` : msg;
-
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": "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",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ]
-      })
-    });
-
-    const data = await res.json();
-    const reply = data.choices[0].message.content.trim();
-    chat.innerHTML = chat.innerHTML.replace(`<div><em>Cutie is typing...</em></div>`, "");
-    chat.innerHTML += `<div><strong>Cutie:</strong> ${reply}</div>`;
-
-    if (url) {
-      setTimeout(() => generateQR(null, url), 500); // Add QR after short delay
-    }
-
-    chat.scrollTop = chat.scrollHeight;
-  }
-</script>
 </body>
 </html>
