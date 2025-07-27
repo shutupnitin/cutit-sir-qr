@@ -12,7 +12,6 @@
     header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid #ccc; }
     .logo { font-size: 2rem; }
     .toggle-btn { padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #999; background: white; cursor: pointer; }
-    .dark-mode .toggle-btn { background: #333; color: #fff; }
     h1 { font-size: 2.2rem; margin-top: 2rem; }
     p { font-size: 1.1rem; margin: 1rem 0 2rem; color: #666; }
     .divider { font-size: 1.3rem; margin-bottom: 2rem; font-weight: bold; transition: color 0.3s; }
@@ -23,19 +22,17 @@
     .theme-btn:hover { background: #444; }
     #qrContainer { margin-top: 3rem; display: none; }
     canvas { margin: auto; display: block; max-width: 300px; background: white; border-radius: 12px; padding: 1rem; }
-    .watermark { margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.6; }
+    .watermark-text { margin-top: 0.7rem; font-size: 0.9rem; opacity: 0.6; font-style: italic; }
     #downloadBtn { margin-top: 1.5rem; padding: 0.7rem 1.4rem; font-size: 1rem; background: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
     .emoji-float { position: fixed; animation: float 6s infinite ease-in-out; pointer-events: none; }
     @keyframes float { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-200px); opacity: 0; } }
-    #cutieBot { position: fixed; bottom: 20px; right: 20px; background: #fff; border-radius: 50%; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; font-size: 24px; }
     footer { margin-top: 3rem; font-size: 0.9rem; opacity: 0.7; }
     .footer-links { margin-top: 0.5rem; }
     .footer-links a { margin: 0 0.5rem; color: inherit; text-decoration: underline; }
     .team-message {
-      font-family: 'Antonio', sans-serif;
       font-size: 1.05rem;
-      text-align: center;
       margin: 40px auto 20px;
+      color: var(--text-color);
       max-width: 600px;
       padding: 0 20px;
       line-height: 1.6;
@@ -46,11 +43,11 @@
 <body>
   <header>
     <div class="logo">CutIt.sbs</div>
-    <button class="toggle-btn" onclick="toggleDarkMode()" id="darkModeToggle">🌙 Dark Mode</button>
+    <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
   </header>
 
   <h1>Craft your QR vibe, effortlessly.</h1>
-  <p>From parties to playlists, make every code pop. Just paste your link, pick a theme, and boom – QR magic.</p>
+  <p>From parties to playlists, make every code pop. Just paste your link, pick a theme, and boom — QR magic.</p>
   <div class="divider">CutIt.sbs ✦ your vibe. your code.</div>
 
   <input id="linkInput" type="text" placeholder="Paste your link (Spotify, Apple Music, etc.)"/>
@@ -65,31 +62,30 @@
   </div>
 
   <div id="qrContainer">
-    <canvas id="qrCanvas"></canvas>
-    <div class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</div>
+    <canvas id="qrCanvas" width="320" height="360"></canvas>
+    <div class="watermark-text">Made by CutIt.sbs ✦ your vibe. your code.</div>
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
 
   <div class="team-message">
-    From all of us at <strong>CutIt.sbs</strong> – we built this with love, creativity, and a bit of chaos 🤪<br/>
-    to help you express yourself, link your vibe, and share it in style. Whether it’s music,<br/>
-    moments, memes, or memories – your code is your voice. Let it echo 🎤✨
+    <p>
+      From all of us at <strong>CutIt.sbs</strong> — we built this with love, creativity, and a bit of chaos 🤪  
+      to help you express yourself, link your vibe, and share it in style. Whether it’s music, moments, memes,  
+      or memories — your code is your voice. Let it echo 🎤✨
+    </p>
   </div>
 
   <footer>
     <div class="footer-links">
       <a href="#">Terms</a> | <a href="#">Privacy</a> | <a href="#">Contact Us</a>
     </div>
-    <p>✨ Created with rebellious love by CutIt.sbs – where QR meets pop culture. ✨</p>
+    <p>✨ Created with rebellious love by CutIt.sbs — where QR meets pop culture. ✨</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
   <script>
     function toggleDarkMode() {
-      const body = document.body;
-      const btn = document.getElementById("darkModeToggle");
-      body.classList.toggle('dark-mode');
-      btn.textContent = body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
+      document.body.classList.toggle('dark-mode');
     }
 
     const emojis = ['🎈','🎊','🎷','❄️','💘','✨','🧙‍♂️'];
@@ -107,27 +103,42 @@
     function generateQR(theme) {
       const link = document.getElementById('linkInput').value.trim();
       if (!link) return alert('Paste a link first!');
-      if (link.includes('spotify.com') || link.includes('music.apple.com')) theme = 'music';
-
       const canvas = document.getElementById('qrCanvas');
-      const qrContainer = document.getElementById('qrContainer');
-      qrContainer.style.display = 'block';
-
       const ctx = canvas.getContext('2d');
-      canvas.width = 300;
-      canvas.height = 300;
-      ctx.clearRect(0, 0, 300, 300);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      if (theme === 'music') ctx.fillStyle = '#3a0f64';
-      else if (theme === 'party') ctx.fillStyle = '#ff00cc';
-      else if (theme === 'love') ctx.fillStyle = '#ffd1dc';
-      else if (theme === 'chill') ctx.fillStyle = '#e0f7fa';
-      else if (theme === 'disney') ctx.fillStyle = '#0a0a40';
-      else ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0,0,300,300);
+      // Draw theme background
+      if (theme === 'music') {
+        const gradient = ctx.createRadialGradient(160, 160, 30, 160, 160, 150);
+        gradient.addColorStop(0, '#3a0f64');
+        gradient.addColorStop(1, '#1b003b');
+        ctx.fillStyle = gradient;
+      } else if (theme === 'party') {
+        ctx.fillStyle = '#ff00cc';
+      } else if (theme === 'love') {
+        ctx.fillStyle = '#ffd1dc';
+      } else if (theme === 'chill') {
+        ctx.fillStyle = '#e0f7fa';
+      } else if (theme === 'disney') {
+        ctx.fillStyle = '#0a0a40';
+      } else {
+        ctx.fillStyle = '#ffffff';
+      }
 
-      QRCode.toCanvas(canvas, link, { margin: 1, color: { dark: '#000', light: '#0000' } }, function (error) {
-        if (error) console.error(error);
+      ctx.fillRect(0, 0, 320, 360);
+
+      // Generate QR code
+      QRCode.toCanvas(document.createElement('canvas'), link, { margin: 1, width: 200, color: { dark: '#000', light: '#0000' } }, function (err, tempCanvas) {
+        if (err) return console.error(err);
+        ctx.drawImage(tempCanvas, 60, 40, 200, 200);
+
+        // Add watermark
+        ctx.font = '16px Antonio';
+        ctx.fillStyle = '#333';
+        ctx.textAlign = 'center';
+        ctx.fillText('Made by CutIt.sbs ✦ your vibe. your code.', 160, 320);
+
+        document.getElementById('qrContainer').style.display = 'block';
       });
     }
 
@@ -135,7 +146,7 @@
       const canvas = document.getElementById('qrCanvas');
       const link = document.createElement('a');
       link.download = 'cutit-qr.png';
-      link.href = canvas.toDataURL();
+      link.href = canvas.toDataURL('image/png');
       link.click();
     }
   </script>
