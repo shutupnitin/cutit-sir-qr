@@ -3,215 +3,256 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CutIt.sbs ✦ QR Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
+  <title>CutIt.sbs – Coming Soon</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #ffffff;
+      --text: #111111;
+      --accent: #6b46c1;
+    }
+
+    .dark {
+      --bg: #111111;
+      --text: #ffffff;
+      --accent: #ff80b5;
+    }
+
     body {
       margin: 0;
+      padding: 0;
       font-family: 'Antonio', sans-serif;
-      background: #0c0c0c;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 2rem;
-      min-height: 100vh;
-      overflow-x: hidden;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 0.3s, color 0.3s;
     }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .toggle-btn {
+      font-size: 1rem;
+      background: none;
+      border: 1px solid var(--text);
+      border-radius: 5px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    main {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+
     h1 {
       font-size: 2.5rem;
-      margin: 0.5rem 0;
+      margin-bottom: 1rem;
     }
+
     p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .divider {
+      font-weight: 600;
       font-size: 1rem;
-      color: #ccc;
-      margin-bottom: 2rem;
+      color: var(--accent);
+      margin: 2rem 0;
     }
-    .input-section {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      width: 100%;
-      max-width: 500px;
-    }
-    input, select, button {
-      padding: 1rem;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: none;
-      outline: none;
-    }
-    input, select {
-      background: #1c1c1c;
-      color: #fff;
-    }
-    button {
-      background: #ff0055;
-      color: white;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #e6004d;
-    }
-    #qrCanvas {
-      margin-top: 2rem;
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-    }
-    #downloadBtn {
+
+    .qr-container {
       margin-top: 1rem;
+    }
+
+    #qrCanvas {
       display: none;
+      margin: 1rem auto;
+      border: 1px solid var(--accent);
+      padding: 1rem;
     }
-    #watermark {
-      font-size: 0.7rem;
-      color: #555;
+
+    #qrWatermark {
+      display: none;
+      font-size: 0.9rem;
+      color: var(--accent);
       margin-top: 0.5rem;
-      text-align: center;
     }
-    #cutieBot {
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      font-size: 0.9rem;
+    }
+
+    #contactLink {
+      display: block;
+      margin-bottom: 0.3rem;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    #chatIcon {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #0f0f0f;
-      border: 2px solid #ff0055;
-      border-radius: 50%;
+      bottom: 24px;
+      right: 24px;
       width: 60px;
       height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff80b5, #9089fc);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
       cursor: pointer;
-      z-index: 999;
+      z-index: 1000;
+      font-size: 28px;
+      color: white;
+      transition: transform 0.3s ease;
     }
+
+    #chatIcon:hover {
+      transform: scale(1.1);
+    }
+
     #chatbox {
-      display: none;
       position: fixed;
       bottom: 100px;
       right: 20px;
-      background: #1a1a1a;
+      width: 280px;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
       padding: 1rem;
-      border-radius: 8px;
-      width: 300px;
-      max-height: 400px;
-      overflow-y: auto;
-      border: 2px solid #ff0055;
+      display: none;
       z-index: 999;
-    }
-    #chatbox p {
       font-size: 0.9rem;
-      margin: 0.5rem 0;
     }
-    #chatInput {
+
+    input[type="text"] {
       width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
       margin-top: 0.5rem;
-      padding: 0.5rem;
-      border-radius: 4px;
+    }
+
+    button.generate-btn {
+      margin-top: 1rem;
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
       border: none;
-      outline: none;
-      background: #333;
+      background-color: var(--accent);
       color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button.download-btn {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.6rem 1.3rem;
+      font-size: 1rem;
+      border: 1px solid var(--accent);
+      background-color: transparent;
+      color: var(--accent);
+      cursor: pointer;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-  <h1>CutIt.sbs ✦ QR Generator</h1>
-  <p>your vibe. your code.</p>
+  <header>
+    <div class="logo">CutIt.sbs</div>
+    <button id="modeToggle" class="toggle-btn" onclick="toggleMode()">🌙 Dark Mode</button>
+  </header>
 
-  <div class="input-section">
-    <select id="qrType">
-      <option value="link">🔗 Link</option>
-      <option value="text">📝 Text</option>
-      <option value="email">✉️ Email</option>
-      <option value="tel">📞 Phone Number</option>
-    </select>
-    <input type="text" id="qrInput" placeholder="Enter content..." />
-    <button onclick="generateQR()">🎯 Generate QR Code</button>
-  </div>
+  <main>
+    <h1>Stay tuned. We’re building something different — just for you.</h1>
+    <p>
+      Our next-gen QR code generator is not just a tool. It’s a vibe.<br><br>
+      🎯 Custom styles for TikTok, Insta, etc.<br>
+      🔐 Private, One-time, or Disappearing QRs<br>
+      🧠 Add AI text, emojis, or even voice to your code<br>
+      ✨ Wi-Fi, Social, Website, or anything else? Covered.<br><br>
+      All in one minimalist and creative space.
+    </p>
 
-  <canvas id="qrCanvas"></canvas>
-  <button id="downloadBtn" onclick="downloadQR()">⬇️ Download QR</button>
-  <div id="watermark"></div>
+    <div class="divider">CutIt.sbs ✦ your vibe. your code.</div>
 
-  <div id="cutieBot" onclick="toggleChat()">🤖</div>
+    <div class="qr-container">
+      <input type="text" id="qrInput" placeholder="Paste link or message here..." />
+      <button class="generate-btn" onclick="generateQR()">Generate</button>
+      <canvas id="qrCanvas"></canvas>
+      <div id="qrWatermark">Made with CutIt.sbs ✦ your vibe. your code.</div>
+      <button class="download-btn" id="downloadBtn" onclick="downloadQR()">Download</button>
+    </div>
+  </main>
+
+  <footer>
+    <div id="contactLink" onclick="toggleContact()">Contact us</div>
+    <div>Made with love by CutIt.sbs</div>
+  </footer>
+
+  <div id="chatIcon" onclick="toggleChat()">🤖</div>
   <div id="chatbox">
-    <div id="chatMessages"></div>
-    <input type="text" id="chatInput" placeholder="Ask Cutie..." onkeydown="handleChat(event)" />
+    <strong>Cutie:</strong> Hey friend! I’m your QR sidekick. Tell me a message or link and I’ll surprise you 🧠✨<br><br>
+    💡 One-time? Private? Social-style? It’s coming. Stay hyped. 💥
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
+    let dark = false;
+    function toggleMode() {
+      dark = !dark;
+      document.body.classList.toggle("dark", dark);
+      document.getElementById("modeToggle").innerText = dark ? "☀️ Light Mode" : "🌙 Dark Mode";
+    }
+
+    function toggleChat() {
+      const chatbox = document.getElementById("chatbox");
+      chatbox.style.display = chatbox.style.display === "none" || chatbox.style.display === "" ? "block" : "none";
+    }
+
+    function toggleContact() {
+      alert("Reach us at: team@cutit.sbs");
+    }
+
     function generateQR() {
-      const type = document.getElementById('qrType').value;
-      const value = document.getElementById('qrInput').value;
-      const canvas = document.getElementById('qrCanvas');
-      const watermark = document.getElementById('watermark');
+      const input = document.getElementById("qrInput").value;
+      const canvas = document.getElementById("qrCanvas");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const watermark = document.getElementById("qrWatermark");
 
-      let content = '';
-      if (type === 'link') content = value;
-      if (type === 'text') content = value;
-      if (type === 'email') content = `mailto:${value}`;
-      if (type === 'tel') content = `tel:${value}`;
+      if (!input) return;
 
-      QRCode.toCanvas(canvas, content, { width: 200 }, function (error) {
+      QRCode.toCanvas(canvas, input, { width: 200 }, function (error) {
         if (error) console.error(error);
-        document.getElementById('downloadBtn').style.display = 'inline-block';
-        watermark.innerText = "Made with CutIt.sbs ✦ your vibe. your code.";
+        canvas.style.display = "block";
+        downloadBtn.style.display = "inline-block";
+        watermark.style.display = "block";
       });
     }
 
     function downloadQR() {
-      const canvas = document.getElementById('qrCanvas');
+      const canvas = document.getElementById("qrCanvas");
       const link = document.createElement('a');
-      link.download = 'cutit-qr.png';
+      link.download = "cutit_qr.png";
       link.href = canvas.toDataURL();
       link.click();
-    }
-
-    function toggleChat() {
-      const chatbox = document.getElementById('chatbox');
-      chatbox.style.display = chatbox.style.display === 'block' ? 'none' : 'block';
-    }
-
-    async function handleChat(e) {
-      if (e.key === 'Enter') {
-        const input = document.getElementById('chatInput');
-        const msg = input.value;
-        if (!msg) return;
-
-        appendMessage("🧑‍💻 You", msg);
-        input.value = "";
-
-        appendMessage("🤖 Cutie", "Typing...");
-
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "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"
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: msg }],
-            temperature: 0.8
-          })
-        });
-
-        const data = await res.json();
-        document.getElementById("chatMessages").lastChild.remove();
-        appendMessage("🤖 Cutie", data.choices[0].message.content);
-      }
-    }
-
-    function appendMessage(sender, message) {
-      const chat = document.getElementById('chatMessages');
-      const p = document.createElement('p');
-      p.innerHTML = `<strong>${sender}:</strong> ${message}`;
-      chat.appendChild(p);
-      chat.scrollTop = chat.scrollHeight;
     }
   </script>
 </body>
