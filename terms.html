@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CutIt.sbs ✦ Terms & Conditions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
+    body { background: #fdfdff; color: #111; padding: 2rem; transition: background 0.3s, color 0.3s; }
+    .dark-mode { background: #111; color: #fdfdff; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding-bottom: 1rem; }
+    .logo { font-size: 2rem; }
+    .toggle-btn {
+      padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #999;
+      background: white; cursor: pointer;
+    }
+    .dark-mode .toggle-btn { background: #222; color: #fff; }
+    .container {
+      max-width: 800px; margin: auto; text-align: center;
+      padding-top: 2rem;
+    }
+    h1 {
+      font-size: 2.3rem; margin-bottom: 1.5rem;
+      letter-spacing: 0.5px;
+    }
+    p, li {
+      font-size: 1.1rem;
+      margin: 1rem 0;
+      color: #555;
+      line-height: 1.6;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 1rem;
+    }
+    li {
+      background: #f0f0f0;
+      margin: 0.6rem 0;
+      padding: 1rem;
+      border-radius: 10px;
+    }
+    .dark-mode li {
+      background: #1c1c1c;
+      color: #eee;
+    }
+    footer {
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      color: #777;
+      text-align: center;
+      opacity: 0.7;
+    }
+    a { color: inherit; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">CutIt.sbs</div>
+    <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+  </header>
+
+  <div class="container">
+    <h1>Terms ✦ But Make It Vibe</h1>
+    <p>Welcome to CutIt.sbs — the internet’s favorite chaos-fueled QR generator. We keep it stylish, fast, and drama-free. Here's the deal:</p>
+
+    <ul>
+      <li>🚫 <strong>No Evil Plots Allowed</strong><br>If you’re here to scam, spam, or stir trouble — bounce. This space is for creators, not creepers.</li>
+
+      <li>🧠 <strong>Your Data = Your Vibe</strong><br>We don’t snoop. Your QR data lives in your browser. We don’t store or track what you generate. Period.</li>
+
+      <li>🎯 <strong>Don’t Be That Guy</strong><br>No hate speech, NSFW abuse, or using our tool to mislead. QR is meant for sharing cool stuff — not chaos.</li>
+
+      <li>🖼️ <strong>We’re Just the Canvas</strong><br>What you encode is your call. Just know — if something breaks, goes viral, or causes a meme war, we’re not liable.</li>
+
+      <li>🎉 <strong>It’s a Tool, Not a Toy (Okay Maybe a Bit)</strong><br>This is creative software, not legal advice or hacking gear. Use with imagination, not irresponsibility.</li>
+    </ul>
+
+    <p>
+      By vibing with us, you agree to play nice, keep it creative, and remember:
+      <br>✨ The code is yours, but the magic — that’s CutIt.sbs ✨
+    </p>
+
+    <footer>
+      ✦ Created with rebellious love by <strong>CutIt.sbs</strong><br/>
+      <a href="index.html">← Back to Generator</a>
+    </footer>
+  </div>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+  </script>
+</body>
+</html>
