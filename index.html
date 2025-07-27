@@ -85,6 +85,13 @@
       padding: 1rem;
     }
 
+    #qrWatermark {
+      display: none;
+      font-size: 0.9rem;
+      color: var(--accent);
+      margin-top: 0.5rem;
+    }
+
     footer {
       text-align: center;
       margin-top: 3rem;
@@ -98,7 +105,6 @@
       cursor: pointer;
     }
 
-    /* Chat bot styles */
     #chatIcon {
       position: fixed;
       bottom: 24px;
@@ -191,6 +197,7 @@
       <input type="text" id="qrInput" placeholder="Paste link or message here..." />
       <button class="generate-btn" onclick="generateQR()">Generate</button>
       <canvas id="qrCanvas"></canvas>
+      <div id="qrWatermark">Made with CutIt.sbs ✦ your vibe. your code.</div>
       <button class="download-btn" id="downloadBtn" onclick="downloadQR()">Download</button>
     </div>
   </main>
@@ -228,6 +235,7 @@
       const input = document.getElementById("qrInput").value;
       const canvas = document.getElementById("qrCanvas");
       const downloadBtn = document.getElementById("downloadBtn");
+      const watermark = document.getElementById("qrWatermark");
 
       if (!input) return;
 
@@ -235,6 +243,7 @@
         if (error) console.error(error);
         canvas.style.display = "block";
         downloadBtn.style.display = "inline-block";
+        watermark.style.display = "block";
       });
     }
 
