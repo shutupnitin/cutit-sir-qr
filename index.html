@@ -37,10 +37,8 @@
     }
     #cutieBot { right: 20px; background: #fff; }
     #donateBtn { left: 20px; background: #000; color: #fff; }
-
     footer { margin-top: 3rem; font-size: 0.9rem; opacity: 0.7; }
     .footer-links a { margin: 0 0.5rem; color: inherit; text-decoration: underline; }
-
     .team-message { font-size: 1rem; margin-top: 2rem; max-width: 600px; margin-inline: auto; color: #666; }
     #successAnim {
       position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -48,6 +46,31 @@
       font-size: 1.3rem; display: none; z-index: 1000; animation: pop 0.3s ease-in-out;
     }
     @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    /* ✅ Cutie Chatbox Styles */
+    #chatBox {
+      display: none; flex-direction: column;
+      position: fixed; bottom: 80px; right: 20px;
+      width: 300px; height: 400px;
+      background: #fff; border: 2px solid #000; border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999; overflow: hidden;
+    }
+    #chatBox > div:first-child {
+      background: #000; color: #fff; padding: 0.6rem; font-weight: bold;
+    }
+    #chatMessages {
+      flex: 1; padding: 0.8rem; overflow-y: auto; font-size: 0.9rem; text-align: left;
+    }
+    #chatForm {
+      display: flex; border-top: 1px solid #ddd;
+    }
+    #chatForm input {
+      flex: 1; border: none; padding: 0.7rem; font-size: 0.9rem; outline: none;
+    }
+    #chatForm button {
+      padding: 0.5rem 1rem; border: none; background: #000; color: #fff; cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -92,7 +115,16 @@
     <p>✨ Created with rebellious love by CutIt.sbs – where QR meets pop culture. ✨</p>
   </footer>
 
-  <div id="cutieBot" onclick="alert('Cutie is being linked soon 🤖')">🤖</div>
+  <!-- ✅ CUTIE CHATBOX -->
+  <div id="chatBox">
+    <div>🧠 Cutie</div>
+    <div id="chatMessages"></div>
+    <form id="chatForm">
+      <input id="userInput" type="text" placeholder="Ask anything..." />
+      <button type="submit">➤</button>
+    </form>
+  </div>
+  <div id="cutieBot" onclick="toggleChat()">🤖</div>
   <div id="donateBtn" onclick="startDonation()">💸</div>
   <div id="successAnim">🎉 Thanks for supporting us! 🎉</div>
 
@@ -177,6 +209,52 @@
       };
       const rzp = new Razorpay(options);
       rzp.open();
+    }
+
+    // ✅ Cutie Chatbot Integration using Sarvam API
+    function toggleChat() {
+      const box = document.getElementById('chatBox');
+      box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    const chatForm = document.getElementById('chatForm');
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+
+    chatForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const msg = userInput.value.trim();
+      if (!msg) return;
+      appendMessage('You', msg);
+      userInput.value = '';
+      try {
+        const response = await fetch('https://api.sarvam.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'api-subscription-key': 'sk_u175bgqo_36esSAyqB1BxqwbBlFlRxcoZ'
+          },
+          body: JSON.stringify({
+            model: 'sarvam-mistral',
+            messages: [
+              { role: 'system', content: 'You are Cutie, a smart, helpful, fun AI that helps with QR codes, pop culture, and cool conversations.' },
+              { role: 'user', content: msg }
+            ]
+          })
+        });
+        const data = await response.json();
+        const reply = data.choices?.[0]?.message?.content || 'Oops! No reply.';
+        appendMessage('Cutie', reply);
+      } catch (err) {
+        appendMessage('Cutie', '⚠️ Something went wrong.');
+      }
+    });
+
+    function appendMessage(sender, text) {
+      const div = document.createElement('div');
+      div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
   </script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
