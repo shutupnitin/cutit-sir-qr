@@ -158,5 +158,164 @@
       }
     }
   </script>
+  <!-- Floating Donate Button -->
+<div id="donateBtn" onclick="openDonate()" title="Support CutIt ❤️">💸</div>
+
+<!-- Cutie Chatbox -->
+<div id="cutieChatbox" class="chatbox">
+  <div class="chat-header">Cutie 🤖</div>
+  <div id="chatMessages" class="chat-messages"></div>
+  <input type="text" id="chatInput" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendChat()"/>
+</div>
+
+<!-- Styles added in <style> -->
+<style>
+  #donateBtn {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    background: #000;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 999;
+  }
+  .chatbox {
+    position: fixed;
+    bottom: 20px;
+    right: 80px;
+    width: 280px;
+    max-height: 400px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+  }
+  .dark-mode .chatbox { background: #222; color: #fff; }
+  .chat-header {
+    padding: 10px;
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+  }
+  .chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+    max-height: 250px;
+  }
+  #chatInput {
+    border: none;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    width: 100%;
+    outline: none;
+    font-size: 1rem;
+  }
+  <!-- Razorpay Donate -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+function openDonate() {
+  var options = {
+    "key": "rzp_live_olqceZcjazpob0",
+    "amount": 50000,
+    "currency": "INR",
+    "name": "CutIt.sbs",
+    "description": "Support CutIt 💸",
+    "image": "https://cutit.sbs/logo.png",
+    "handler": function (response) {
+      alert("Thanks for donating ❤️");
+    },
+    "prefill": {
+      "name": "",
+      "email": ""
+    },
+    "theme": {
+      "color": "#111"
+    }
+  };
+  var rzp = new Razorpay(options);
+  rzp.open();
+}
+</script>
+
+<!-- Cutie Chat + AI Suggestions -->
+<script>
+  let chatOpen = false;
+  document.getElementById("cutieBot").onclick = function () {
+    chatOpen = !chatOpen;
+    document.getElementById("cutieChatbox").style.display = chatOpen ? "flex" : "none";
+  };
+
+  async function sendChat() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    const chat = document.getElementById('chatMessages');
+    chat.innerHTML += `<div><strong>You:</strong> ${msg}</div>`;
+    input.value = "";
+
+    chat.innerHTML += `<div><em>Cutie is typing...</em></div>`;
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer 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",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "system", content: "You're Cutie, a fun Gen Z chatbot that gives cool QR suggestions and responds with pop culture references." },
+                   { role: "user", content: msg }]
+      })
+    });
+    const data = await res.json();
+    const reply = data.choices[0].message.content.trim();
+    chat.innerHTML = chat.innerHTML.replace(`<div><em>Cutie is typing...</em></div>`, "");
+    chat.innerHTML += `<div><strong>Cutie:</strong> ${reply}</div>`;
+    chat.scrollTop = chat.scrollHeight;
+  }
+</script>
+
+<!-- Smart QR Suggestions -->
+<script>
+function generateQR(theme) {
+  const link = document.getElementById('linkInput').value.trim();
+  if (!link) return alert('Paste a link first!');
+
+  // Smart detection
+  if (link.includes('spotify.com') || link.includes('music.apple.com')) theme = 'music';
+  else if (link.includes('party') || link.includes('fest') || link.includes('eventbrite')) theme = 'party';
+  else if (link.includes('love') || link.includes('date') || link.includes('valentine')) theme = 'love';
+  else if (link.includes('calm') || link.includes('sleep') || link.includes('chill')) theme = 'chill';
+  else if (link.includes('disney') || link.includes('pixar')) theme = 'disney';
+
+  const canvas = document.getElementById('qrCanvas');
+  const qrContainer = document.getElementById('qrContainer');
+  qrContainer.style.display = 'block';
+
+  const ctx = canvas.getContext('2d');
+  canvas.width = 300;
+  canvas.height = 300;
+  ctx.clearRect(0, 0, 300, 300);
+
+  if (theme === 'music') ctx.fillStyle = '#3a0f64';
+  else if (theme === 'party') ctx.fillStyle = '#ff00cc';
+  else if (theme === 'love') ctx.fillStyle = '#ffd1dc';
+  else if (theme === 'chill') ctx.fillStyle = '#e0f7fa';
+  else if (theme === 'disney') ctx.fillStyle = '#0a0a40';
+  else ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,300,300);
+
+  QRCode.toCanvas(canvas, link, { margin: 1, color: { dark: '#000', light: '#0000' } }, function (error) {
+    if (error) console.error(error);
+  });
+}
+</script>
+</style>
 </body>
 </html>
