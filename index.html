@@ -136,7 +136,6 @@
   <button id="downloadBtn" onclick="downloadQR()">⬇️ Download QR</button>
   <div id="watermark"></div>
 
-  <!-- Cutie Bot -->
   <div id="cutieBot" onclick="toggleChat()">🤖</div>
   <div id="chatbox">
     <div id="chatMessages"></div>
@@ -145,7 +144,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
-    // QR Generation
     function generateQR() {
       const type = document.getElementById('qrType').value;
       const value = document.getElementById('qrInput').value;
@@ -173,13 +171,11 @@
       link.click();
     }
 
-    // Toggle Cutie Chat
     function toggleChat() {
       const chatbox = document.getElementById('chatbox');
       chatbox.style.display = chatbox.style.display === 'block' ? 'none' : 'block';
     }
 
-    // Chatbot: GPT-3.5 Integration
     async function handleChat(e) {
       if (e.key === 'Enter') {
         const input = document.getElementById('chatInput');
@@ -195,7 +191,7 @@
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer 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"
+            "Authorization": "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"
           },
           body: JSON.stringify({
             model: "gpt-3.5-turbo",
