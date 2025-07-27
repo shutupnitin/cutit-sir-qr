@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -241,6 +242,15 @@
 
       QRCode.toCanvas(canvas, input, { width: 200 }, function (error) {
         if (error) console.error(error);
+
+        // Draw the watermark directly on the QR canvas
+        const ctx = canvas.getContext('2d');
+        ctx.font = '12px Antonio, sans-serif';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText("Made with CutIt.sbs ✦ your vibe. your code.", canvas.width / 2, canvas.height - 10);
+
         canvas.style.display = "block";
         downloadBtn.style.display = "inline-block";
         watermark.style.display = "block";
@@ -250,7 +260,7 @@
     function downloadQR() {
       const canvas = document.getElementById("qrCanvas");
       const link = document.createElement('a');
-      link.download = "cutit_qr.png";
+      link.download = "cutit_qr_with_watermark.png";
       link.href = canvas.toDataURL();
       link.click();
     }
