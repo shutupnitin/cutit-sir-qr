@@ -3,46 +3,109 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contact Us ✦ CutIt.sbs</title>
+  <title>404 ✦ CutIt.sbs</title>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
-    body { background: #fdfdff; color: #111; padding: 2rem; text-align: center; line-height: 1.7; transition: background 0.3s, color 0.3s; }
-    .dark-mode { background: #111; color: #fdfdff; }
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Antonio', sans-serif;
+    }
+
+    body {
+      background: #fdfdff;
+      color: #111;
+      text-align: center;
+      padding: 3rem;
+      overflow: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .dark-mode {
+      background: #111;
+      color: #fdfdff;
+    }
 
     header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-bottom: 1rem; border-bottom: 1px solid #ccc; margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 2rem;
     }
-    .logo { font-size: 2rem; }
+
+    .logo {
+      font-size: 2rem;
+    }
+
     .toggle-btn {
-      padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #999;
-      background: white; cursor: pointer;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: 1px solid #999;
+      background: white;
+      cursor: pointer;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      z-index: 2;
+      position: relative;
+    }
+
+    p {
+      font-size: 1.2rem;
+      color: #555;
+      margin-bottom: 2rem;
+      z-index: 2;
+      position: relative;
     }
 
     .back-btn {
-      display: inline-block; margin-bottom: 2rem; font-size: 1rem;
-      padding: 0.6rem 1.2rem; border-radius: 6px; border: none;
-      background: #000; color: #fff; text-decoration: none;
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      background: #000;
+      color: #fff;
+      text-decoration: none;
       transition: background 0.3s;
+      z-index: 2;
+      position: relative;
     }
-    .back-btn:hover { background: #333; }
 
-    h1 { font-size: 2.5rem; margin-bottom: 1.2rem; }
-    p { font-size: 1.1rem; max-width: 700px; margin: auto; margin-bottom: 1.5rem; color: #444; }
-    .email-link { color: #000; font-weight: bold; text-decoration: underline; }
-    .dark-mode .email-link { color: #fdfdff; }
-
-    iframe {
-      border: none; margin-top: 2rem; border-radius: 12px;
-      width: 100%; height: 1100px;
+    .back-btn:hover {
+      background: #222;
     }
 
     footer {
-      margin-top: 3rem; font-size: 0.9rem; opacity: 0.7;
+      margin-top: 4rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      z-index: 2;
+      position: relative;
     }
+
     .footer-links a {
-      margin: 0 0.5rem; color: inherit; text-decoration: underline;
+      margin: 0 0.5rem;
+      color: inherit;
+      text-decoration: underline;
+    }
+
+    .floating {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.1;
+      animation: float 20s infinite linear;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+      }
+      100% {
+        transform: translateY(-200vh) translateX(50vw) rotate(360deg);
+      }
     }
   </style>
 </head>
@@ -52,23 +115,9 @@
     <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
   </header>
 
-  <a href="index.html" class="back-btn">← Back to Generator</a>
-
-  <h1>Got something on your mind?</h1>
-
-  <p>Whether you're vibin', ranting, or sharing the next big idea — we got you.💬  
-  Slide into our inbox at <a class="email-link" href="mailto:vibe@cutit.sbs">vibe@cutit.sbs</a>  
-  for all things feedback, help, or just saying hey.</p>
-
-  <p>⏩ Wanna get a quick response?  
-  Fill the form below — our team’s faster than a QR scan when it comes to form replies.</p>
-
-  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSddy5neP3JlBPYJEEPTTWD-DwiQ6VpB7y4kYDNFa2DJKVKl4A/viewform?embedded=true">
-    Loading…
-  </iframe>
-
-  <p>🚨 Urgent vibes? Tap the live chat if we're online —  
-  our team might just be sipping chai and waiting to help ☕</p>
+  <h1>Oops. You found the Upside Down 🚪👾</h1>
+  <p>This page doesn’t exist (yet). But you? You do. And you’re awesome. 🌈</p>
+  <a href="index.html" class="back-btn">← Back to Home</a>
 
   <footer>
     <div class="footer-links">
@@ -77,18 +126,22 @@
     ✨ Created with rebellious love by CutIt.sbs – where QR meets pop culture. ✨
   </footer>
 
-  <!-- Dark Mode Script -->
+  <!-- Floating animated elements -->
   <script>
+    const emojis = ['🔢','📎','🌀','👾','🎲','📶','🤯','🎯','🧠','🧬','❓','💾','🖤','💫','🎥','📱','💻','💣'];
+    for (let i = 0; i < 40; i++) {
+      const span = document.createElement('span');
+      span.className = 'floating';
+      span.style.left = `${Math.random() * 100}vw`;
+      span.style.top = `${Math.random() * 100 + 100}vh`;
+      span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      span.style.animationDuration = `${10 + Math.random() * 20}s`;
+      document.body.appendChild(span);
+    }
+
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
     }
   </script>
-
-  <!-- Zoho SalesIQ Live Chat -->
-  <script>
-    window.$zoho=window.$zoho || {};
-    $zoho.salesiq = $zoho.salesiq || { ready: function() {} };
-  </script>
-  <script id="zsiqscript" src="https://salesiq.zohopublic.in/widget?wc=siq75c478e529173b2d56909ed728473601778920eaed652045e9bad0131d53cae0" defer></script>
 </body>
 </html>
