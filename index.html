@@ -16,47 +16,39 @@
     p { font-size: 1.1rem; margin: 1rem 0 2rem; color: #666; }
     .divider { font-size: 1.3rem; margin-bottom: 2rem; font-weight: bold; transition: color 0.3s; }
     .dark-mode .divider { color: #fdfdff; }
-    #linkInput { width: 90%; max-width: 500px; padding: 1rem; font-size: 1.2rem; border: 2px solid #000; border-radius: 8px; }
-    .btn-group { margin: 1.5rem 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 0.8rem; }
-    .theme-btn { padding: 0.6rem 1.2rem; border: none; font-size: 1rem; border-radius: 8px; cursor: pointer; background: #000; color: #fff; transition: background 0.3s; }
-    .theme-btn:hover { background: #444; }
-    #qrContainer { margin-top: 3rem; display: none; }
+    #linkInput, #wifiName, #wifiPass, #emailAddr, #emailSubj, #textMsg, #phoneNumber {
+      width: 90%; max-width: 500px; padding: 1rem; font-size: 1.1rem; border: 2px solid #000; border-radius: 8px; margin-top: 0.8rem;
+    }
+    .btn-group, .mode-group { margin: 1.5rem 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 0.8rem; }
+    .mode-btn {
+      padding: 0.6rem 1.2rem; border: none; font-size: 1rem; border-radius: 8px; cursor: pointer;
+      background: #000; color: #fff; transition: background 0.3s;
+    }
+    .mode-btn.active { background: #ffcc00; color: #000; transform: scale(1.05); }
+    #generateBtn { margin-top: 1rem; padding: 0.7rem 1.4rem; background: #000; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+    #qrContainer { margin-top: 2rem; display: none; }
     canvas { margin: auto; display: block; max-width: 300px; background: white; border-radius: 12px; padding: 1rem; }
     .watermark { margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.6; }
-    #downloadBtn { margin-top: 1.5rem; padding: 0.7rem 1.4rem; font-size: 1rem; background: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    #downloadBtn { margin-top: 1.2rem; padding: 0.6rem 1.2rem; font-size: 1rem; background: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+
     #cutieBot, #donateBtn {
       position: fixed; bottom: 20px; width: 50px; height: 50px; border-radius: 50%;
-      font-size: 24px; background: black; color: white; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      font-size: 24px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer;
     }
-    #cutieBot { right: 80px; }
-    #donateBtn { right: 20px; }
+    #cutieBot { right: 20px; background: #fff; }
+    #donateBtn { left: 20px; background: #000; color: #fff; }
 
-    #successAnimation {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.85);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      flex-direction: column;
-      color: #fff;
-      font-size: 1.5rem;
-      animation: fadeIn 0.3s ease-in-out;
-    }
+    footer { margin-top: 3rem; font-size: 0.9rem; opacity: 0.7; }
+    .footer-links a { margin: 0 0.5rem; color: inherit; text-decoration: underline; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+    .team-message { font-size: 1rem; margin-top: 2rem; max-width: 600px; margin-inline: auto; color: #666; }
+    #successAnim {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: #000; color: #fff; padding: 2rem 3rem; border-radius: 12px;
+      font-size: 1.3rem; display: none; z-index: 1000; animation: pop 0.3s ease-in-out;
     }
-
-    .confetti { font-size: 2rem; animation: pop 1s infinite ease-in-out; }
-    @keyframes pop {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.5); opacity: 0.8; }
-      100% { transform: scale(1); opacity: 1; }
-    }
+    @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
   </style>
 </head>
 <body>
@@ -69,16 +61,19 @@
   <p>From parties to playlists, make every code pop. Just paste your link, pick a mode, and boom — QR magic.</p>
   <div class="divider">CutIt.sbs ✦ your vibe. your code.</div>
 
-  <input id="linkInput" type="text" placeholder="Paste your link here..."/>
-  <div class="btn-group">
-    <button class="theme-btn" onclick="generateQR('default')">📎 Default</button>
-    <button class="theme-btn" onclick="generateQR('wifi')">📶 Wi-Fi</button>
-    <button class="theme-btn" onclick="generateQR('mobile')">📱 Mobile</button>
-    <button class="theme-btn" onclick="generateQR('email')">✉️ Email</button>
-    <button class="theme-btn" onclick="generateQR('text')">📝 Text</button>
+  <div class="mode-group">
+    <button class="mode-btn active" onclick="switchMode('default')">📎 Default</button>
+    <button class="mode-btn" onclick="switchMode('wifi')">📶 Wi-Fi</button>
+    <button class="mode-btn" onclick="switchMode('mobile')">📱 Mobile</button>
+    <button class="mode-btn" onclick="switchMode('email')">✉️ Email</button>
+    <button class="mode-btn" onclick="switchMode('text')">📝 Text</button>
   </div>
 
-  <button class="theme-btn" onclick="generateQR('default')">Generate QR</button>
+  <div id="inputs">
+    <input id="linkInput" placeholder="Paste your link here" />
+  </div>
+
+  <button id="generateBtn" onclick="generateQR()">Generate QR</button>
 
   <div id="qrContainer">
     <canvas id="qrCanvas"></canvas>
@@ -86,53 +81,81 @@
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
 
-  <button id="cutieBot" onclick="cutieReply()">🥷🏻</button>
-  <button id="donateBtn" onclick="startDonation()">💸</button>
-
-  <div id="successAnimation">
-    <div class="confetti">🎉🎊✨</div>
-    <p>Thank you for supporting us!</p>
-    <div class="confetti">✨🎉🎈</div>
+  <div class="team-message">
+    From all of us at CutIt.sbs — we built this with love, creativity, and a bit of chaos 🤪 to help you express yourself,
+    link your vibe, and share it in style. Whether it’s music, moments, memes, or memories — your code is your voice. Let it echo 🎤✨
   </div>
 
+  <footer>
+    <div class="footer-links">
+      <a href="#">Terms</a> | <a href="#">Privacy</a> | <a href="#">Contact Us</a>
+    </div>
+    <p>✨ Created with rebellious love by CutIt.sbs – where QR meets pop culture. ✨</p>
+  </footer>
+
+  <div id="cutieBot" onclick="alert('Cutie is being linked soon 🤖')">🤖</div>
+  <div id="donateBtn" onclick="startDonation()">💸</div>
+  <div id="successAnim">🎉 Thanks for supporting us! 🎉</div>
+
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
     }
 
-    function generateQR(mode) {
-      const link = document.getElementById('linkInput').value.trim();
-      if (!link) return alert('Paste a link first!');
+    const inputArea = document.getElementById('inputs');
+    let selectedMode = 'default';
+
+    function switchMode(mode) {
+      selectedMode = mode;
+      document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      inputArea.innerHTML = '';
+
+      if (mode === 'wifi') {
+        inputArea.innerHTML = '<input id="wifiName" placeholder="Wi-Fi Name (SSID)" /><input id="wifiPass" placeholder="Wi-Fi Password" />';
+      } else if (mode === 'mobile') {
+        inputArea.innerHTML = '<input id="phoneNumber" placeholder="Phone Number" />';
+      } else if (mode === 'email') {
+        inputArea.innerHTML = '<input id="emailAddr" placeholder="Email Address" /><input id="emailSubj" placeholder="Subject" />';
+      } else if (mode === 'text') {
+        inputArea.innerHTML = '<input id="textMsg" placeholder="Message Text" />';
+      } else {
+        inputArea.innerHTML = '<input id="linkInput" placeholder="Paste your link here" />';
+      }
+    }
+
+    function generateQR() {
+      let data = '';
+      if (selectedMode === 'wifi') {
+        const ssid = document.getElementById('wifiName').value;
+        const pass = document.getElementById('wifiPass').value;
+        data = `WIFI:T:WPA;S:${ssid};P:${pass};;`;
+      } else if (selectedMode === 'mobile') {
+        const phone = document.getElementById('phoneNumber').value;
+        data = `tel:${phone}`;
+      } else if (selectedMode === 'email') {
+        const email = document.getElementById('emailAddr').value;
+        const subj = document.getElementById('emailSubj').value;
+        data = `mailto:${email}?subject=${subj}`;
+      } else if (selectedMode === 'text') {
+        const msg = document.getElementById('textMsg').value;
+        data = msg;
+      } else {
+        data = document.getElementById('linkInput').value.trim();
+      }
 
       const canvas = document.getElementById('qrCanvas');
       const qrContainer = document.getElementById('qrContainer');
       qrContainer.style.display = 'block';
 
-      const ctx = canvas.getContext('2d');
-      canvas.width = 300;
-      canvas.height = 300;
-      ctx.clearRect(0, 0, 300, 300);
-
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(0, 0, 300, 300);
-
-      QRCode.toCanvas(canvas, link, {
-        margin: 1,
-        color: { dark: '#000', light: '#0000' }
-      }, function (error) {
+      QRCode.toCanvas(canvas, data, { margin: 1, color: { dark: '#000', light: '#fff' } }, function (error) {
         if (error) console.error(error);
       });
     }
 
     function downloadQR() {
       const canvas = document.getElementById('qrCanvas');
-      const ctx = canvas.getContext('2d');
-      ctx.font = "12px Antonio";
-      ctx.fillStyle = "#555";
-      ctx.fillText("Made by CutIt.sbs ✦ your vibe. your code.", 10, 290);
-
       const link = document.createElement('a');
       link.download = 'cutit-qr.png';
       link.href = canvas.toDataURL();
@@ -141,25 +164,22 @@
 
     function startDonation() {
       const options = {
-        key: "rzp_live_AJEAZ1WJHOpOOQ",
+        key: 'rzp_live_AJEAZ1WJHOpOOQ',
         amount: 5000,
-        currency: "INR",
-        name: "CutIt.sbs",
-        description: "Support us 💖",
-        theme: { color: "#000" },
-        handler: function () {
-          const anim = document.getElementById('successAnimation');
-          anim.style.display = 'flex';
-          setTimeout(() => { anim.style.display = 'none'; }, 4000);
+        currency: 'INR',
+        name: 'CutIt.sbs',
+        description: 'Support Us',
+        handler: function (response) {
+          document.getElementById('successAnim').style.display = 'block';
+          setTimeout(() => {
+            document.getElementById('successAnim').style.display = 'none';
+          }, 3000);
         }
       };
       const rzp = new Razorpay(options);
       rzp.open();
     }
-
-    function cutieReply() {
-      alert("Cutie 🤖 says: Yo! I’ll be trained soon to help you create stunning QR codes. Stay tuned!");
-    }
   </script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
 </html>
