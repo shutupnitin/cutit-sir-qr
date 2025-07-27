@@ -27,23 +27,12 @@
     .emoji-float { position: fixed; animation: float 6s infinite ease-in-out; pointer-events: none; }
     @keyframes float { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-200px); opacity: 0; } }
     #cutieBot { position: fixed; bottom: 20px; right: 20px; background: #fff; border-radius: 50%; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; font-size: 24px; }
-
-    #chatbox {
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      width: 300px;
-      max-height: 400px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 10px;
-      display: none;
-      flex-direction: column;
-      font-size: 0.9rem;
-    }
-    #chatlog { flex: 1; overflow-y: auto; margin-bottom: 8px; max-height: 250px; text-align: left; }
-    #userInput { padding: 5px; width: 100%; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; }
+    #donateBtn { position: fixed; bottom: 20px; left: 20px; background: #fff; border-radius: 50%; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; font-size: 22px; }
+    footer { margin-top: 3rem; font-size: 0.9rem; opacity: 0.7; }
+    .footer-links { margin-top: 0.5rem; }
+    .footer-links a { margin: 0 0.5rem; color: inherit; text-decoration: underline; }
+    #chatWindow { display: none; position: fixed; bottom: 80px; right: 20px; background: white; width: 300px; max-height: 400px; overflow-y: auto; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.2); padding: 1rem; text-align: left; }
+    #chatInput { width: 100%; margin-top: 10px; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; }
   </style>
 </head>
 <body>
@@ -74,52 +63,24 @@
   </div>
 
   <div id="cutieBot" onclick="toggleChat()">🤖</div>
-  <div id="chatbox">
-    <div id="chatlog"></div>
-    <input id="userInput" type="text" placeholder="Ask Cutie..." onkeypress="handleChat(event)" />
+  <div id="donateBtn" onclick="alert('Coming soon via Razorpay!')">💸</div>
+
+  <div id="chatWindow">
+    <div id="chatMessages"></div>
+    <input id="chatInput" placeholder="Ask Cutie anything..." onkeypress="handleChatKey(event)"/>
   </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="#">Terms</a> | <a href="#">Privacy</a> | <a href="#" onclick="document.getElementById('contactModal').style.display='block'">Contact Us</a>
+    </div>
+    <p>✨ Created with rebellious love by CutIt.sbs — where QR meets pop culture. ✨</p>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
   <script>
-    const cutieTraining = {
-      "how to generate qr": "Just paste your link above, choose a theme, and click on a button like 🎵 Music or ❤️ Love!",
-      "spotify link": "Detected music! Use the 🎵 Music button and let Cutie jam it up!",
-      "party": "Pick 🎉 Party to drop that QR with full celebration vibes.",
-      "i love you": "Aww! Cutie loves you back 💖",
-      "what's your name": "I'm Cutie 🤖 — your QR sidekick!",
-      "generate qr": "Sure thing! Just paste your link and I’ll do the rest!",
-      "how do i share": "Once your QR is ready, click ⬇️ Download and send it anywhere!"
-    };
-
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
-    }
-
-    function toggleChat() {
-      const chat = document.getElementById("chatbox");
-      chat.style.display = chat.style.display === "flex" ? "none" : "flex";
-    }
-
-    function handleChat(e) {
-      if (e.key === "Enter") {
-        const input = document.getElementById("userInput");
-        const msg = input.value.trim();
-        if (!msg) return;
-        const log = document.getElementById("chatlog");
-        log.innerHTML += "<div><strong>You:</strong> " + msg + "</div>";
-        const response = getCutieReply(msg);
-        log.innerHTML += "<div><strong>Cutie:</strong> " + response + "</div>";
-        input.value = "";
-        log.scrollTop = log.scrollHeight;
-      }
-    }
-
-    function getCutieReply(msg) {
-      const key = msg.toLowerCase().trim();
-      for (let k in cutieTraining) {
-        if (key.includes(k)) return cutieTraining[k];
-      }
-      return "I’m still learning... but here’s a QR if that helps 💡";
     }
 
     const emojis = ['🎈','🎊','🎷','❄️','💘','✨','🧙‍♂️'];
@@ -137,33 +98,19 @@
     function generateQR(theme) {
       const link = document.getElementById('linkInput').value.trim();
       if (!link) return alert('Paste a link first!');
-      if (link.includes('spotify.com') || link.includes('music.apple.com')) theme = 'music';
-
       const canvas = document.getElementById('qrCanvas');
       const qrContainer = document.getElementById('qrContainer');
       qrContainer.style.display = 'block';
-
       const ctx = canvas.getContext('2d');
-      canvas.width = 300;
-      canvas.height = 300;
+      canvas.width = 300; canvas.height = 300;
       ctx.clearRect(0, 0, 300, 300);
-
-      const bgColors = {
-        music: '#3a0f64',
-        party: '#ff00cc',
-        love: '#ffd1dc',
-        chill: '#e0f7fa',
-        disney: '#0a0a40',
-        default: '#ffffff'
-      };
-
-      ctx.fillStyle = bgColors[theme] || '#ffffff';
-      ctx.fillRect(0, 0, 300, 300);
-
-      QRCode.toCanvas(canvas, link, {
-        margin: 1,
-        color: { dark: '#000000', light: '#0000' }
-      }, function (error) {
+      ctx.fillStyle = theme === 'music' ? '#3a0f64' :
+                      theme === 'party' ? '#ff00cc' :
+                      theme === 'love' ? '#ffd1dc' :
+                      theme === 'chill' ? '#e0f7fa' :
+                      theme === 'disney' ? '#0a0a40' : '#ffffff';
+      ctx.fillRect(0,0,300,300);
+      QRCode.toCanvas(canvas, link, { margin: 1, color: { dark: '#000', light: '#0000' } }, function (error) {
         if (error) console.error(error);
       });
     }
@@ -174,6 +121,43 @@
       link.download = 'cutit-qr.png';
       link.href = canvas.toDataURL();
       link.click();
+    }
+
+    function toggleChat() {
+      const chat = document.getElementById("chatWindow");
+      chat.style.display = chat.style.display === "block" ? "none" : "block";
+    }
+
+    async function loadTrainingData() {
+      const res = await fetch("cutie_training_data.txt");
+      return (await res.text()).split("\n").filter(Boolean);
+    }
+
+    let cutieData = [];
+    loadTrainingData().then(data => cutieData = data);
+
+    function getBestMatchResponse(query) {
+      query = query.toLowerCase();
+      let best = cutieData.find(d => d.toLowerCase().startsWith(query));
+      if (best) return best.split("::")[1];
+      let keyword = cutieData.find(d => d.toLowerCase().includes(query));
+      if (keyword) return keyword.split("::")[1];
+      return "Cutie says: Hmm… I'm feeling quirky 🤪 but couldn’t find an exact vibe. Try rewording that?";
+    }
+
+    function handleChatKey(e) {
+      if (e.key === "Enter") {
+        const input = document.getElementById("chatInput");
+        const message = input.value.trim();
+        if (!message) return;
+        const msgDiv = document.createElement("div");
+        msgDiv.textContent = "You: " + message;
+        document.getElementById("chatMessages").appendChild(msgDiv);
+        const reply = document.createElement("div");
+        reply.textContent = "Cutie: " + getBestMatchResponse(message);
+        document.getElementById("chatMessages").appendChild(reply);
+        input.value = "";
+      }
     }
   </script>
 </body>
