@@ -80,12 +80,12 @@
   <input id="linkInput" type="text" placeholder="Paste your link (Spotify, Apple Music, etc.)"/>
 
   <div class="btn-group">
-    <button class="theme-btn" onclick="startPayment('default')">🎯 Default</button>
-    <button class="theme-btn" onclick="startPayment('music')">🎵 Music</button>
-    <button class="theme-btn" onclick="startPayment('party')">🎉 Party</button>
-    <button class="theme-btn" onclick="startPayment('love')">❤️ Love</button>
-    <button class="theme-btn" onclick="startPayment('chill')">🧊 Chill</button>
-    <button class="theme-btn" onclick="startPayment('disney')">🌟 Disney Magic</button>
+    <button class="theme-btn" onclick="generateQR('default')">🎯 Default</button>
+    <button class="theme-btn" onclick="generateQR('music')">🎵 Music</button>
+    <button class="theme-btn" onclick="generateQR('party')">🎉 Party</button>
+    <button class="theme-btn" onclick="generateQR('love')">❤️ Love</button>
+    <button class="theme-btn" onclick="generateQR('chill')">🧊 Chill</button>
+    <button class="theme-btn" onclick="generateQR('disney')">🌟 Disney Magic</button>
   </div>
 
   <div id="qrContainer">
@@ -94,11 +94,18 @@
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
 
+  <!-- ✅ Razorpay Button -->
+  <div style="margin-top: 3rem;">
+    <button class="theme-btn" onclick="startPayment()">Pay ₹50 to Support 🚀</button>
+  </div>
+
+  <!-- ✅ Cutie Chatbot Icon -->
   <div id="cutieBot" onclick="toggleChat()">🤖</div>
 
-  <div id="chatPopup">
-    <p><strong>Cutie:</strong> Yo! Drop a link and say “make QR” 💖</p>
-    <input id="chatInput" placeholder="Type here... (e.g. make QR for https://...)"/>
+  <!-- ✅ Cutie Chat UI -->
+  <div id="chatContainer" style="display:none; position:fixed; bottom:80px; right:20px; width:300px; max-height:400px; background:#fff; border-radius:12px; box-shadow:0 0 10px rgba(0,0,0,0.3); padding:1rem; overflow-y:auto; z-index:1000;">
+    <div id="chatMessages" style="height:260px; overflow-y:auto; font-family:sans-serif; font-size:0.95rem; margin-bottom:0.5rem;"></div>
+    <input id="chatInput" type="text" placeholder="Ask Cutie anything..." style="width:100%; padding:0.5rem; font-size:0.95rem; border-radius:6px; border:1px solid #ccc;" onkeydown="if(event.key==='Enter') sendChat()" />
   </div>
 
   <div id="contactModal">
@@ -108,8 +115,11 @@
   </div>
 
   <div class="team-message">
-    <p>From all of us at <strong>CutIt.sbs</strong> — we built this with love, creativity, and a bit of chaos 🤪  
-    to help you express yourself, link your vibe, and share it in style.</p>
+    <p>
+      From all of us at <strong>CutIt.sbs</strong> — we built this with love, creativity, and a bit of chaos 🤪  
+      to help you express yourself, link your vibe, and share it in style. Whether it’s music, moments, memes,  
+      or memories — your code is your voice. Let it echo 🎤✨
+    </p>
   </div>
 
   <footer>
@@ -121,55 +131,28 @@
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
   <script>
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
     }
 
-    function toggleChat() {
-      const chat = document.getElementById('chatPopup');
-      chat.style.display = (chat.style.display === 'none' || chat.style.display === '') ? 'block' : 'none';
+    const emojis = ['🎈','🎊','🎷','❄️','💘','✨','🧙‍♂️'];
+    function floatEmoji() {
+      const emoji = document.createElement('div');
+      emoji.className = 'emoji-float';
+      emoji.style.left = Math.random() * 100 + 'vw';
+      emoji.style.top = '100vh';
+      emoji.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 6000);
     }
-
-    document.getElementById("chatInput").addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        const input = e.target.value.trim();
-        if (input.toLowerCase().includes("make qr") && input.includes("http")) {
-          document.getElementById("linkInput").value = input.split("make qr")[1].trim();
-          generateQR("default");
-        }
-      }
-    });
-
-    function startPayment(theme) {
-      const link = document.getElementById('linkInput').value.trim();
-      if (!link) return alert('Paste a link first!');
-      const options = {
-        key: "rzp_live_AJEAZ1WJHOpOOQ",
-        amount: 5000, // Rs 50 = 5000 paise
-        currency: "INR",
-        name: "CutIt.sbs QR",
-        description: "QR Code Generator",
-        image: "", // optional logo
-        handler: function (response) {
-          generateQR(theme);
-        },
-        prefill: {
-          name: "",
-          email: "",
-          contact: ""
-        },
-        theme: {
-          color: "#000"
-        }
-      };
-      const rzp = new Razorpay(options);
-      rzp.open();
-    }
+    setInterval(floatEmoji, 2000);
 
     function generateQR(theme) {
       const link = document.getElementById('linkInput').value.trim();
-      if (!link) return;
+      if (!link) return alert('Paste a link first!');
+      if (link.includes('spotify.com') || link.includes('music.apple.com')) theme = 'music';
 
       const canvas = document.getElementById('qrCanvas');
       const qrContainer = document.getElementById('qrContainer');
@@ -186,13 +169,9 @@
       else if (theme === 'chill') ctx.fillStyle = '#e0f7fa';
       else if (theme === 'disney') ctx.fillStyle = '#0a0a40';
       else ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0,0,300,300);
 
-      ctx.fillRect(0, 0, 300, 300);
-
-      QRCode.toCanvas(canvas, link, {
-        margin: 1,
-        color: { dark: '#000', light: '#0000' }
-      }, function (error) {
+      QRCode.toCanvas(canvas, link, { margin: 1, color: { dark: '#000', light: '#0000' } }, function (error) {
         if (error) console.error(error);
       });
     }
@@ -203,6 +182,60 @@
       link.download = 'cutit-qr.png';
       link.href = canvas.toDataURL();
       link.click();
+    }
+
+    function startPayment() {
+      const options = {
+        key: 'rzp_live_AJEAZ1WJHOpOOQ',
+        amount: 5000, // 50 INR in paisa
+        currency: 'INR',
+        name: 'CutIt.sbs',
+        description: 'Support the vibe ✨',
+        image: 'https://cutit.sbs/favicon.png', // Optional
+        handler: function (response) {
+          alert('Payment successful! ✨ ID: ' + response.razorpay_payment_id);
+        },
+        theme: {
+          color: '#000'
+        }
+      };
+      const rzp = new Razorpay(options);
+      rzp.open();
+    }
+
+    function toggleChat() {
+      const chat = document.getElementById('chatContainer');
+      chat.style.display = chat.style.display === 'none' ? 'block' : 'none';
+    }
+
+    async function sendChat() {
+      const input = document.getElementById('chatInput');
+      const messages = document.getElementById('chatMessages');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      const userMsg = document.createElement('div');
+      userMsg.textContent = "🧑‍🎤 " + msg;
+      messages.appendChild(userMsg);
+
+      input.value = '';
+      messages.scrollTop = messages.scrollHeight;
+
+      let replyText = "🤖 Cutie says: Hmm...";
+
+      if (msg.toLowerCase().includes("qr") || msg.toLowerCase().includes("link")) {
+        const fakeLink = "https://example.com/" + Math.random().toString(36).substring(2, 7);
+        replyText = `🤖 Cutie: Here’s your QR for ${fakeLink} 💫`;
+        document.getElementById('linkInput').value = fakeLink;
+        generateQR('default');
+      } else {
+        replyText = "🤖 Cutie: I'm still vibing up — ask me to generate a QR!";
+      }
+
+      const botMsg = document.createElement('div');
+      botMsg.textContent = replyText;
+      messages.appendChild(botMsg);
+      messages.scrollTop = messages.scrollHeight;
     }
   </script>
 </body>
