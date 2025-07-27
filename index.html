@@ -1,243 +1,229 @@
-
-<!--
-  FINAL CutIt.sbs ✦ your vibe. your code.
-  Aesthetic, minimal, Gen Z–friendly QR Generator with Cutie AI Bot + Themed Backgrounds.
-  Built with ❤️ for CutIt.sbs
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CutIt.sbs ✦ QR Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
+  <title>CutIt.sbs ✦ QR Vibe Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0; padding: 0;
-      box-sizing: border-box;
-      font-family: 'Antonio', sans-serif;
+    :root {
+      --bg-light: #f9f9f9;
+      --bg-dark: #121212;
+      --text-light: #1a1a1a;
+      --text-dark: #f1f1f1;
+      --accent: #7f4af3;
     }
     body {
-      background: #fdfdff;
-      color: #111;
+      margin: 0;
+      font-family: 'Antonio', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-light);
       text-align: center;
-      padding: 2rem;
       transition: background 0.3s, color 0.3s;
     }
     .dark-mode {
-      background: #111;
-      color: #fdfdff;
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
     }
     header {
       display: flex;
       justify-content: space-between;
+      padding: 20px;
+      font-size: 1.8rem;
       align-items: center;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #ccc;
-    }
-    .logo {
-      font-size: 2rem;
     }
     .toggle-btn {
-      padding: 0.5rem 1rem;
+      padding: 8px 12px;
+      border: 1px solid #888;
       border-radius: 6px;
-      border: 1px solid #999;
-      background: white;
       cursor: pointer;
+      background: none;
+      color: inherit;
+      font-family: 'Antonio', sans-serif;
     }
-    h1 {
-      font-size: 2.2rem;
-      margin-top: 2rem;
-    }
-    p {
-      font-size: 1.1rem;
-      margin: 1rem 0 2rem;
-      color: #666;
+    .headline {
+      font-size: 2.5rem;
+      margin-top: 40px;
     }
     .divider {
-      font-size: 1.3rem;
-      margin-bottom: 2rem;
-      color: #000;
-      font-weight: bold;
+      margin: 20px auto;
+      font-size: 1.2rem;
+      color: var(--accent);
     }
     #linkInput {
-      width: 90%;
-      max-width: 500px;
-      padding: 1rem;
-      font-size: 1.2rem;
-      border: 2px solid #000;
-      border-radius: 8px;
-    }
-    .btn-group {
-      margin: 1.5rem 0;
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-    }
-    .theme-btn {
-      padding: 0.6rem 1.2rem;
-      border: none;
+      margin: 20px auto;
+      padding: 12px;
+      width: 80%;
+      max-width: 400px;
       font-size: 1rem;
       border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .button-group {
+      margin: 15px auto;
+    }
+    .qr-type {
+      padding: 10px 14px;
+      margin: 5px;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: bold;
       cursor: pointer;
-      background: #000;
-      color: #fff;
-      transition: background 0.3s;
     }
-    .theme-btn:hover {
-      background: #444;
+    #generateBtn {
+      background: var(--accent);
+      color: white;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      margin-top: 20px;
+      cursor: pointer;
     }
-    #qrContainer {
-      margin-top: 3rem;
+    #qrCanvas {
+      margin-top: 30px;
       display: none;
     }
-    canvas {
-      margin: auto;
-      display: block;
-      max-width: 300px;
-      background: white;
-      border-radius: 12px;
-      padding: 1rem;
-    }
     .watermark {
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-      opacity: 0.6;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      color: #aaa;
     }
-    #downloadBtn {
-      margin-top: 1.5rem;
-      padding: 0.7rem 1.4rem;
-      font-size: 1rem;
-      background: #000;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .emoji-float {
+    .floating-emojis {
       position: fixed;
-      animation: float 6s infinite ease-in-out;
-      pointer-events: none;
+      top: 10%;
+      animation: float 8s linear infinite;
+      font-size: 1.5rem;
     }
+    .emoji-1 { left: 10%; animation-delay: 0s; }
+    .emoji-2 { left: 40%; animation-delay: 3s; }
+    .emoji-3 { left: 70%; animation-delay: 6s; }
     @keyframes float {
       0% { transform: translateY(0); opacity: 1; }
-      100% { transform: translateY(-200px); opacity: 0; }
+      100% { transform: translateY(-100vh); opacity: 0; }
     }
-    /* Cutie Chatbot button */
-    #cutieBot {
+    footer {
+      margin-top: 50px;
+      font-size: 0.9rem;
+    }
+    .popup {
+      display: none;
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #fff;
-      border-radius: 50%;
-      padding: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      cursor: pointer;
-      font-size: 24px;
+      background: white;
+      color: black;
+      padding: 20px;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+    .popup.show {
+      display: block;
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo">CutIt.sbs</div>
-    <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+    <div>CutIt.sbs</div>
+    <button class="toggle-btn" onclick="toggleMode()">🌙 Dark Mode</button>
   </header>
 
-  <h1>Craft your QR vibe, effortlessly.</h1>
-  <p>From parties to playlists, make every code pop. Just paste your link, pick a theme, and boom — QR magic.</p>
-  <div class="divider">CutIt.sbs ✦ your vibe. your code.</div>
+  <div class="headline">We’re here to turn your links into magic ✨</div>
+  <div class="divider" id="tagline">CutIt.sbs ✦ your vibe. your code.</div>
 
-  <input id="linkInput" type="text" placeholder="Paste your link (Spotify, Apple Music, etc.)"/>
+  <input id="linkInput" type="text" placeholder="Paste link or message here..." />
 
-  <div class="btn-group">
-    <button class="theme-btn" onclick="generateQR('default')">🎯 Default</button>
-    <button class="theme-btn" onclick="generateQR('music')">🎵 Music</button>
-    <button class="theme-btn" onclick="generateQR('party')">🎉 Party</button>
-    <button class="theme-btn" onclick="generateQR('love')">❤️ Love</button>
-    <button class="theme-btn" onclick="generateQR('chill')">🧊 Chill</button>
-    <button class="theme-btn" onclick="generateQR('disney')">🌟 Disney Magic</button>
+  <div class="button-group">
+    <button class="qr-type" onclick="setTheme('music')">🎵 Music</button>
+    <button class="qr-type" onclick="setTheme('party')">🎉 Party</button>
+    <button class="qr-type" onclick="setTheme('love')">❤️ Love</button>
+    <button class="qr-type" onclick="setTheme('chill')">🧊 Chill</button>
+    <button class="qr-type" onclick="setTheme('magic')">🌟 Disney Magic</button>
   </div>
 
-  <div id="qrContainer">
-    <canvas id="qrCanvas"></canvas>
+  <button id="generateBtn" onclick="generateQR()">Generate</button>
+
+  <div id="qrCanvas">
+    <canvas id="qr-code"></canvas>
     <div class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</div>
-    <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
 
-  <div id="cutieBot">🤖</div>
+  <div class="floating-emojis emoji-1">✨</div>
+  <div class="floating-emojis emoji-2">🎈</div>
+  <div class="floating-emojis emoji-3">🎶</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
+  <footer>
+    <p><a href="#" onclick="togglePopup()">Contact us</a> | <a href="#">Terms</a> | <a href="#">Privacy</a></p>
+    <div class="popup" id="popup">Email us at: team@cutit.sbs 💌</div>
+    <p>Made with 💿 vibes, 🌀 energy, and 🍿 late-night coding by the CutIt.sbs squad</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
+    let currentTheme = 'default';
+    const tagline = document.getElementById("tagline");
+
+    function toggleMode() {
+      document.body.classList.toggle("dark-mode");
     }
 
-    const emojis = ['🎈','🎊','🎷','❄️','💘','✨','🧙‍♂️'];
-    function floatEmoji() {
-      const emoji = document.createElement('div');
-      emoji.className = 'emoji-float';
-      emoji.style.left = Math.random() * 100 + 'vw';
-      emoji.style.top = '100vh';
-      emoji.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-      document.body.appendChild(emoji);
-      setTimeout(() => emoji.remove(), 6000);
+    function togglePopup() {
+      document.getElementById('popup').classList.toggle('show');
     }
-    setInterval(floatEmoji, 2000);
 
-    function generateQR(theme) {
-      const link = document.getElementById('linkInput').value.trim();
-      if (!link) return alert('Paste a link first!');
+    function setTheme(theme) {
+      currentTheme = theme;
+    }
 
-      let detected = '';
-      if (link.includes('spotify.com') || link.includes('music.apple.com')) {
-        theme = 'music';
-        detected = '(auto-detected music link)';
+    function generateQR() {
+      const value = document.getElementById("linkInput").value;
+      if (!value) return;
+
+      let canvas = document.getElementById("qr-code");
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext("2d");
+
+      // Background
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (currentTheme === 'music') {
+        ctx.fillStyle = "#3c1361";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#d6ad60";
+        ctx.font = "bold 12px Antonio";
+        ctx.fillText("🎺🎷🎼", 100, 20);
+      } else if (currentTheme === 'party') {
+        ctx.fillStyle = "#ffe600";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#ff69b4";
+        ctx.fillText("🎉🪅🎈", 100, 20);
+      } else if (currentTheme === 'love') {
+        ctx.fillStyle = "#ffc0cb";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#ff0000";
+        ctx.fillText("🍦💘🌹", 100, 20);
+      } else if (currentTheme === 'chill') {
+        ctx.fillStyle = "#dceeff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0e76a8";
+        ctx.fillText("❄️🏔️🧘‍♂️", 100, 20);
+      } else if (currentTheme === 'magic') {
+        ctx.fillStyle = "#1e1b4b";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#fcd34d";
+        ctx.fillText("✨🔮🧙‍♂️", 100, 20);
       }
 
-      const canvas = document.getElementById('qrCanvas');
-      const qrContainer = document.getElementById('qrContainer');
-      qrContainer.style.display = 'block';
-
-      const ctx = canvas.getContext('2d');
-      canvas.width = 300;
-      canvas.height = 300;
-
-      ctx.clearRect(0, 0, 300, 300);
-
-      // Theme backgrounds
-      if (theme === 'music') {
-        ctx.fillStyle = '#3a0f64';
-        ctx.fillRect(0,0,300,300);
-        ctx.fillStyle = '#000';
-      } else if (theme === 'party') {
-        ctx.fillStyle = '#ff00cc';
-        ctx.fillRect(0,0,300,300);
-      } else if (theme === 'love') {
-        ctx.fillStyle = '#ffd1dc';
-        ctx.fillRect(0,0,300,300);
-      } else if (theme === 'chill') {
-        ctx.fillStyle = '#e0f7fa';
-        ctx.fillRect(0,0,300,300);
-      } else if (theme === 'disney') {
-        ctx.fillStyle = '#0a0a40';
-        ctx.fillRect(0,0,300,300);
-      } else {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0,0,300,300);
-      }
-
-      QRCode.toCanvas(canvas, link, { margin: 1, color: { dark: '#000', light: '#0000' } }, function (error) {
+      QRCode.toCanvas(canvas, value, { width: 200 }, function (error) {
         if (error) console.error(error);
+        document.getElementById("qrCanvas").style.display = "block";
       });
-    }
-
-    function downloadQR() {
-      const canvas = document.getElementById('qrCanvas');
-      const link = document.createElement('a');
-      link.download = 'cutit-qr.png';
-      link.href = canvas.toDataURL();
-      link.click();
     }
   </script>
 </body>
