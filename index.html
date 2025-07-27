@@ -34,6 +34,17 @@
     #contactModal h2 { font-size: 1.5rem; margin-bottom: 1rem; }
     #modalClose { margin-top: 1rem; padding: 0.5rem 1rem; background: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
     .dark-mode #contactModal { background: #222; color: #fff; }
+    .team-message {
+  font-family: 'Antonio', sans-serif;
+  font-size: 1.05rem;
+  text-align: center;
+  margin: 40px auto 20px;
+  color: var(--text-color);
+  max-width: 600px;
+  padding: 0 20px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
   </style>
 </head>
 <body>
@@ -70,7 +81,13 @@
     <p>We're crafting something magical just for you. If you have feedback, ideas, or just want to vibe — reach out anytime!</p>
     <button id="modalClose" onclick="document.getElementById('contactModal').style.display='none'">Close</button>
   </div>
-
+<div class="team-message">
+  <p>
+    From all of us at <strong>CutIt.sbs</strong> — we built this with love, creativity, and a bit of chaos 🤪  
+    to help you express yourself, link your vibe, and share it in style. Whether it’s music, moments, memes,  
+    or memories — your code is your voice. Let it echo 🎤✨
+  </p>
+</div>
   <footer>
     <div class="footer-links">
       <a href="#">Terms</a> | <a href="#">Privacy</a> | <a href="#" onclick="document.getElementById('contactModal').style.display='block'">Contact Us</a>
