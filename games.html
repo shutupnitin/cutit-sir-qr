@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CutIt.sbs ✦ Arcade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@600&display=swap" rel="stylesheet"/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Antonio', sans-serif;
+    }
+
+    body {
+      background: #0a0a0a;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Floating Emojis */
+    .floating-emojis {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .emoji {
+      position: absolute;
+      font-size: 2rem;
+      animation: floatUp 12s linear infinite;
+      opacity: 0.5;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(-20vh) translateX(20px);
+        opacity: 0;
+      }
+    }
+
+    /* Header */
+    header {
+      width: 100%;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0a0a0a;
+      border-bottom: 1px solid #222;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      color: #ff62d6;
+      letter-spacing: 1px;
+    }
+
+    nav a {
+      color: #ccc;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-size: 1rem;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #f9e000;
+    }
+
+    /* Main Content */
+    main {
+      padding: 3rem 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #f9e000;
+      margin-bottom: 1rem;
+    }
+
+    p.description {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #aaa;
+      margin-bottom: 3rem;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .game-card {
+      background: #1b1b1b;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .game-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #f9e00066;
+    }
+
+    .game-card h2 {
+      color: #f9e000;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .game-card p {
+      font-size: 0.95rem;
+      color: #aaa;
+    }
+
+    .play-btn {
+      margin-top: 1rem;
+      background: #f9e000;
+      color: #000;
+      border: none;
+      padding: 0.6rem 1.4rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .play-btn:hover {
+      background: #e2cb00;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      padding: 2rem 1rem;
+      font-size: 0.95rem;
+      color: #777;
+      border-top: 1px solid #222;
+      background: #0a0a0a;
+    }
+    footer span {
+      color: #f9e000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Emojis -->
+  <div class="floating-emojis" id="emojiContainer"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">CutIt.sbs</div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/qr">QR</a>
+      <a href="/chat">Chat</a>
+      <a href="/arcade">Arcade</a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <h1>🎮 CutIt.sbs Arcade</h1>
+    <p class="description">Totally random. Completely fun. Zero productivity. Dive into wild mini games 🕹️</p>
+
+    <div class="game-grid">
+      <div class="game-card">
+        <h2>🏓 Ping Pong</h2>
+        <p>Classic arcade ping pong. Reflexes on max.</p>
+        <button class="play-btn" onclick="location.href='games/pingpong.html'">Play</button>
+      </div>
+
+      <div class="game-card">
+        <h2>🔢 2048</h2>
+        <p>Swipe numbers. Hit 2048. Simple? Think again.</p>
+        <button class="play-btn" onclick="location.href='games/2048.html'">Play</button>
+      </div>
+
+      <div class="game-card">
+        <h2>🚀 Space Invaders</h2>
+        <p>Blast aliens. Save vibes. Go pew pew.</p>
+        <button class="play-btn" onclick="location.href='games/space-invaders.html'">Play</button>
+      </div>
+
+      <div class="game-card">
+        <h2>🐍 Snake</h2>
+        <p>Grow or die trying. Nostalgia, but neon.</p>
+        <button class="play-btn" onclick="location.href='games/snake.html'">Play</button>
+      </div>
+
+      <div class="game-card">
+        <h2>🧠 Memory Match</h2>
+        <p>Test your Gen Z brain. Match emojis under pressure.</p>
+        <button class="play-btn" onclick="location.href='games/memory.html'">Play</button>
+      </div>
+
+      <div class="game-card">
+        <h2>🧍🏽‍♂️ Jump Guy</h2>
+        <p>Tap. Jump. Rage quit. Repeat.</p>
+        <button class="play-btn" onclick="location.href='games/jump-guy.html'">Play</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    Made with <span>❤️</span> & <span>chaos</span> by CutIt.sbs ✦ your vibe. your code.
+  </footer>
+
+  <!-- Emoji Generator Script -->
+  <script>
+    const emojis = ["💥", "🚀", "🎮", "✨", "🕹️", "🐍", "😈", "🏓", "🌀", "🔥"];
+    const container = document.getElementById('emojiContainer');
+
+    function createEmoji() {
+      const emoji = document.createElement('div');
+      emoji.classList.add('emoji');
+      emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+      emoji.style.left = `${Math.random() * 100}%`;
+      emoji.style.fontSize = `${Math.random() * 1.5 + 1.2}rem`;
+      emoji.style.animationDuration = `${10 + Math.random() * 10}s`;
+      container.appendChild(emoji);
+
+      setTimeout(() => emoji.remove(), 12000);
+    }
+
+    setInterval(createEmoji, 500);
+  </script>
+</body>
+</html>
