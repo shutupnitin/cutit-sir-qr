@@ -1,787 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CutIt.sbs Ping Pong</title>
-    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #000;
-            font-family: 'Antonio', sans-serif;
-            color: #fff;
-            touch-action: manipulation;
-        }
-        
-        #gameContainer {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-            overflow: hidden;
-        }
-        
-        #gameCanvas {
-            background: #000;
-            display: block;
-            max-width: 100%;
-            max-height: 100%;
-            image-rendering: optimizeSpeed;
-            image-rendering: crisp-edges;
-        }
-        
-        .popup {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.92);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-            padding: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-        }
-        
-        .popup.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .popup-content {
-            background: #111;
-            padding: 40px;
-            border-radius: 16px;
-            text-align: center;
-            max-width: 600px;
-            width: 90%;
-            border: 3px solid #fff;
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
-            transform: scale(0.9);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        .popup.active .popup-content {
-            transform: scale(1);
-        }
-        
-        .popup h1 {
-            font-size: 3.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, #fff, #aaa);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-        }
-        
-        .popup h2 {
-            font-size: 2.2rem;
-            margin-bottom: 20px;
-            color: #fff;
-            letter-spacing: 1px;
-        }
-        
-        .popup p {
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            color: #ddd;
-            line-height: 1.7;
-        }
-        
-        .game-modes {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 25px;
-            margin: 35px 0;
-        }
-        
-        .mode-btn {
-            background: #000;
-            color: #fff;
-            border: 3px solid #fff;
-            padding: 18px 35px;
-            font-size: 1.4rem;
-            font-family: 'Antonio', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            flex: 1;
-            min-width: 220px;
-            position: relative;
-            overflow: hidden;
-            border-radius: 8px;
-        }
-        
-        .mode-btn:hover {
-            background: #fff;
-            color: #000;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
-        }
-        
-        .btn {
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 18px 45px;
-            font-size: 1.5rem;
-            font-family: 'Antonio', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin: 15px;
-            font-weight: bold;
-            border: 3px solid #fff;
-            border-radius: 8px;
-        }
-        
-        .btn:hover {
-            background: #000;
-            color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
-        }
-        
-        .btn-outline {
-            background: transparent;
-            color: #fff;
-        }
-        
-        .watermark {
-            position: absolute;
-            bottom: 25px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.25);
-            font-family: 'Antonio', sans-serif;
-            z-index: 5;
-            pointer-events: none;
-            letter-spacing: 1px;
-        }
-        
-        .score-display {
-            position: absolute;
-            top: 25px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-            font-size: 2.5rem;
-            z-index: 5;
-            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
-        }
-        
-        .player-score {
-            text-align: center;
-            min-width: 150px;
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .high-score {
-            color: #aaa;
-            font-size: 1.3rem;
-            margin-top: 8px;
-            letter-spacing: 1px;
-        }
-        
-        .controls {
-            margin-top: 25px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 12px;
-            font-size: 1.1rem;
-            color: #bbb;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .controls h3 {
-            margin-bottom: 15px;
-            color: #fff;
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-        }
-        
-        .controls p {
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-        
-        @media (max-width: 768px) {
-            .popup h1 {
-                font-size: 2.5rem;
-            }
-            
-            .popup h2 {
-                font-size: 1.8rem;
-            }
-            
-            .popup p {
-                font-size: 1.1rem;
-            }
-            
-            .mode-btn {
-                padding: 15px 25px;
-                font-size: 1.2rem;
-                min-width: 180px;
-            }
-            
-            .btn {
-                padding: 15px 30px;
-                font-size: 1.3rem;
-            }
-            
-            .score-display {
-                font-size: 1.8rem;
-                gap: 30px;
-            }
-            
-            .player-score {
-                min-width: 120px;
-                padding: 8px 15px;
-            }
-            
-            .controls p {
-                font-size: 1rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .popup-content {
-                padding: 25px 20px;
-            }
-            
-            .popup h1 {
-                font-size: 2rem;
-            }
-            
-            .game-modes {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .mode-btn {
-                width: 100%;
-                min-width: auto;
-            }
-            
-            .score-display {
-                font-size: 1.5rem;
-                gap: 15px;
-                top: 15px;
-            }
-            
-            .player-score {
-                min-width: 100px;
-                padding: 5px 10px;
-                font-size: 1.3rem;
-            }
-            
-            .high-score {
-                font-size: 1rem;
-            }
-            
-            .watermark {
-                font-size: 0.9rem;
-                bottom: 15px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <title>CutIt.sbs Ping Pong</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Antonio&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html {
+      width: 100%; height: 100%; overflow: hidden;
+      background: #000; color: #fff;
+      font-family: 'Antonio', sans-serif;
+      position: relative;
+    }
+    canvas {
+      display: block;
+      width: 100vw; height: 100vh;
+    }
+    .overlay {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10;
+    }
+    .popup {
+      text-align: center;
+      background: #111; padding: 2rem 3rem;
+      border: 2px solid #fff; border-radius: 8px;
+    }
+    .popup h1, .popup h2 {
+      margin-bottom: 1rem; font-size: 1.8rem;
+    }
+    .popup p {
+      margin: 1rem 0;
+    }
+    .popup label {
+      display: block; margin-bottom: .5rem;
+    }
+    .popup select, .popup button {
+      font-family: inherit;
+      font-size: 1rem; padding: .5rem 1rem;
+      margin: .5rem;
+      background: #000; color: #fff;
+      border: 1px solid #fff; border-radius: 4px;
+      cursor: pointer;
+    }
+    .popup select { width: 100%; max-width: 200px; }
+    .watermark {
+      position: absolute; bottom: 10px; width: 100%;
+      text-align: center; font-size: 1rem;
+      color: rgba(255,255,255,0.2);
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas"></canvas>
-        
-        <div id="startPopup" class="popup active">
-            <div class="popup-content">
-                <h1>CutIt.sbs</h1>
-                <h2>✦ your vibe. your code.</h2>
-                <p>Challenge your friend or test your skills against our unbeatable AI in this high-performance ping pong game!</p>
-                
-                <div class="game-modes">
-                    <button class="mode-btn" onclick="startGame('pvp')">1 vs 1</button>
-                    <button class="mode-btn" onclick="startGame('pvc')">Computer vs 1</button>
-                </div>
-                
-                <button class="btn" onclick="startGame()">Start Game</button>
-                
-                <div class="controls">
-                    <h3>Controls:</h3>
-                    <p><strong>1 vs 1 Mode:</strong> Player 1 (Left): W/S keys or touch left side | Player 2 (Right): Arrow keys or touch right side</p>
-                    <p><strong>Computer vs 1 Mode:</strong> Player: W/S, Arrow keys, or touch anywhere</p>
-                </div>
-            </div>
-        </div>
-        
-        <div id="endPopup" class="popup">
-            <div class="popup-content">
-                <h1>Game Over</h1>
-                <h2 id="winnerText">Player Wins!</h2>
-                
-                <div class="score-display">
-                    <div class="player-score">
-                        <div>Player: <span id="endPlayerScore">0</span></div>
-                    </div>
-                    <div class="player-score">
-                        <div>Opponent: <span id="endOpponentScore">0</span></div>
-                    </div>
-                </div>
-                
-                <p>High Score: <span id="highScoreDisplay">0</span></p>
-                
-                <div style="margin: 40px 0 20px;">
-                    <button class="btn" onclick="restartGame()">Play Again</button>
-                    <button class="btn btn-outline" onclick="goHome()">Home</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="watermark">CutIt.sbs ✦ your vibe. your code.</div>
-        
-        <div class="score-display">
-            <div class="player-score">
-                <div>Player: <span id="playerScore">0</span></div>
-                <div class="high-score">High: <span id="playerHighScore">0</span></div>
-            </div>
-            <div class="player-score">
-                <div>Opponent: <span id="opponentScore">0</span></div>
-            </div>
-        </div>
+  <div id="overlay-start" class="overlay">
+    <div class="popup">
+      <h1>CutIt.sbs ✦ your vibe. your code</h1>
+      <label for="mode-select">Game Mode</label>
+      <select id="mode-select">
+        <option value="computer">Computer vs Player</option>
+      </select>
+      <button id="start-btn">Start Game</button>
     </div>
+  </div>
 
-    <script>
-        // Game variables
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const startPopup = document.getElementById('startPopup');
-        const endPopup = document.getElementById('endPopup');
-        
-        // Game settings
-        let gameMode = 'pvp'; // 'pvp' or 'pvc'
-        let gameRunning = false;
-        let animationId;
-        let lastTime = 0;
-        
-        // Game objects
-        let paddleHeight;
-        const paddleWidth = 12;
-        const ballSize = 12;
-        
-        let playerY, opponentY;
-        let ballX, ballY;
-        let ballSpeedX, ballSpeedY;
-        
-        // Scores
-        let playerScoreVal = 0;
-        let opponentScoreVal = 0;
-        let playerHighScore = 0;
-        
-        // Control variables
-        let playerUp = false;
-        let playerDown = false;
-        let opponentUp = false;
-        let opponentDown = false;
-        let touchMode = '';
+  <canvas id="gameCanvas"></canvas>
 
-        // Initialize game
-        function init() {
-            resizeCanvas();
-            loadHighScore();
-            window.addEventListener('resize', resizeCanvas);
-            window.addEventListener('keydown', handleKeyDown);
-            window.addEventListener('keyup', handleKeyUp);
-            canvas.addEventListener('mousemove', handleMouseMove);
-            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-        }
-        
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            // Scale elements based on screen size
-            paddleHeight = Math.max(80, Math.min(150, canvas.height * 0.15));
-            
-            playerY = canvas.height / 2 - paddleHeight / 2;
-            opponentY = canvas.height / 2 - paddleHeight / 2;
-            ballX = canvas.width / 2;
-            ballY = canvas.height / 2;
-            
-            // Adjust ball speed based on screen size
-            const baseSpeed = Math.min(8, Math.max(4, canvas.width * 0.005));
-            ballSpeedX = baseSpeed * (Math.random() > 0.5 ? 1 : -1);
-            ballSpeedY = baseSpeed * (Math.random() > 0.5 ? 1 : -1);
-        }
-        
-        function loadHighScore() {
-            const savedScore = localStorage.getItem('pingPongHighScore');
-            playerHighScore = savedScore ? parseInt(savedScore) : 0;
-            document.getElementById('playerHighScore').textContent = playerHighScore;
-        }
-        
-        function saveHighScore() {
-            if (playerScoreVal > playerHighScore) {
-                playerHighScore = playerScoreVal;
-                localStorage.setItem('pingPongHighScore', playerHighScore.toString());
-                document.getElementById('playerHighScore').textContent = playerHighScore;
-            }
-        }
-        
-        function startGame(mode) {
-            if (mode) gameMode = mode;
-            startPopup.classList.remove('active');
-            gameRunning = true;
-            playerScoreVal = 0;
-            opponentScoreVal = 0;
-            document.getElementById('playerScore').textContent = '0';
-            document.getElementById('opponentScore').textContent = '0';
-            resetBall();
-            lastTime = performance.now();
-            gameLoop();
-        }
-        
-        function resetBall() {
-            ballX = canvas.width / 2;
-            ballY = canvas.height / 2;
-            
-            // Adjust ball speed based on screen size
-            const baseSpeed = Math.min(8, Math.max(4, canvas.width * 0.005));
-            ballSpeedX = baseSpeed * (Math.random() > 0.5 ? 1 : -1);
-            ballSpeedY = baseSpeed * (Math.random() > 0.5 ? 1 : -1);
-        }
-        
-        function endGame() {
-            gameRunning = false;
-            cancelAnimationFrame(animationId);
-            
-            document.getElementById('endPlayerScore').textContent = playerScoreVal;
-            document.getElementById('endOpponentScore').textContent = opponentScoreVal;
-            document.getElementById('highScoreDisplay').textContent = playerHighScore;
-            
-            if (playerScoreVal > opponentScoreVal) {
-                document.getElementById('winnerText').textContent = "Player Wins!";
-            } else {
-                document.getElementById('winnerText').textContent = "Opponent Wins!";
-            }
-            
-            saveHighScore();
-            setTimeout(() => {
-                endPopup.classList.add('active');
-            }, 500);
-        }
-        
-        function restartGame() {
-            endPopup.classList.remove('active');
-            setTimeout(() => {
-                startGame();
-            }, 300);
-        }
-        
-        function goHome() {
-            window.location.href = 'https://cutit.sbs/games';
-        }
-        
-        function handleKeyDown(e) {
-            if (e.key === 'w' || e.key === 'W') playerUp = true;
-            if (e.key === 's' || e.key === 'S') playerDown = true;
-            
-            // Arrow keys control both players depending on mode
-            if (e.key === 'ArrowUp') {
-                if (gameMode === 'pvp') {
-                    opponentUp = true;
-                } else {
-                    playerUp = true;
-                }
-            }
-            if (e.key === 'ArrowDown') {
-                if (gameMode === 'pvp') {
-                    opponentDown = true;
-                } else {
-                    playerDown = true;
-                }
-            }
-        }
-        
-        function handleKeyUp(e) {
-            if (e.key === 'w' || e.key === 'W') playerUp = false;
-            if (e.key === 's' || e.key === 'S') playerDown = false;
-            
-            if (e.key === 'ArrowUp') {
-                if (gameMode === 'pvp') {
-                    opponentUp = false;
-                } else {
-                    playerUp = false;
-                }
-            }
-            if (e.key === 'ArrowDown') {
-                if (gameMode === 'pvp') {
-                    opponentDown = false;
-                } else {
-                    playerDown = false;
-                }
-            }
-        }
-        
-        function handleMouseMove(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleY = canvas.height / rect.height;
-            const touchY = (e.clientY - rect.top) * scaleY;
-            
-            if (gameMode === 'pvc') {
-                // In computer mode, mouse controls player paddle
-                playerY = touchY - paddleHeight / 2;
-            }
-        }
-        
-        function handleTouchStart(e) {
-            e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const touchX = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
-            
-            // Determine which side is being touched
-            if (gameMode === 'pvp') {
-                touchMode = touchX < canvas.width / 2 ? 'player' : 'opponent';
-            } else {
-                touchMode = 'player';
-            }
-        }
-        
-        function handleTouchMove(e) {
-            e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const scaleY = canvas.height / rect.height;
-            const touchYPos = (e.touches[0].clientY - rect.top) * scaleY;
-            
-            if (gameMode === 'pvp') {
-                if (touchMode === 'player') {
-                    playerY = touchYPos - paddleHeight / 2;
-                } else {
-                    opponentY = touchYPos - paddleHeight / 2;
-                }
-            } else {
-                playerY = touchYPos - paddleHeight / 2;
-            }
-        }
-        
-        function update() {
-            // Move player paddle with keyboard
-            const paddleSpeed = 10;
-            if (playerUp && playerY > 0) playerY -= paddleSpeed;
-            if (playerDown && playerY < canvas.height - paddleHeight) playerY += paddleSpeed;
-            
-            // Move opponent paddle
-            if (gameMode === 'pvc') {
-                // Unbeatable AI with predictive movement
-                const predictY = ballY + (ballSpeedY * (canvas.width - ballX) / ballSpeedX);
-                const targetY = predictY - paddleHeight / 2;
-                
-                // Move towards predicted position with perfect precision
-                if (opponentY + paddleHeight/2 < targetY) {
-                    opponentY += 10;
-                } else if (opponentY + paddleHeight/2 > targetY) {
-                    opponentY -= 10;
-                }
-                
-                // Ensure paddle stays within bounds
-                opponentY = Math.max(0, Math.min(canvas.height - paddleHeight, opponentY));
-            } else {
-                // Move opponent paddle with keyboard
-                if (opponentUp && opponentY > 0) opponentY -= paddleSpeed;
-                if (opponentDown && opponentY < canvas.height - paddleHeight) opponentY += paddleSpeed;
-            }
-            
-            // Move ball
-            ballX += ballSpeedX;
-            ballY += ballSpeedY;
-            
-            // Ball collision with top and bottom
-            if (ballY < 0) {
-                ballY = 0;
-                ballSpeedY = -ballSpeedY;
-            }
-            if (ballY > canvas.height) {
-                ballY = canvas.height;
-                ballSpeedY = -ballSpeedY;
-            }
-            
-            // Ball collision with paddles
-            if (ballX - ballSize < paddleWidth && 
-                ballY > playerY && 
-                ballY < playerY + paddleHeight) {
-                
-                // Calculate hit position (from -1 to 1)
-                const hitPosition = (ballY - (playerY + paddleHeight/2)) / (paddleHeight/2);
-                ballSpeedX = Math.abs(ballSpeedX) * 1.05; // Increase speed
-                
-                // Adjust angle based on where ball hits paddle
-                ballSpeedY = hitPosition * 7;
-                
-                // Ensure ball doesn't get stuck
-                ballX = paddleWidth + ballSize;
-            }
-            
-            if (ballX + ballSize > canvas.width - paddleWidth && 
-                ballY > opponentY && 
-                ballY < opponentY + paddleHeight) {
-                
-                // Calculate hit position (from -1 to 1)
-                const hitPosition = (ballY - (opponentY + paddleHeight/2)) / (paddleHeight/2);
-                ballSpeedX = -Math.abs(ballSpeedX) * 1.05; // Increase speed
-                
-                // Adjust angle based on where ball hits paddle
-                ballSpeedY = hitPosition * 7;
-                
-                // Ensure ball doesn't get stuck
-                ballX = canvas.width - paddleWidth - ballSize;
-            }
-            
-            // Score points
-            if (ballX < 0) {
-                opponentScoreVal++;
-                document.getElementById('opponentScore').textContent = opponentScoreVal;
-                resetBall();
-            }
-            
-            if (ballX > canvas.width) {
-                playerScoreVal++;
-                document.getElementById('playerScore').textContent = playerScoreVal;
-                resetBall();
-            }
-            
-            // End game condition
-            if (playerScoreVal >= 7 || opponentScoreVal >= 7) {
-                endGame();
-            }
-        }
-        
-        function draw() {
-            // Clear canvas
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw center line with glow
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-            ctx.setLineDash([15, 20]);
-            ctx.lineWidth = 5;
-            ctx.beginPath();
-            ctx.moveTo(canvas.width / 2, 0);
-            ctx.lineTo(canvas.width / 2, canvas.height);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            // Draw paddles
-            ctx.fillStyle = '#fff';
-            ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
-            ctx.shadowBlur = 15;
-            
-            // Player paddle with rounded corners
-            ctx.beginPath();
-            ctx.roundRect(0, playerY, paddleWidth, paddleHeight, 8);
-            ctx.fill();
-            
-            // Opponent paddle with rounded corners
-            ctx.beginPath();
-            ctx.roundRect(canvas.width - paddleWidth, opponentY, paddleWidth, paddleHeight, 8);
-            ctx.fill();
-            
-            ctx.shadowBlur = 0;
-            
-            // Draw ball with glow effect
-            ctx.fillStyle = '#fff';
-            ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
-            ctx.shadowBlur = 20;
-            ctx.beginPath();
-            ctx.arc(ballX, ballY, ballSize, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-            
-            // Draw scores
-            ctx.font = 'bold 3rem Antonio';
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#fff';
-            ctx.fillText(playerScoreVal.toString(), canvas.width / 4, 80);
-            ctx.fillText(opponentScoreVal.toString(), canvas.width * 3 / 4, 80);
-            
-            // Draw touch areas in 1 vs 1 mode for visual guidance
-            if (gameMode === 'pvp' && window.innerWidth < 768) {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
-                ctx.fillRect(0, 0, canvas.width / 2, canvas.height);
-                ctx.fillRect(canvas.width / 2, 0, canvas.width / 2, canvas.height);
-                
-                // Draw touch indicators
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-                ctx.beginPath();
-                ctx.arc(canvas.width / 4, canvas.height - 80, 30, 0, Math.PI * 2);
-                ctx.fill();
-                
-                ctx.beginPath();
-                ctx.arc(canvas.width * 3 / 4, canvas.height - 80, 30, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-        
-        function gameLoop() {
-            if (!gameRunning) return;
-            
-            // Update game state
-            update();
-            
-            // Draw everything
-            draw();
-            
-            animationId = requestAnimationFrame(gameLoop);
-        }
-        
-        // Initialize the game when page loads
-        window.onload = function() {
-            // Add roundRect support if not available
-            if (!CanvasRenderingContext2D.prototype.roundRect) {
-                CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
-                    if (width < 2 * radius) radius = width / 2;
-                    if (height < 2 * radius) radius = height / 2;
-                    this.beginPath();
-                    this.moveTo(x + radius, y);
-                    this.arcTo(x + width, y, x + width, y + height, radius);
-                    this.arcTo(x + width, y + height, x, y + height, radius);
-                    this.arcTo(x, y + height, x, y, radius);
-                    this.arcTo(x, y, x + width, y, radius);
-                    this.closePath();
-                    return this;
-                };
-            }
-            
-            init();
-        };
-    </script>
+  <div id="overlay-end" class="overlay" style="display: none;">
+    <div class="popup">
+      <h2>Game Over</h2>
+      <p id="score-text"></p>
+      <button id="play-again">Play Again</button>
+      <button id="home-btn">Home</button>
+    </div>
+  </div>
+
+  <div class="watermark">
+    CutIt.sbs ✦ your vibe. your code
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let W, H;
+
+    function resize() {
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W * devicePixelRatio;
+      canvas.height = H * devicePixelRatio;
+      ctx.scale(devicePixelRatio, devicePixelRatio);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Game objects
+    const paddleWidth = 10, paddleHeight = 100, paddleMargin = 20;
+    let playerY, compY, ballX, ballY;
+    let ballVX = 6, ballVY = 6;
+    let score = 0, highScore = +localStorage.getItem('cutit_pp_high') || 0;
+    let running = false, raf;
+
+    // Start & End overlays
+    const overlayStart = document.getElementById('overlay-start');
+    const overlayEnd = document.getElementById('overlay-end');
+    const startBtn = document.getElementById('start-btn');
+    const playAgain = document.getElementById('play-again');
+    const homeBtn = document.getElementById('home-btn');
+    const scoreText = document.getElementById('score-text');
+
+    function reset() {
+      playerY = (H - paddleHeight) / 2;
+      compY = (H - paddleHeight) / 2;
+      ballX = W / 2; ballY = H / 2;
+      ballVX = Math.random() > .5 ? 6 : -6;
+      ballVY = (Math.random() * 6) - 3;
+      score = 0;
+    }
+
+    function startGame() {
+      overlayStart.style.display = 'none';
+      reset();
+      running = true;
+      loop();
+    }
+
+    function endGame() {
+      running = false;
+      cancelAnimationFrame(raf);
+      // update high score
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('cutit_pp_high', highScore);
+      }
+      scoreText.textContent =
+        `Your score: ${score}` + (score === highScore ? ' (New High!)' : '');
+      overlayEnd.style.display = 'flex';
+    }
+
+    function drawRect(x, y, w, h) {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(x, y, w, h);
+    }
+    function drawCircle(x, y, r) {
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+
+    function loop() {
+      raf = requestAnimationFrame(loop);
+      // update
+      if (!running) return;
+      ballX += ballVX;
+      ballY += ballVY;
+
+      // bounce off top/bottom
+      if (ballY < 0 || ballY > H) ballVY *= -1;
+
+      // player paddle collision
+      if (
+        ballX - 8 < paddleMargin + paddleWidth &&
+        ballY > playerY && ballY < playerY + paddleHeight
+      ) {
+        ballVX *= -1;
+        score++;
+        // slightly randomize
+        ballVY += (Math.random() - 0.5) * 2;
+      }
+
+      // computer paddle (perfect AI)
+      compY = ballY - paddleHeight / 2;
+      if (compY < 0) compY = 0;
+      if (compY + paddleHeight > H) compY = H - paddleHeight;
+      if (
+        ballX + 8 > W - paddleMargin - paddleWidth &&
+        ballY > compY && ballY < compY + paddleHeight
+      ) {
+        ballVX *= -1;
+      }
+
+      // check miss
+      if (ballX < 0 || ballX > W) return endGame();
+
+      // draw
+      ctx.clearRect(0, 0, W, H);
+      drawRect(paddleMargin, playerY, paddleWidth, paddleHeight);
+      drawRect(W - paddleMargin - paddleWidth, compY, paddleWidth, paddleHeight);
+      drawCircle(ballX, ballY, 8);
+
+      // center line
+      ctx.strokeStyle = '#444';
+      ctx.setLineDash([10,10]);
+      ctx.beginPath();
+      ctx.moveTo(W/2, 0);
+      ctx.lineTo(W/2, H);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // score
+      ctx.font = '24px Antonio';
+      ctx.fillText(score, W/2 - 12, 40);
+    }
+
+    // input handlers
+    window.addEventListener('mousemove', e => {
+      playerY = e.clientY - paddleHeight / 2;
+      if (playerY < 0) playerY = 0;
+      if (playerY + paddleHeight > H) playerY = H - paddleHeight;
+    });
+    window.addEventListener('touchmove', e => {
+      playerY = e.touches[0].clientY - paddleHeight / 2;
+      if (playerY < 0) playerY = 0;
+      if (playerY + paddleHeight > H) playerY = H - paddleHeight;
+      e.preventDefault();
+    }, { passive: false });
+    window.addEventListener('keydown', e => {
+      const step = 10;
+      if (e.key === 'ArrowUp') playerY = Math.max(0, playerY - step);
+      if (e.key === 'ArrowDown') playerY = Math.min(H - paddleHeight, playerY + step);
+    });
+
+    // buttons
+    startBtn.addEventListener('click', startGame);
+    playAgain.addEventListener('click', () => {
+      overlayEnd.style.display = 'none';
+      startGame();
+    });
+    homeBtn.addEventListener('click', () => {
+      window.location.href = 'https://cutit.sbs/games';
+    });
+  </script>
 </body>
 </html>
+```
