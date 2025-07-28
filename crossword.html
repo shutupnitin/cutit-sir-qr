@@ -1,202 +1,109 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>CutIt.sbs ✦ Crossword Challenge</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Antonio&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       font-family: 'Antonio', sans-serif;
       background-color: #000;
       color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      overflow-x: hidden;
+      text-align: center;
     }
 
-    header {
-      padding: 20px;
-      text-align: center;
+    .container {
+      padding: 2rem;
     }
 
     h1 {
-      font-size: 2.5rem;
+      font-size: 2rem;
+      margin-bottom: 1rem;
     }
 
-    #crossword-board {
-      display: grid;
-      grid-template-columns: repeat(10, 30px);
-      grid-auto-rows: 30px;
-      gap: 2px;
-      margin: 20px 0;
+    #clue {
+      font-size: 1.5rem;
+      margin: 1.5rem 0;
     }
 
-    .cell {
-      width: 30px;
-      height: 30px;
-      background: #111;
-      border: 1px solid #333;
+    #answerInput {
+      padding: 0.7rem;
+      font-size: 1rem;
+      width: 60%;
       text-align: center;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      color: #fff;
-    }
-
-    .cell input {
-      background: transparent;
       border: none;
-      color: #fff;
-      text-align: center;
-      width: 100%;
-      height: 100%;
-      font-size: 1.1rem;
-      font-family: 'Antonio', sans-serif;
-      text-transform: uppercase;
+      border-radius: 5px;
+    }
+
+    #submitAnswer {
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      background-color: #fff;
+      color: #000;
+      cursor: pointer;
+      border-radius: 4px;
     }
 
     #scoreboard {
-      font-size: 1rem;
-      margin: 10px;
+      margin-top: 1rem;
+      font-size: 1.1rem;
     }
 
     #timer {
-      margin: 5px;
-    }
-
-    .btn {
-      background: #fff;
-      color: #000;
-      font-weight: bold;
-      padding: 10px 20px;
-      border: none;
-      cursor: pointer;
-      font-family: 'Antonio', sans-serif;
-      margin: 10px;
-    }
-
-    #floatingEmojis {
-      position: fixed;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      z-index: 999;
-    }
-
-    .emoji {
-      position: absolute;
-      font-size: 1.8rem;
-      animation: floatUp 6s ease-in infinite;
-      opacity: 0.7;
-    }
-
-    @keyframes floatUp {
-      0% { transform: translateY(100vh) scale(1); opacity: 0; }
-      10% { opacity: 1; }
-      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
-    }
-
-    footer {
-      margin-top: auto;
-      padding: 10px;
-      opacity: 0.2;
-      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      font-size: 1.3rem;
     }
 
     #popup {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.9);
-      display: flex;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      color: white;
+      font-size: 1.2rem;
+      display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 9999;
+      padding: 2rem;
     }
 
-    #popup.hidden {
-      display: none;
-    }
-
-    #popup h2 {
-      font-size: 2rem;
-    }
-
-    #popup p {
-      max-width: 500px;
+    .watermark {
+      position: fixed;
+      bottom: 5px;
+      width: 100%;
+      font-size: 0.9rem;
+      opacity: 0.2;
       text-align: center;
-    }
-
-    .dark-mode {
-      background: #fff;
-      color: #000;
     }
   </style>
 </head>
 <body>
-
-<header>
-  <h1>🧠 Crossword Challenge</h1>
-  <div id="scoreboard">
-    Score: <span id="score">0</span> | Time: <span id="timer">00:00</span>
+  <div class="container">
+    <h1>🧠 CutIt.sbs Crossword Challenge</h1>
+    <div id="clue">Loading clue...</div>
+    <input type="text" id="answerInput" placeholder="Type your answer..." />
+    <br>
+    <button id="submitAnswer">Submit</button>
+    <div id="scoreboard">Score: 0 | Level: 1</div>
+    <div id="timer">Time left: 60s</div>
   </div>
-</header>
 
-<div id="crossword-board"></div>
+  <div class="watermark">CutIt.sbs ✦ your vibe. your code.</div>
 
-<button class="btn" onclick="submitPuzzle()">Submit Puzzle</button>
-<button class="btn" onclick="toggleTheme()">🌓 Toggle Dark/Light</button>
-<a class="btn" href="https://cutit.sbs/games">🏠 Home</a>
+  <div id="popup">
+    <div id="popupMessage"></div>
+    <p>🏆 Post your score screenshot on <strong>Instagram</strong> (<a href='https://instagram.com/cutit.sbs' target='_blank'>@cutit.sbs</a>) or <strong>X</strong> (<a href='https://x.com/cutitsbs' target='_blank'>@cutitsbs</a>) and <strong>win exciting prizes!</strong> 🎁</p>
+    <button onclick="location.reload()">Play Again</button>
+  </div>
 
-<div id="floatingEmojis"></div>
-
-<footer>CutIt.sbs ✦ your vibe. your code.</footer>
-
-<!-- Intro popup -->
-<div id="popup">
-  <h2>Welcome to the Challenge!</h2>
-  <p>
-    Solve the crossword puzzles to level up your brain. Each puzzle gets harder. Score is saved on your device. 
-    Beat the clock, complete all levels and tag <strong>@cutit.sbs</strong> on Instagram or <strong>@cutitsbs</strong> on X 
-    with a screenshot to win exciting prizes!
-  </p>
-  <button class="btn" onclick="startGame()">Start Game</button>
-</div>
-
-<script>
-const emojiList = ["✍️", "🧠", "💡", "🔤", "🕹️", "🎯", "📚"];
-function spawnEmoji() {
-  const emoji = document.createElement("div");
-  emoji.className = "emoji";
-  emoji.innerText = emojiList[Math.floor(Math.random() * emojiList.length)];
-  emoji.style.left = Math.random() * 100 + "vw";
-  emoji.style.top = "100vh";
-  emoji.style.animationDuration = (3 + Math.random() * 3) + "s";
-  document.getElementById("floatingEmojis").appendChild(emoji);
-  setTimeout(() => emoji.remove(), 6000);
-}
-setInterval(spawnEmoji, 1500);
-
-// Timer
-let seconds = 0, timerInterval;
-function startTimer() {
-  timerInterval = setInterval(() => {
-    seconds++;
-    const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
-    const secs = String(seconds % 60).padStart(2, '0');
-    document.getElementById("timer").textContent = `${mins}:${secs}`;
-  }, 1000);
-}
-
-// Game Logic
-let currentLevel = 0;
-let score = 0;
-const board = document.getElementById("crossword-board");
-const levels = {
+  <script>
+    const levels = {
   "words": [
     /* Level 1 (Basic) */ 
     {"word": "axiom", "clue": "Self-evident truth in mathematics"},
@@ -330,46 +237,75 @@ const levels = {
   ]
 };
 
-function loadLevel(level) {
-  board.innerHTML = '';
-  const { words } = levels[level];
-  const size = 10;
-  for (let i = 0; i < size * size; i++) {
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    const input = document.createElement("input");
-    input.maxLength = 1;
-    cell.appendChild(input);
-    board.appendChild(cell);
-  }
-  // Show clues (you can style or expand this)
-  alert("Clues: " + words.map(w => w.clue).join(" | "));
-}
+    let level = 0;
+    let index = 0;
+    let score = 0;
+    let timeLeft = 60;
+    let timer;
+    let totalTime = 0;
 
-function submitPuzzle() {
-  score += 100;
-  document.getElementById("score").textContent = score;
-  clearInterval(timerInterval);
-  if (currentLevel < levels.length - 1) {
-    currentLevel++;
-    loadLevel(currentLevel);
-    startTimer();
-  } else {
-    alert(`🎉 Congrats! Final Score: ${score} | Time: ${document.getElementById("timer").textContent}
-Share on Instagram @cutit.sbs or X @cutitsbs and win prizes!`);
-  }
-}
+    const clueEl = document.getElementById('clue');
+    const input = document.getElementById('answerInput');
+    const timerEl = document.getElementById('timer');
+    const scoreEl = document.getElementById('scoreboard');
+    const popup = document.getElementById('popup');
+    const popupMessage = document.getElementById('popupMessage');
 
-function startGame() {
-  document.getElementById("popup").classList.add("hidden");
-  loadLevel(currentLevel);
-  startTimer();
-}
+    function loadWord() {
+      if (level >= levels.length) {
+        showPopup("🎉 You've completed all levels!<br>Final Score: " + score + "<br>Total Time: " + totalTime + "s");
+        return;
+      }
 
-function toggleTheme() {
-  document.body.classList.toggle("dark-mode");
-}
-</script>
+      if (index >= levels[level].words.length) {
+        level++;
+        index = 0;
+        loadWord();
+        return;
+      }
 
+      const wordObj = levels[level].words[index];
+      clueEl.innerHTML = wordObj.clue;
+      input.value = "";
+      resetTimer();
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      timeLeft = 60;
+      timerEl.textContent = "Time left: " + timeLeft + "s";
+      timer = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = "Time left: " + timeLeft + "s";
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          showPopup("⏱️ Time's up!<br>Final Score: " + score + "<br>Total Time: " + totalTime + "s");
+        }
+      }, 1000);
+    }
+
+    function showPopup(msg) {
+      popup.style.display = "flex";
+      popupMessage.innerHTML = msg;
+    }
+
+    document.getElementById("submitAnswer").onclick = () => {
+      const answer = input.value.trim().toLowerCase();
+      const correct = levels[level].words[index].word.toLowerCase();
+      totalTime += (60 - timeLeft);
+
+      if (answer === correct) {
+        score += (level + 1) * 5;
+        index++;
+        loadWord();
+        scoreEl.textContent = "Score: " + score + " | Level: " + (level + 1);
+      } else {
+        clearInterval(timer);
+        showPopup("❌ Wrong answer!<br>Final Score: " + score + "<br>Total Time: " + totalTime + "s");
+      }
+    };
+
+    loadWord();
+  </script>
 </body>
 </html>
