@@ -1,311 +1,294 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>CutIt.sbs ✦ Crossword Challenge</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Antonio&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CutIt.sbs ✦ Crossword</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
-      margin: 0;
       font-family: 'Antonio', sans-serif;
+      margin: 0;
+      padding: 0;
       background-color: #000;
       color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .watermark {
+      position: absolute;
+      bottom: 5px;
+      font-size: 12px;
+      opacity: 0.2;
+    }
+    .question-box, .popup {
+      margin-top: 60px;
       text-align: center;
     }
-
-    .container {
-      padding: 2rem;
+    input[type="text"] {
+      padding: 10px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      margin-top: 10px;
     }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    #clue {
-      font-size: 1.5rem;
-      margin: 1.5rem 0;
-    }
-
-    #answerInput {
-      padding: 0.7rem;
-      font-size: 1rem;
-      width: 60%;
-      text-align: center;
+    button {
+      padding: 10px 20px;
+      margin-top: 15px;
+      font-size: 18px;
+      cursor: pointer;
+      background: white;
+      color: black;
       border: none;
       border-radius: 5px;
     }
-
-    #submitAnswer {
-      margin-top: 1rem;
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
-      border: none;
-      background-color: #fff;
-      color: #000;
-      cursor: pointer;
-      border-radius: 4px;
+    #timer, #score {
+      margin-top: 10px;
     }
-
-    #scoreboard {
-      margin-top: 1rem;
-      font-size: 1.1rem;
-    }
-
-    #timer {
-      margin-top: 0.5rem;
-      font-size: 1.3rem;
-    }
-
-    #popup {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.95);
-      color: white;
-      font-size: 1.2rem;
+    .popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #111;
+      padding: 30px;
+      border-radius: 10px;
       display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      padding: 2rem;
+      z-index: 99;
+      max-width: 90%;
     }
-
-    .watermark {
-      position: fixed;
-      bottom: 5px;
-      width: 100%;
-      font-size: 0.9rem;
-      opacity: 0.2;
-      text-align: center;
+    .popup button {
+      margin-top: 20px;
+    }
+    .emoji {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 28px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🧠 CutIt.sbs Crossword Challenge</h1>
-    <div id="clue">Loading clue...</div>
+
+  <div class="emoji">🧩</div>
+  <div class="popup" id="startPopup">
+    <h2>Welcome to the Crossword Challenge!</h2>
+    <p>You’ll get a clue. Type the correct word before time runs out.<br>Each level raises the score and difficulty.</p>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div class="question-box">
+    <h2 id="clue">Clue will appear here</h2>
     <input type="text" id="answerInput" placeholder="Type your answer..." />
     <br>
-    <button id="submitAnswer">Submit</button>
-    <div id="scoreboard">Score: 0 | Level: 1</div>
-    <div id="timer">Time left: 60s</div>
+    <button onclick="submitAnswer()">Submit</button>
+    <div id="timer">Time Left: 60s</div>
+    <div id="score">Score: 0</div>
+    <div id="level">Level: 1</div>
+  </div>
+
+  <div class="popup" id="endPopup">
+    <h2>Game Over!</h2>
+    <p id="finalScoreText"></p>
+    <p>📸 Take a screenshot and tag us on Instagram <b>@cutit.sbs</b> or X <b>@cutitsbs</b> to win exciting prizes!</p>
+    <a href="https://cutit.sbs/games"><button>🏠 Home</button></a>
+    <button onclick="location.reload()">🔁 Play Again</button>
   </div>
 
   <div class="watermark">CutIt.sbs ✦ your vibe. your code.</div>
 
-  <div id="popup">
-    <div id="popupMessage"></div>
-    <p>🏆 Post your score screenshot on <strong>Instagram</strong> (<a href='https://instagram.com/cutit.sbs' target='_blank'>@cutit.sbs</a>) or <strong>X</strong> (<a href='https://x.com/cutitsbs' target='_blank'>@cutitsbs</a>) and <strong>win exciting prizes!</strong> 🎁</p>
-    <button onclick="location.reload()">Play Again</button>
-  </div>
-
   <script>
-    const levels = [
-      {"words": [
-    /* Level 1 (Basic) */ 
-    {"word": "axiom", "clue": "Self-evident truth in mathematics"},
-    {"word": "sonnet", "clue": "14-line poetic form"},
-    {"word": "enzyme", "clue": "Biological catalyst"},
-    {"word": "zenith", "clue": "Highest celestial point"},
-    {"word": "quark", "clue": "Elementary particle in physics"},
-    {"word": "trochee", "clue": "Metrical foot in poetry (stressed-unstressed)"},
-    {"word": "lemma", "clue": "Auxiliary theorem in mathematics"},
+const questions = [
+  // Level 1 (score +5)
+  {"word": "axiom", "clue": "Self-evident truth in mathematics"},
+  {"word": "sonnet", "clue": "14-line poetic form"},
+  {"word": "enzyme", "clue": "Biological catalyst"},
+  {"word": "zenith", "clue": "Highest celestial point"},
+  {"word": "quark", "clue": "Elementary particle in physics"},
+  {"word": "trochee", "clue": "Metrical foot in poetry (stressed-unstressed)"},
+  {"word": "lemma", "clue": "Auxiliary theorem in mathematics"},
 
-    /* Level 2 */ 
-    {"word": "hegira", "clue": "Muhammad's pivotal migration from Mecca"},
-    {"word": "chthonic", "clue": "Relating to underworld deities"},
-    {"word": "anomie", "clue": "Societal normlessness (Durkheim concept)"},
-    {"word": "exegesis", "clue": "Critical textual interpretation"},
-    {"word": "synecdoche", "clue": "Figure of speech using part for whole"},
-    {"word": "noumenon", "clue": "Kantian thing-in-itself"},
-    {"word": "ecliptic", "clue": "Sun's apparent celestial path"},
+  // Level 2 (score +10)
+  {"word": "hegira", "clue": "Muhammad's pivotal migration from Mecca"},
+  {"word": "chthonic", "clue": "Relating to underworld deities"},
+  {"word": "anomie", "clue": "Societal normlessness (Durkheim concept)"},
+  {"word": "exegesis", "clue": "Critical textual interpretation"},
+  {"word": "synecdoche", "clue": "Figure of speech using part for whole"},
+  {"word": "noumenon", "clue": "Kantian thing-in-itself"},
+  {"word": "ecliptic", "clue": "Sun's apparent celestial path"},
 
-    /* Level 3 */ 
-    {"word": "pleroma", "clue": "Gnostic concept of divine fullness"},
-    {"word": "apophatic", "clue": "Theology defining God by negation"},
-    {"word": "isostasy", "clue": "Geological equilibrium of crust"},
-    {"word": "anagnorisis", "clue": "Critical recognition in tragedy"},
-    {"word": "haecceity", "clue": "Essence making something 'this particular thing'"},
-    {"word": "morphogen", "clue": "Biological development signaling molecule"},
-    {"word": "pareidolia", "clue": "Perceiving patterns in randomness"},
+  // Level 3 (score +15)
+  {"word": "pleroma", "clue": "Gnostic concept of divine fullness"},
+  {"word": "apophatic", "clue": "Theology defining God by negation"},
+  {"word": "isostasy", "clue": "Geological equilibrium of crust"},
+  {"word": "anagnorisis", "clue": "Critical recognition in tragedy"},
+  {"word": "haecceity", "clue": "Essence making something 'this particular thing'"},
+  {"word": "morphogen", "clue": "Biological development signaling molecule"},
+  {"word": "pareidolia", "clue": "Perceiving patterns in randomness"},
 
-    /* Level 4 */ 
-    {"word": "zeugma", "clue": "Rhetorical device using one verb for multiple clauses"},
-    {"word": "hypocorism", "clue": "Pet name or diminutive form (e.g., 'doggy')"},
-    {"word": "prolepsis", "clue": "Anticipatory argumentative device"},
-    {"word": "peripeteia", "clue": "Sudden reversal in drama"},
-    {"word": "sphexish", "clue": "Robotically instinctive behavior"},
-    {"word": "anacoluthon", "clue": "Mid-sentence grammatical shift for effect"},
-    {"word": "defenestration", "clue": "Act of throwing out a window"},
+  // Level 4 (score +20)
+  {"word": "zeugma", "clue": "Rhetorical device using one verb for multiple clauses"},
+  {"word": "hypocorism", "clue": "Pet name or diminutive form (e.g., 'doggy')"},
+  {"word": "prolepsis", "clue": "Anticipatory argumentative device"},
+  {"word": "peripeteia", "clue": "Sudden reversal in drama"},
+  {"word": "sphexish", "clue": "Robotically instinctive behavior"},
+  {"word": "anacoluthon", "clue": "Mid-sentence grammatical shift for effect"},
+  {"word": "defenestration", "clue": "Act of throwing out a window"},
 
-    /* Level 5 */ 
-    {"word": "heliotrope", "clue": "Sun-tracking astronomical instrument"},
-    {"word": "antinomian", "clue": "Rejecting moral law as unnecessary for salvation"},
-    {"word": "chiaroscuro", "clue": "Artistic light-dark contrast technique"},
-    {"word": "eschatology", "clue": "Study of end times in theology"},
-    {"word": "gematria", "clue": "Kabbalistic numerical text interpretation"},
-    {"word": "bathos", "clue": "Anticlimactic descent from serious to trivial"},
-    {"word": "solenodon", "clue": "Venomous mammalian relic species"},
+  // Level 5 (score +25)
+  {"word": "heliotrope", "clue": "Sun-tracking astronomical instrument"},
+  {"word": "antinomian", "clue": "Rejecting moral law as unnecessary for salvation"},
+  {"word": "chiaroscuro", "clue": "Artistic light-dark contrast technique"},
+  {"word": "eschatology", "clue": "Study of end times in theology"},
+  {"word": "gematria", "clue": "Kabbalistic numerical text interpretation"},
+  {"word": "bathos", "clue": "Anticlimactic descent from serious to trivial"},
+  {"word": "solenodon", "clue": "Venomous mammalian relic species"},
 
-    /* Level 6 */ 
-    {"word": "tachyon", "clue": "Hypothetical faster-than-light particle"},
-    {"word": "scansion", "clue": "Analysis of poetic meter"},
-    {"word": "threnody", "clue": "Lamenting poetic composition"},
-    {"word": "quincunx", "clue": "Geometric arrangement of five points"},
-    {"word": "epeiric", "clue": "Relating to inland seas covering continents"},
-    {"word": "autochthonous", "clue": "Indigenous or formed in situ"},
-    {"word": "demimonde", "clue": "Marginalized social group (originally courtesans)"},
+  // Level 6 (score +30)
+  {"word": "tachyon", "clue": "Hypothetical faster-than-light particle"},
+  {"word": "scansion", "clue": "Analysis of poetic meter"},
+  {"word": "threnody", "clue": "Lamenting poetic composition"},
+  {"word": "quincunx", "clue": "Geometric arrangement of five points"},
+  {"word": "epeiric", "clue": "Relating to inland seas covering continents"},
+  {"word": "autochthonous", "clue": "Indigenous or formed in situ"},
+  {"word": "demimonde", "clue": "Marginalized social group (originally courtesans)"},
 
-    /* Level 7 */ 
-    {"word": "eisegesis", "clue": "Interpretation imposing external ideas onto text"},
-    {"word": "anfractuous", "clue": "Winding or circuitous"},
-    {"word": "omphalos", "clue": "Religious stone symbolizing world's navel"},
-    {"word": "prosopopoeia", "clue": "Rhetorical device of personifying abstractions"},
-    {"word": "tergiversate", "clue": "To equivocate or abandon a cause"},
-    {"word": "noosphere", "clue": "Vernadsky's realm of human thought"},
-    {"word": "chiliasm", "clue": "Millenarian belief in 1,000-year earthly paradise"},
+  // Level 7 (score +35)
+  {"word": "eisegesis", "clue": "Interpretation imposing external ideas onto text"},
+  {"word": "anfractuous", "clue": "Winding or circuitous"},
+  {"word": "omphalos", "clue": "Religious stone symbolizing world's navel"},
+  {"word": "prosopopoeia", "clue": "Rhetorical device of personifying abstractions"},
+  {"word": "tergiversate", "clue": "To equivocate or abandon a cause"},
+  {"word": "noosphere", "clue": "Vernadsky's realm of human thought"},
+  {"word": "chiliasm", "clue": "Millenarian belief in 1,000-year earthly paradise"},
 
-    /* Level 8 */ 
-    {"word": "apophasis", "clue": "Rhetorical device of mentioning by denying"},
-    {"word": "bathykolpian", "clue": "Having deep bosoms (archaic poetic)"},
-    {"word": "hamartia", "clue": "Tragic flaw in Aristotelian drama"},
-    {"word": "hylozoism", "clue": "Philosophical doctrine attributing life to matter"},
-    {"word": "molybdosis", "clue": "Pathological lead poisoning"},
-    {"word": "opsimath", "clue": "One who learns late in life"},
-    {"word": "sphragistics", "clue": "Study of seals and signets"},
+  // Level 8 (score +40)
+  {"word": "apophasis", "clue": "Rhetorical device of mentioning by denying"},
+  {"word": "bathykolpian", "clue": "Having deep bosoms (archaic poetic)"},
+  {"word": "hamartia", "clue": "Tragic flaw in Aristotelian drama"},
+  {"word": "hylozoism", "clue": "Philosophical doctrine attributing life to matter"},
+  {"word": "molybdosis", "clue": "Pathological lead poisoning"},
+  {"word": "opsimath", "clue": "One who learns late in life"},
+  {"word": "sphragistics", "clue": "Study of seals and signets"},
 
-    /* Level 9 */ 
-    {"word": "cryptomnesia", "clue": "Unrecognized memory masquerading as original thought"},
-    {"word": "dysphuism", "clue": "Deliberate use of obscure diction"},
-    {"word": "hecatoncheir", "clue": "Hundred-handed giant in Greek mythology"},
-    {"word": "metempsychosis", "clue": "Transmigration of souls"},
-    {"word": "paregmenon", "clue": "Rhetorical device using derivatives of same root"},
-    {"word": "ultracrepidarian", "clue": "One who opines beyond their expertise"},
-    {"word": "xenoglossy", "clue": "Speaking unlearned languages"},
+  // Level 9 (score +45)
+  {"word": "cryptomnesia", "clue": "Unrecognized memory masquerading as original thought"},
+  {"word": "dysphuism", "clue": "Deliberate use of obscure diction"},
+  {"word": "hecatoncheir", "clue": "Hundred-handed giant in Greek mythology"},
+  {"word": "metempsychosis", "clue": "Transmigration of souls"},
+  {"word": "paregmenon", "clue": "Rhetorical device using derivatives of same root"},
+  {"word": "ultracrepidarian", "clue": "One who opines beyond their expertise"},
+  {"word": "xenoglossy", "clue": "Speaking unlearned languages"},
 
-    /* Level 10 */ 
-    {"word": "anacampserote", "clue": "Mythical object restoring lost love"},
-    {"word": "borborygmus", "clue": "Medical term for stomach rumbling"},
-    {"word": "catachresis", "clue": "Rhetorical misuse of words (e.g., 'blind mouth')"},
-    {"word": "hippocrepiform", "clue": "Horseshoe-shaped"},
-    {"word": "mumpsimus", "clue": "Persistent adherence to incorrect tradition"},
-    {"word": "quodlibet", "clue": "Scholarly debate on philosophical questions"},
-    {"word": "sciolism", "clue": "Pretentious superficial knowledge"},
+  // Level 10 (score +50)
+  {"word": "anacampserote", "clue": "Mythical object restoring lost love"},
+  {"word": "borborygmus", "clue": "Medical term for stomach rumbling"},
+  {"word": "catachresis", "clue": "Rhetorical misuse of words (e.g., 'blind mouth')"},
+  {"word": "hippocrepiform", "clue": "Horseshoe-shaped"},
+  {"word": "mumpsimus", "clue": "Persistent adherence to incorrect tradition"},
+  {"word": "quodlibet", "clue": "Scholarly debate on philosophical questions"},
+  {"word": "sciolism", "clue": "Pretentious superficial knowledge"},
 
-    /* Level 11 */ 
-    {"word": "apocatastasis", "clue": "Restoration to original state (Origen's theology)"},
-    {"word": "dasyphyllous", "clue": "Having thick or hairy leaves"},
-    {"word": "eschatocol", "clue": "Final section of ancient documents"},
-    {"word": "gnotobiosis", "clue": "Raising organisms in germ-free conditions"},
-    {"word": "hypocorisma", "clue": "Linguistic phenomenon of pet name formation"},
-    {"word": "prosopagnosia", "clue": "Neurological inability to recognize faces"},
+  // Level 11 (score +55)
+  {"word": "apocatastasis", "clue": "Restoration to original state (Origen's theology)"},
+  {"word": "dasyphyllous", "clue": "Having thick or hairy leaves"},
+  {"word": "eschatocol", "clue": "Final section of ancient documents"},
+  {"word": "gnotobiosis", "clue": "Raising organisms in germ-free conditions"},
+  {"word": "hypocorisma", "clue": "Linguistic phenomenon of pet name formation"},
+  {"word": "prosopagnosia", "clue": "Neurological inability to recognize faces"},
 
-    /* Level 12 */ 
-    {"word": "cacozelia", "clue": "Rhetorical vice of affected diction"},
-    {"word": "epiclesis", "clue": "Invocation in Eucharistic prayers"},
-    {"word": "heautontimorumenos", "clue": "Self-tormenting person (Terence title)"},
-    {"word": "myrmecochory", "clue": "Seed dispersal by ants"},
-    {"word": "phariseeism", "clue": "Hypocritical religious observance"},
-    {"word": "tristich", "clue": "Three-line poetic unit"},
+  // Level 12 (score +60)
+  {"word": "cacozelia", "clue": "Rhetorical vice of affected diction"},
+  {"word": "epiclesis", "clue": "Invocation in Eucharistic prayers"},
+  {"word": "heautontimorumenos", "clue": "Self-tormenting person (Terence title)"},
+  {"word": "myrmecochory", "clue": "Seed dispersal by ants"},
+  {"word": "phariseeism", "clue": "Hypocritical religious observance"},
+  {"word": "tristich", "clue": "Three-line poetic unit"},
 
-    /* Level 13 */ 
-    {"word": "bathysiderodromophobia", "clue": "Fear of subways"},
-    {"word": "dendrochronology", "clue": "Tree-ring dating method"},
-    {"word": "hierophany", "clue": "Manifestation of the sacred (Eliade)"},
-    {"word": "oneiromancy", "clue": "Divination through dreams"},
-    {"word": "penumbra", "clue": "Partial shadow in astronomy/law"},
-    {"word": "thaumaturgy", "clue": "Working of miracles or magic"},
+  // Level 13 (score +65)
+  {"word": "bathysiderodromophobia", "clue": "Fear of subways"},
+  {"word": "dendrochronology", "clue": "Tree-ring dating method"},
+  {"word": "hierophany", "clue": "Manifestation of the sacred (Eliade)"},
+  {"word": "oneiromancy", "clue": "Divination through dreams"},
+  {"word": "penumbra", "clue": "Partial shadow in astronomy/law"},
+  {"word": "thaumaturgy", "clue": "Working of miracles or magic"},
 
-    /* Level 14 */ 
-    {"word": "anacusic", "clue": "Profoundly deaf (medical term)"},
-    {"word": "eellogofusciouhipoppokunurious", "clue": "Extremely good (nonce word)"},
-    {"word": "floccinaucinihilipilification", "clue": "Act of deeming something worthless"},
-    {"word": "iridocyclitis", "clue": "Ocular inflammation condition"},
-    {"word": "pneumonoultramicroscopicsilicovolcanoconiosis", "clue": "Lung disease from volcanic dust"},
-    {"word": "xanthocyanopsy", "clue": "Form of color blindness"},
+  // Level 14 (score +70)
+  {"word": "anacusic", "clue": "Profoundly deaf (medical term)"},
+  {"word": "eellogofusciouhipoppokunurious", "clue": "Extremely good (nonce word)"},
+  {"word": "floccinaucinihilipilification", "clue": "Act of deeming something worthless"},
+  {"word": "iridocyclitis", "clue": "Ocular inflammation condition"},
+  {"word": "pneumonoultramicroscopicsilicovolcanoconiosis", "clue": "Lung disease from volcanic dust"},
+  {"word": "xanthocyanopsy", "clue": "Form of color blindness"},
 
-    /* Level 15 (Hardest) */ 
-    {"word": "antidisestablishmentarianism", "clue": "Opposition to church-state separation"},
-    {"word": "cyclohexylsulfamate", "clue": "Chemical name for artificial sweetener"},
-    {"word": "hepaticocholangiojejunostomy", "clue": "Surgical bile duct procedure"},
-    {"word": "hippopotomonstrosesquipedaliophobia", "clue": "Fear of long words"},
-    {"word": "parastratiosphecomyia", "clue": "Genus of soldier fly"},
-    {"word": "spectrophotofluorometrically", "clue": "Via light emission/absorption analysis"}
-  ]
-}];
+  // Level 15 (score +75)
+  {"word": "antidisestablishmentarianism", "clue": "Opposition to church-state separation"},
+  {"word": "cyclohexylsulfamate", "clue": "Chemical name for artificial sweetener"},
+  {"word": "hepaticocholangiojejunostomy", "clue": "Surgical bile duct procedure"},
+  {"word": "hippopotomonstrosesquipedaliophobia", "clue": "Fear of long words"},
+  {"word": "parastratiosphecomyia", "clue": "Genus of soldier fly"},
+  {"word": "spectrophotofluorometrically", "clue": "Via light emission/absorption analysis"}
+];
 
-    let level = 0;
-    let index = 0;
-    let score = 0;
-    let timeLeft = 60;
-    let timer;
-    let totalTime = 0;
+    let current = 0, score = 0, level = 1, timer, timeLeft = 60, totalTime = 0;
 
-    const clueEl = document.getElementById('clue');
-    const input = document.getElementById('answerInput');
-    const timerEl = document.getElementById('timer');
-    const scoreEl = document.getElementById('scoreboard');
-    const popup = document.getElementById('popup');
-    const popupMessage = document.getElementById('popupMessage');
-
-    function loadWord() {
-      if (level >= levels.length) {
-        showPopup("🎉 You've completed all levels!<br>Final Score: " + score + "<br>Total Time: " + totalTime + "s");
-        return;
-      }
-
-      if (index >= levels[level].words.length) {
-        level++;
-        index = 0;
-        loadWord();
-        return;
-      }
-
-      const wordObj = levels[level].words[index];
-      clueEl.innerHTML = wordObj.clue;
-      input.value = "";
-      resetTimer();
+    function startGame() {
+      document.getElementById("startPopup").style.display = "none";
+      loadQuestion();
     }
 
-    function resetTimer() {
-      clearInterval(timer);
+    function loadQuestion() {
+      if (current >= questions.length) return showEnd();
+      const q = questions[current];
+      document.getElementById("clue").textContent = q.clue;
+      document.getElementById("answerInput").value = "";
       timeLeft = 60;
-      timerEl.textContent = "Time left: " + timeLeft + "s";
+      startTimer();
+    }
+
+    function submitAnswer() {
+      const userAnswer = document.getElementById("answerInput").value.trim().toLowerCase();
+      const correctAnswer = questions[current].word;
+      stopTimer();
+      if (userAnswer === correctAnswer) {
+        let currentLevelScore = level * 5;
+        score += currentLevelScore;
+        current++;
+        if (current % 3 === 0) level++;
+        document.getElementById("score").textContent = "Score: " + score;
+        document.getElementById("level").textContent = "Level: " + level;
+        loadQuestion();
+      } else {
+        showEnd();
+      }
+    }
+
+    function startTimer() {
+      document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
       timer = setInterval(() => {
         timeLeft--;
-        timerEl.textContent = "Time left: " + timeLeft + "s";
+        totalTime++;
+        document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
         if (timeLeft <= 0) {
-          clearInterval(timer);
-          showPopup("⏱️ Time's up!<br>Final Score: " + score + "<br>Total Time: " + totalTime + "s");
+          stopTimer();
+          showEnd();
         }
       }, 1000);
     }
 
-    function showPopup(msg) {
-      popup.style.display = "flex";
-      popupMessage.innerHTML = msg;
+    function stopTimer() {
+      clearInterval(timer);
     }
 
-    document.getElementById("submitAnswer").onclick = () => {
-      const answer = input.value.trim().toLowerCase();
-      const correct = levels[level].words[index].word.toLowerCase();
-      totalTime += (60 - timeLeft);
-
-      if (answer === correct) {
-        score += (level + 1) * 5;
-        index++;
-        loadWord();
-        scoreEl.textContent = "Score: " + score + " | Level: " + (level + 1);
-      } else {
-        clearInterval(timer);
-        showPopup("❌ Wrong answer!<br>Final Score: " + score + "<br>Total Time: " + totalTime + "s");
-      }
-    };
-
-    loadWord();
+    function showEnd() {
+      document.querySelector(".question-box").style.display = "none";
+      document.getElementById("endPopup").style.display = "block";
+      document.getElementById("finalScoreText").innerHTML = `Final Score: <b>${score}</b><br>Total Time: <b>${totalTime}s</b>`;
+    }
   </script>
 </body>
 </html>
