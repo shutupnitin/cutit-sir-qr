@@ -4,146 +4,138 @@
   <meta charset="UTF-8">
   <title>Cutit’s Cosmic Arcade 🚀✨</title>
   <style>
-    /* ✨ GLOBAL & FONT */
+    /* GLOBAL & FONT */
+    * { box-sizing: border-box; }
     body, html {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
+      margin: 0; padding: 0;
+      width:100%; height:100%;
+      overflow:hidden;
       background: linear-gradient(135deg, #f5eaff, #b6f0ff);
       font-family: 'Poppins', sans-serif;
       color: #222;
     }
 
-    /* 🕹️ UI PANELS */
+    /* UI PANELS */
     #game-ui {
-      position: absolute;
-      top: 10px;
-      left: 50%;
+      position: absolute; top:10px; left:50%;
       transform: translateX(-50%);
-      text-align: center;
+      text-align: center; z-index: 10;
       pointer-events: none;
-      z-index: 10;
+    }
+    .level-banner, .score-panel {
+      display: inline-block;
+      backdrop-filter: blur(12px);
+      background: rgba(255,255,255,0.3);
+      border-radius: 8px;
     }
     .level-banner {
-      display: inline-block;
-      padding: 8px 16px;
-      margin-bottom: 6px;
-      background: rgba(255,255,255,0.3);
-      backdrop-filter: blur(12px);
-      border-radius: 8px;
-      font-size: 1.2rem;
-      opacity: 0;
-      transition: opacity 0.5s;
+      padding: 8px 16px; margin-bottom:6px;
+      font-size:1.2rem; opacity:0;
+      transition: opacity .5s;
     }
-    .level-banner.visible {
-      opacity: 1;
-    }
+    .level-banner.visible { opacity:1; }
     .score-panel {
-      font-size: 1rem;
-      background: rgba(255,255,255,0.3);
-      backdrop-filter: blur(12px);
-      border-radius: 8px;
-      padding: 6px 12px;
+      padding:6px 12px; font-size:1rem;
     }
 
-    /* 🎮 GAME AREA */
+    /* GAME AREA */
     #game-container {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      overflow: hidden;
+      position:absolute; top:0; left:0;
+      width:100%; height:100%; overflow:hidden;
     }
     .alien, .boss {
-      position: absolute;
-      pointer-events: none;
-      transform-origin: center;
+      position:absolute; pointer-events:auto;
+      transform-origin:center;
+      cursor: pointer;
     }
 
-    /* 💥 EXPLOSION EFFECT */
+    /* EXPLOSION EFFECT */
     .explosion {
-      position: absolute;
-      font-size: 1.5rem;
+      position:absolute; font-size:2rem;
       animation: pop 0.6s forwards;
-      pointer-events: none;
+      pointer-events:none;
     }
     @keyframes pop {
-      0%   { opacity: 1; transform: scale(1) translate(-50%, -50%); }
-      100% { opacity: 0; transform: scale(2) translate(-50%, -50%); }
+      0%   { opacity:1; transform: scale(1) translate(-50%,-50%); }
+      100% { opacity:0; transform: scale(2) translate(-50%,-50%); }
     }
 
-    /* ⚔️ GAME OVER MODAL */
+    /* MODALS */
     .modal {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
+      position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
       background: rgba(255,255,255,0.4);
       backdrop-filter: blur(12px);
-      padding: 24px 32px;
-      border-radius: 12px;
-      text-align: center;
-      display: none;
-      z-index: 20;
+      padding:24px 32px; border-radius:12px;
+      text-align:center; display:none;
+      z-index:20;
     }
-    .modal.active { display: block; }
-    .modal h2 { margin-bottom: 12px; }
+    .modal.active { display:block; }
+    .modal h2 { margin-bottom:12px; }
     .modal button {
-      padding: 8px 16px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      background: #ffc4e1;
-      cursor: pointer;
+      padding:8px 16px; font-size:1rem;
+      border:none; border-radius:8px;
+      background:#ffc4e1; cursor:pointer;
     }
   </style>
 </head>
 <body>
 
-  <!-- 🎯 UI -->
+  <!-- UI -->
   <div id="game-ui">
     <div class="level-banner" id="level-banner">🌟 LEVEL 1 – Moon Base 🌕 🌟</div>
     <div class="score-panel">Score 💯: <span id="score">0</span> | Best 🏆: <span id="best">0</span></div>
   </div>
 
-  <!-- 🌌 GAME AREA -->
+  <!-- GAME AREA -->
   <div id="game-container"></div>
 
-  <!-- 💥 GAME OVER -->
+  <!-- GAME OVER -->
   <div class="modal" id="game-over">
     <h2>💥 Game Over!</h2>
     <button onclick="restartGame()">🔁 Play Again</button>
   </div>
 
+  <!-- YOU WIN -->
+  <div class="modal" id="you-win">
+    <h2>👑 You Slayed the Vibe Overlord! 👑</h2>
+    <button onclick="restartGame()">🎉 Restart</button>
+  </div>
+
   <script>
-    // 🚀 LEVEL CONFIG
     const LEVELS = [
-      { name:"Moon Base 🌕",    count:5,  speed:2,       zigzag:false, shootBack:false },
-      { name:"Asteroid Rush 🪨",count:10, speed:3,       zigzag:false, shootBack:false },
-      { name:"Saturn Drift 🪐", count:15, speed:2.5,     zigzag:false, shootBack:true  },
-      { name:"Cosmic Chaos 🌌", count:20, speed:4,       zigzag:true,  shootBack:false },
-      { name:"Vibe Overlord 👾",boss:true }
+      { name:"Moon Base 🌕",     count:5,  speed:2,   zigzag:false, shootBack:false },
+      { name:"Asteroid Rush 🪨", count:10, speed:3,   zigzag:false, shootBack:false },
+      { name:"Saturn Drift 🪐",  count:15, speed:2.5, zigzag:false, shootBack:true  },
+      { name:"Cosmic Chaos 🌌",  count:20, speed:4,   zigzag:true,  shootBack:false },
+      { name:"Vibe Overlord 👾", boss:true }
     ];
 
-    let level=0, score=0, best=0, aliens=[];
-    const container = document.getElementById('game-container');
-    const banner = document.getElementById('level-banner');
-    const scoreEl= document.getElementById('score');
-    const bestEl = document.getElementById('best');
-    const overModal = document.getElementById('game-over');
+    let level = 0, score = 0, best = 0, aliens = [], animId;
+    const container   = document.getElementById('game-container');
+    const banner      = document.getElementById('level-banner');
+    const scoreEl     = document.getElementById('score');
+    const bestEl      = document.getElementById('best');
+    const overModal   = document.getElementById('game-over');
+    const winModal    = document.getElementById('you-win');
 
     function startLevel() {
-      // clear old
-      aliens.forEach(a=>a.el.remove());
-      aliens=[];
-      container.querySelectorAll('.explosion, .boss').forEach(e=>e.remove());
+      // cleanup
+      aliens.forEach(a=> a.el.remove());
+      aliens = [];
+      container.querySelectorAll('.explosion, .boss').forEach(e=> e.remove());
+      overModal.classList.remove('active');
+      winModal.classList.remove('active');
 
       const cfg = LEVELS[level];
       showBanner(cfg.name);
+
       if (cfg.boss) {
         spawnBoss();
       } else {
-        for(let i=0;i<cfg.count;i++) spawnAlien(cfg);
+        for (let i = 0; i < cfg.count; i++) {
+          spawnAlien(cfg);
+        }
       }
     }
 
@@ -154,12 +146,11 @@
     }
 
     function spawnAlien(cfg) {
-      // Create Blobbit SVG
-      const ns="http://www.w3.org/2000/svg";
-      const svg = document.createElementNS(ns,'svg');
+      const ns = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(ns, 'svg');
       svg.setAttribute('viewBox','0 0 64 64');
       svg.classList.add('alien');
-      svg.innerHTML=`
+      svg.innerHTML = `
         <circle cx="32" cy="32" r="24" fill="#FFC4E1"/>
         <circle cx="24" cy="28" r="4" fill="#000"/>
         <circle cx="40" cy="28" r="4" fill="#000"/>
@@ -167,95 +158,115 @@
       `;
       container.appendChild(svg);
 
-      // position & data
-      const x = Math.random()*(window.innerWidth-80)+40;
-      const y = -60;
-      svg.style.left = x+'px';
-      svg.style.top  = y+'px';
-      aliens.push({el:svg,x,y,dir:1, cfg});
+      const x0 = Math.random()*(window.innerWidth - 64);
+      const y0 = -64;
+      aliens.push({ el: svg, x: x0, y: y0, cfg });
+
+      // click to destroy
+      svg.addEventListener('click', (e) => {
+        e.stopPropagation();
+        score += 10;
+        updateScore();
+        createExplosion(e.pageX, e.pageY);
+        svg.remove();
+        aliens = aliens.filter(a => a.el !== svg);
+      });
     }
 
     function spawnBoss() {
       const boss = document.createElement('div');
       boss.classList.add('boss');
-      boss.innerHTML=`
-        <pre>╔══ 💜 VIBE OVERLORD 👾 ══╗
+      boss.innerHTML = `
+<pre>╔══ 💜 VIBE OVERLORD 👾 ══╗
 ║ ✨ Mood: Chaotic 🌀      ║
 ║ 💥 Attack: Triple Beam  ║
 ║ 🧠 “You vibin’?” 😎     ║
-╚══════════════════════════╝</pre>
-      `;
+╚══════════════════════════╝</pre>`;
       container.appendChild(boss);
-      boss.style.left = (window.innerWidth/2-150)+'px';
-      boss.style.top = '100px';
+      boss.style.left = (window.innerWidth/2 - 150) + 'px';
+      boss.style.top  = '80px';
+
+      boss.addEventListener('click', (e) => {
+        createExplosion(e.pageX, e.pageY);
+        winGame();
+      });
+    }
+
+    function updateScore() {
+      scoreEl.textContent = score;
+    }
+
+    function createExplosion(x, y) {
+      const emojis = ['💥','🔥','✨','🧨'];
+      const fx = document.createElement('div');
+      fx.classList.add('explosion');
+      fx.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      fx.style.left = x + 'px';
+      fx.style.top  = y + 'px';
+      container.appendChild(fx);
+      fx.addEventListener('animationend',()=> fx.remove());
     }
 
     function update() {
       const cfg = LEVELS[level];
-      aliens.forEach(a=>{
-        // move
+      aliens.forEach(a => {
         a.y += cfg.speed;
-        if(cfg.zigzag) a.x += 4 * Math.sin(a.y/20);
+        if (cfg.zigzag) a.x += 4 * Math.sin(a.y/20);
         a.el.style.left = a.x + 'px';
         a.el.style.top  = a.y + 'px';
-        // shot back?
-        if (cfg.shootBack && Math.random()<0.005) shootBack(a.x,a.y);
-
-        // off-screen?
-        if (a.y>window.innerHeight+50) {
-          endGame();
-        }
+        if (cfg.shootBack && Math.random() < 0.005) shootBack(a.x+32, a.y+64);
+        if (a.y > window.innerHeight) endGame();
       });
 
-      // next level?
-      if(!cfg.boss && aliens.every(a=>a.y>window.innerHeight+60)) {
+      if (!cfg.boss && aliens.length === 0) {
         level++;
-        if(level<LEVELS.length) startLevel();
+        if (level < LEVELS.length) startLevel();
         else winGame();
       }
-      requestAnimationFrame(update);
+
+      animId = requestAnimationFrame(update);
     }
 
-    function shootBack(x,y) {
+    function shootBack(x, y) {
       const b = document.createElement('div');
       b.textContent = '💢';
-      b.style.position='absolute';
-      b.style.left = x+'px';
-      b.style.top  = y+'px';
+      b.style.position = 'absolute';
+      b.style.left = x + 'px';
+      b.style.top  = y + 'px';
       container.appendChild(b);
       let by = y;
-      ;(function move() {
+      const move = () => {
         by += 6;
-        b.style.top = by+'px';
+        b.style.top = by + 'px';
         if (by < window.innerHeight) requestAnimationFrame(move);
         else b.remove();
-      })();
+      };
+      move();
     }
 
     function endGame() {
-      overModal.classList.add('active');
+      cancelAnimationFrame(animId);
       best = Math.max(best, score);
       bestEl.textContent = best;
-      cancelAnimationFrame(update);
+      overModal.classList.add('active');
     }
 
     function winGame() {
-      banner.textContent = '👑 YOU SLAYED THE VIBE OVERLORD! 👑';
-      banner.classList.add('visible');
+      cancelAnimationFrame(animId);
+      winModal.classList.add('active');
     }
 
     function restartGame() {
-      overModal.classList.remove('active');
-      level=0; score=0; scoreEl.textContent=0;
+      cancelAnimationFrame(animId);
+      level = 0; score = 0;
+      updateScore();
       startLevel();
-      update();
+      animId = requestAnimationFrame(update);
     }
 
-    // 🚀 INIT
     window.onload = () => {
       bestEl.textContent = best;
-      startLevel();
-      update();
+      restartGame();
     };
   </script>
 </body>
