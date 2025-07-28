@@ -3,13 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Crossword ✦ CutIt.sbs</title>
+  <title>CutIt.sbs Crossword ✦ your vibe. your code</title>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --main-bg: #000;
-      --main-text: #fff;
+      --bg: #000;
+      --text: #fff;
       --accent: #fff;
+      --cell-bg: #111;
+    }
+    .light {
+      --bg: #fff;
+      --text: #000;
+      --accent: #000;
+      --cell-bg: #eee;
     }
     * {
       box-sizing: border-box;
@@ -18,66 +25,105 @@
     }
     html, body {
       height: 100%;
-      background: var(--main-bg);
-      color: var(--main-text);
+      background: var(--bg);
+      color: var(--text);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
       overflow: hidden;
+      transition: background 0.3s, color 0.3s;
     }
     .score {
-      font-size: 2rem;
-      margin: 20px;
+      font-size: 1.6rem;
+      margin: 12px;
     }
     .board {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 5px;
-      margin: 20px;
+      gap: 6px;
+      padding: 10px;
     }
     .cell {
       width: 60px;
       height: 60px;
-      background: #111;
-      color: var(--main-text);
+      background: var(--cell-bg);
+      color: var(--text);
       font-size: 1.8rem;
       text-align: center;
       line-height: 60px;
       border: 1px solid #333;
+      border-radius: 8px;
       transition: all 0.2s ease;
+      user-select: none;
     }
     .cell.selected {
       background: var(--accent);
-      color: #000;
-    }
-    .watermark {
-      position: absolute;
-      bottom: 10px;
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.15);
+      color: var(--bg);
+      transform: scale(1.1);
     }
     .popup {
       position: fixed;
       top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.95);
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.96);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 999;
       padding: 20px;
       text-align: center;
+      color: #fff;
     }
     .popup button {
       padding: 10px 20px;
       font-size: 1.2rem;
-      margin-top: 20px;
+      margin: 10px 5px;
       background: #fff;
       color: #000;
       border: none;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    .popup a {
+      color: #ccc;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+    .watermark {
+      position: absolute;
+      bottom: 12px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.15);
+    }
+    .leaderboard {
+      font-size: 1rem;
+      margin-top: 15px;
+      text-align: center;
+    }
+    .leaderboard ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 5px;
+    }
+    .leaderboard li {
+      background: rgba(255,255,255,0.08);
+      margin: 3px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .mode-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      border-radius: 6px;
       cursor: pointer;
     }
     @media (max-width: 600px) {
@@ -92,135 +138,141 @@
 </head>
 <body>
 
+  <button class="mode-toggle" onclick="toggleMode()">🌗 Mode</button>
+
   <div class="score">Score: <span id="score">0</span></div>
   <div class="board" id="board"></div>
   <div class="watermark">CutIt.sbs ✦ your vibe. your code</div>
 
   <!-- Popups -->
   <div class="popup" id="introPopup">
-    <h2>Welcome to Crossword!</h2>
-    <p>Form words by selecting adjacent letters. Words will never repeat. Your best score is saved.</p>
-    <button onclick="startGame()">Start Game</button>
+    <h2>Welcome to Crossword</h2>
+    <p>🌞 Daily challenge. 🎯 No repeats. 🧠 Outsmart friends.<br>Try the TikTok-style leaderboard!</p>
+    <button onclick="startGame()">🎮 Start Game</button>
+    <a href="https://cutit.sbs/games">🏠 Go Home</a>
   </div>
 
   <div class="popup" id="winPopup" style="display:none">
     <h2>🎉 You Win!</h2>
     <p>CutIt.sbs ✦ your vibe. your code</p>
-    <button onclick="restartGame()">Play Again</button>
+    <button onclick="restartGame()">🔁 Play Again</button>
+    <a href="https://cutit.sbs/games">🏠 Go Home</a>
   </div>
 
   <div class="popup" id="endPopup" style="display:none">
-    <h2>Game Over</h2>
+    <h2>💀 Game Over</h2>
     <p>Your final score: <span id="finalScore"></span></p>
-    <button onclick="restartGame()">Play Again</button>
-    <button onclick="window.location.reload()">🏠 Home</button>
+    <button onclick="restartGame()">🔁 Play Again</button>
+    <a href="https://cutit.sbs/games">🏠 Home</a>
+    <div class="leaderboard">
+      <strong>🏆 Leaderboard</strong>
+      <ul id="leaderboardList"></ul>
+    </div>
   </div>
 
   <script>
     const boardEl = document.getElementById('board');
     const scoreEl = document.getElementById('score');
     const finalScoreEl = document.getElementById('finalScore');
-    const usedWords = JSON.parse(localStorage.getItem('usedWords')) || [];
-    let score = 0;
-    let currentWord = '';
+    const leaderboardEl = document.getElementById('leaderboardList');
+
+    const allWords = ["CODE", "HTML", "CSS", "CUTIT", "VIBE", "BOT", "AI", "GRID", "TECH", "JS", "NODE", "REACT", "PIXEL", "BLACK", "WHITE", "LOGIC", "HACK", "APP", "BRAIN", "STACK", "ARRAY"];
+    const dailySeed = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+    const wordIndex = [...dailySeed].reduce((acc, c) => acc + c.charCodeAt(0), 0) % allWords.length;
+    const dailyWord = allWords[wordIndex];
+
+    let currentWord = dailyWord;
     let selectedCells = [];
-
-    const wordsList = [
-      "CODE", "HTML", "CSS", "CUTIT", "VIBE", "JAVASCRIPT", "AI", "BOT", "CHAT", "INTERNET", "DATA",
-      "CROSS", "WORD", "BLACK", "WHITE", "PIXEL", "TECH", "HACK", "GRID", "WEB", "NODE", "REACT"
-    ];
-
-    function getRandomWord() {
-      const fresh = wordsList.filter(w => !usedWords.includes(w));
-      if (!fresh.length) return null;
-      const word = fresh[Math.floor(Math.random() * fresh.length)];
-      usedWords.push(word);
-      localStorage.setItem('usedWords', JSON.stringify(usedWords));
-      return word;
-    }
+    let score = 0;
 
     function renderBoard(word) {
-      boardEl.innerHTML = '';
-      const letters = word.split('');
-      const gridSize = 5;
-      const totalCells = gridSize * gridSize;
-      let filled = 0;
-      const cells = Array(totalCells).fill('');
-
-      // Place word randomly
-      const start = Math.floor(Math.random() * (totalCells - letters.length));
-      for (let i = 0; i < letters.length; i++) {
-        cells[start + i] = letters[i];
-        filled++;
+      boardEl.innerHTML = "";
+      selectedCells = [];
+      const board = [];
+      for (let i = 0; i < 25; i++) {
+        board.push(String.fromCharCode(65 + Math.floor(Math.random() * 26)));
       }
-
-      // Fill rest
-      for (let i = 0; i < totalCells; i++) {
-        if (cells[i] === '') {
-          cells[i] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
-        }
+      const start = Math.floor(Math.random() * (25 - word.length));
+      for (let i = 0; i < word.length; i++) {
+        board[start + i] = word[i];
       }
-
-      cells.forEach((letter, i) => {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.textContent = letter;
-        cell.dataset.index = i;
-        cell.addEventListener('click', () => selectCell(cell));
+      board.forEach((letter, idx) => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.innerText = letter;
+        cell.dataset.index = idx;
+        cell.addEventListener("click", () => handleCellClick(cell));
         boardEl.appendChild(cell);
       });
     }
 
-    function selectCell(cell) {
-      if (cell.classList.contains('selected')) return;
-      cell.classList.add('selected');
+    function isAdjacent(a, b) {
+      const ax = a % 5, ay = Math.floor(a / 5);
+      const bx = b % 5, by = Math.floor(b / 5);
+      return Math.abs(ax - bx) <= 1 && Math.abs(ay - by) <= 1;
+    }
+
+    function handleCellClick(cell) {
+      const index = parseInt(cell.dataset.index);
+      if (cell.classList.contains("selected")) return;
+      if (selectedCells.length > 0) {
+        const lastIndex = parseInt(selectedCells[selectedCells.length - 1].dataset.index);
+        if (!isAdjacent(index, lastIndex)) return;
+      }
+      cell.classList.add("selected");
       selectedCells.push(cell);
-      currentWord += cell.textContent;
-
-      // Animation
-      cell.style.transform = 'scale(1.1)';
-      setTimeout(() => cell.style.transform = 'scale(1)', 100);
-
-      if (currentWord === usedWords[usedWords.length - 1]) {
-        score += currentWord.length;
-        scoreEl.textContent = score;
-        currentWord = '';
-        selectedCells.forEach(c => c.classList.remove('selected'));
-        selectedCells = [];
-        const nextWord = getRandomWord();
-        if (!nextWord) {
-          document.getElementById('winPopup').style.display = 'flex';
-        } else {
-          renderBoard(nextWord);
-        }
-      } else if (!usedWords[usedWords.length - 1].startsWith(currentWord)) {
+      const wordSoFar = selectedCells.map(c => c.innerText).join('');
+      if (!currentWord.startsWith(wordSoFar)) {
         endGame();
+        return;
+      }
+      if (wordSoFar === currentWord) {
+        score += currentWord.length;
+        scoreEl.innerText = score;
+        document.getElementById("winPopup").style.display = "flex";
+        updateLeaderboard(score);
       }
     }
 
-    function endGame() {
-      document.getElementById('finalScore').textContent = score;
-      document.getElementById('endPopup').style.display = 'flex';
+    function startGame() {
+      score = 0;
+      scoreEl.innerText = score;
+      renderBoard(currentWord);
+      document.getElementById("introPopup").style.display = "none";
     }
 
-    function startGame() {
-      document.getElementById('introPopup').style.display = 'none';
-      score = 0;
-      scoreEl.textContent = score;
-      currentWord = '';
-      selectedCells = [];
-      const word = getRandomWord();
-      if (word) renderBoard(word);
-      else document.getElementById('winPopup').style.display = 'flex';
+    function endGame() {
+      finalScoreEl.innerText = score;
+      document.getElementById("endPopup").style.display = "flex";
+      updateLeaderboard(score);
     }
 
     function restartGame() {
-      usedWords.length = 0;
-      localStorage.removeItem('usedWords');
-      document.getElementById('winPopup').style.display = 'none';
-      document.getElementById('endPopup').style.display = 'none';
-      startGame();
+      selectedCells = [];
+      document.querySelectorAll(".cell").forEach(c => c.classList.remove("selected"));
+      document.getElementById("winPopup").style.display = "none";
+      document.getElementById("endPopup").style.display = "none";
+      score = 0;
+      scoreEl.innerText = score;
+      renderBoard(currentWord);
     }
+
+    function updateLeaderboard(newScore) {
+      const scores = JSON.parse(localStorage.getItem("cutit_leaderboard") || "[]");
+      scores.push({ score: newScore, date: new Date().toLocaleDateString() });
+      scores.sort((a, b) => b.score - a.score);
+      const top5 = scores.slice(0, 5);
+      localStorage.setItem("cutit_leaderboard", JSON.stringify(top5));
+      leaderboardEl.innerHTML = top5.map(s => `<li>⭐ ${s.score} pts (${s.date})</li>`).join("");
+    }
+
+    function toggleMode() {
+      document.body.classList.toggle("light");
+    }
+
+    // Load leaderboard if already played
+    const existing = JSON.parse(localStorage.getItem("cutit_leaderboard") || "[]");
+    leaderboardEl.innerHTML = existing.map(s => `<li>⭐ ${s.score} pts (${s.date})</li>`).join("");
   </script>
 </body>
 </html>
