@@ -4,151 +4,222 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Crossword ✦ CutIt.sbs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Antonio&display=swap');
-
-    html, body {
-      margin: 0; padding: 0;
+    :root {
+      --main-bg: #000;
+      --main-text: #fff;
+      --accent: #fff;
+    }
+    * {
+      box-sizing: border-box;
       font-family: 'Antonio', sans-serif;
-      background: #000; color: #fff;
+      margin: 0; padding: 0;
+    }
+    html, body {
+      height: 100%;
+      background: var(--main-bg);
+      color: var(--main-text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
       overflow: hidden;
     }
-
-    #game {
+    .score {
+      font-size: 2rem;
+      margin: 20px;
+    }
+    .board {
       display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      grid-template-rows: repeat(10, 1fr);
-      width: 100vw; height: 100vh;
-      gap: 2px;
-      padding: 1vw;
-      box-sizing: border-box;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      margin: 20px;
     }
-
     .cell {
+      width: 60px;
+      height: 60px;
       background: #111;
-      border: 1px solid #444;
-      display: flex; justify-content: center; align-items: center;
-      font-size: 2vw;
-      animation: fadeIn 0.3s ease-in;
+      color: var(--main-text);
+      font-size: 1.8rem;
+      text-align: center;
+      line-height: 60px;
+      border: 1px solid #333;
+      transition: all 0.2s ease;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.8); }
-      to { opacity: 1; transform: scale(1); }
+    .cell.selected {
+      background: var(--accent);
+      color: #000;
     }
-
-    #score {
+    .watermark {
       position: absolute;
-      top: 1vh; right: 2vw;
-      font-size: 2vw;
+      bottom: 10px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.15);
     }
-
-    #watermark {
-      position: absolute;
-      bottom: 1vh; left: 50%;
-      transform: translateX(-50%);
-      font-size: 1.2vw;
-      opacity: 0.2;
-    }
-
     .popup {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
       background: rgba(0,0,0,0.95);
-      display: flex; flex-direction: column;
-      justify-content: center; align-items: center;
-      color: #fff; font-size: 2vw;
-      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      text-align: center;
     }
-
     .popup button {
-      margin-top: 2vh;
-      font-size: 1.5vw;
-      background: #fff; color: #000;
-      padding: 1vh 2vw; border: none;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      background: #fff;
+      color: #000;
+      border: none;
       cursor: pointer;
     }
-
     @media (max-width: 600px) {
-      .cell { font-size: 5vw; }
-      #score { font-size: 5vw; }
-      #watermark { font-size: 3vw; }
-      .popup { font-size: 5vw; }
-      .popup button { font-size: 4vw; }
+      .cell {
+        width: 45px;
+        height: 45px;
+        line-height: 45px;
+        font-size: 1.4rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="score">Score: <span id="scoreVal">0</span></div>
-  <div id="watermark">CutIt.sbs ✦ your vibe. your code</div>
-  <div id="game"></div>
 
-  <div id="startPopup" class="popup">
-    <div>Match letters to form real words. Every win adds a new challenge. No repeats!</div>
-    <button onclick="startGame()">Let's Go</button>
+  <div class="score">Score: <span id="score">0</span></div>
+  <div class="board" id="board"></div>
+  <div class="watermark">CutIt.sbs ✦ your vibe. your code</div>
+
+  <!-- Popups -->
+  <div class="popup" id="introPopup">
+    <h2>Welcome to Crossword!</h2>
+    <p>Form words by selecting adjacent letters. Words will never repeat. Your best score is saved.</p>
+    <button onclick="startGame()">Start Game</button>
   </div>
 
-  <div id="winPopup" class="popup" style="display:none;">
-    <div>🎉 You nailed it! <br> CutIt.sbs ✦ your vibe. your code</div>
-    <button onclick="nextLevel()">Next Puzzle</button>
+  <div class="popup" id="winPopup" style="display:none">
+    <h2>🎉 You Win!</h2>
+    <p>CutIt.sbs ✦ your vibe. your code</p>
+    <button onclick="restartGame()">Play Again</button>
   </div>
 
-  <div id="endPopup" class="popup" style="display:none;">
-    <div>Game Over!</div>
-    <button onclick="startGame()">Home</button>
-    <button onclick="nextLevel()">Play Again</button>
+  <div class="popup" id="endPopup" style="display:none">
+    <h2>Game Over</h2>
+    <p>Your final score: <span id="finalScore"></span></p>
+    <button onclick="restartGame()">Play Again</button>
+    <button onclick="window.location.reload()">🏠 Home</button>
   </div>
 
   <script>
-    const grid = document.getElementById('game');
-    const scoreVal = document.getElementById('scoreVal');
-    const usedWords = new Set(JSON.parse(localStorage.getItem('usedWords') || "[]"));
-    let score = +localStorage.getItem('score') || 0;
+    const boardEl = document.getElementById('board');
+    const scoreEl = document.getElementById('score');
+    const finalScoreEl = document.getElementById('finalScore');
+    const usedWords = JSON.parse(localStorage.getItem('usedWords')) || [];
+    let score = 0;
+    let currentWord = '';
+    let selectedCells = [];
 
-    const words = ["vibe","code","cutit","trend","anime","neon","glass","love","wild","genz"];
-    function getNewWord() {
-      let word;
-      do {
-        word = words[Math.floor(Math.random()*words.length)];
-      } while (usedWords.has(word));
-      usedWords.add(word);
-      localStorage.setItem('usedWords', JSON.stringify([...usedWords]));
+    const wordsList = [
+      "CODE", "HTML", "CSS", "CUTIT", "VIBE", "JAVASCRIPT", "AI", "BOT", "CHAT", "INTERNET", "DATA",
+      "CROSS", "WORD", "BLACK", "WHITE", "PIXEL", "TECH", "HACK", "GRID", "WEB", "NODE", "REACT"
+    ];
+
+    function getRandomWord() {
+      const fresh = wordsList.filter(w => !usedWords.includes(w));
+      if (!fresh.length) return null;
+      const word = fresh[Math.floor(Math.random() * fresh.length)];
+      usedWords.push(word);
+      localStorage.setItem('usedWords', JSON.stringify(usedWords));
       return word;
     }
 
-    function renderWord(word) {
-      grid.innerHTML = '';
-      for (let i = 0; i < 100; i++) {
+    function renderBoard(word) {
+      boardEl.innerHTML = '';
+      const letters = word.split('');
+      const gridSize = 5;
+      const totalCells = gridSize * gridSize;
+      let filled = 0;
+      const cells = Array(totalCells).fill('');
+
+      // Place word randomly
+      const start = Math.floor(Math.random() * (totalCells - letters.length));
+      for (let i = 0; i < letters.length; i++) {
+        cells[start + i] = letters[i];
+        filled++;
+      }
+
+      // Fill rest
+      for (let i = 0; i < totalCells; i++) {
+        if (cells[i] === '') {
+          cells[i] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+        }
+      }
+
+      cells.forEach((letter, i) => {
         const cell = document.createElement('div');
         cell.className = 'cell';
-        cell.textContent = word[i % word.length].toUpperCase();
-        grid.appendChild(cell);
+        cell.textContent = letter;
+        cell.dataset.index = i;
+        cell.addEventListener('click', () => selectCell(cell));
+        boardEl.appendChild(cell);
+      });
+    }
+
+    function selectCell(cell) {
+      if (cell.classList.contains('selected')) return;
+      cell.classList.add('selected');
+      selectedCells.push(cell);
+      currentWord += cell.textContent;
+
+      // Animation
+      cell.style.transform = 'scale(1.1)';
+      setTimeout(() => cell.style.transform = 'scale(1)', 100);
+
+      if (currentWord === usedWords[usedWords.length - 1]) {
+        score += currentWord.length;
+        scoreEl.textContent = score;
+        currentWord = '';
+        selectedCells.forEach(c => c.classList.remove('selected'));
+        selectedCells = [];
+        const nextWord = getRandomWord();
+        if (!nextWord) {
+          document.getElementById('winPopup').style.display = 'flex';
+        } else {
+          renderBoard(nextWord);
+        }
+      } else if (!usedWords[usedWords.length - 1].startsWith(currentWord)) {
+        endGame();
       }
+    }
+
+    function endGame() {
+      document.getElementById('finalScore').textContent = score;
+      document.getElementById('endPopup').style.display = 'flex';
     }
 
     function startGame() {
-      document.getElementById('startPopup').style.display = 'none';
+      document.getElementById('introPopup').style.display = 'none';
       score = 0;
-      scoreVal.textContent = score;
-      localStorage.setItem('score', score);
-      document.getElementById('endPopup').style.display = 'none';
-      nextLevel();
+      scoreEl.textContent = score;
+      currentWord = '';
+      selectedCells = [];
+      const word = getRandomWord();
+      if (word) renderBoard(word);
+      else document.getElementById('winPopup').style.display = 'flex';
     }
 
-    function nextLevel() {
-      const word = getNewWord();
-      if (!word) {
-        document.getElementById('endPopup').style.display = 'flex';
-        return;
-      }
-      renderWord(word);
-      score++;
-      scoreVal.textContent = score;
-      localStorage.setItem('score', score);
-      document.getElementById('winPopup').style.display = 'flex';
-      setTimeout(() => {
-        document.getElementById('winPopup').style.display = 'none';
-      }, 2000);
+    function restartGame() {
+      usedWords.length = 0;
+      localStorage.removeItem('usedWords');
+      document.getElementById('winPopup').style.display = 'none';
+      document.getElementById('endPopup').style.display = 'none';
+      startGame();
     }
   </script>
 </body>
