@@ -136,11 +136,17 @@
         if (keys["ArrowUp"] && player2.y > 0) player2.y -= 6;
         if (keys["ArrowDown"] && player2.y < canvas.height - player2.h) player2.y += 6;
       } else if (!draggingPaddle) {
-        // 🚀 Unbeatable AI logic
+        // 🍯 Smooth predictive AI logic (no teleport, just glide)
         const predictionFrames = (player2.x - ball.x) / ball.dx;
         const predictedY = ball.y + ball.dy * predictionFrames;
-        const clampedY = Math.max(0, Math.min(canvas.height - player2.h, predictedY - player2.h / 2));
-        player2.y = clampedY;
+        const targetY = Math.max(0, Math.min(canvas.height - player2.h, predictedY - player2.h / 2));
+        const aiSpeed = 12; // smooth glide speed
+
+        if (player2.y < targetY) {
+          player2.y = Math.min(targetY, player2.y + aiSpeed);
+        } else if (player2.y > targetY) {
+          player2.y = Math.max(targetY, player2.y - aiSpeed);
+        }
       }
 
       ball.x += ball.dx;
