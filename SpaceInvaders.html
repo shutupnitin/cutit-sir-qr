@@ -1,296 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🚀 Space Invaders • CutIt.sbs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Cutit’s Cosmic Arcade 🚀✨</title>
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    html, body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Antonio',sans-serif; }
-    canvas { display:block; }
-
-    /* SCOREBOARD */
-    #scoreboard {
-      position: fixed; top:10px; left:50%; transform:translateX(-50%);
-      display:flex; gap:20px; color:#fff; font-size:1.2rem; z-index:5;
-    }
-    #scoreboard div { text-align:center; }
-    #scoreboard .label { font-size:0.8rem; color:#bbb; text-transform:uppercase; }
-    #scoreboard .value { font-size:1.4rem; }
-
-    /* CONTROLS (mobile) */
-    #controls {
-      position: fixed; bottom:20px; width:100%; display:flex; justify-content:space-between;
-      padding: 0 30px; z-index:5;
-    }
-    .control-btn {
-      width:60px; height:60px; border-radius:50%;
-      background:rgba(255,255,255,0.1); color:#fff; border:none;
-      font-size:2rem; display:flex; align-items:center; justify-content:center;
-      user-select:none;
+    /* ✨ GLOBAL & FONT */
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #f5eaff, #b6f0ff);
+      font-family: 'Poppins', sans-serif;
+      color: #222;
     }
 
-    /* MODALS */
+    /* 🕹️ UI PANELS */
+    #game-ui {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .level-banner {
+      display: inline-block;
+      padding: 8px 16px;
+      margin-bottom: 6px;
+      background: rgba(255,255,255,0.3);
+      backdrop-filter: blur(12px);
+      border-radius: 8px;
+      font-size: 1.2rem;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .level-banner.visible {
+      opacity: 1;
+    }
+    .score-panel {
+      font-size: 1rem;
+      background: rgba(255,255,255,0.3);
+      backdrop-filter: blur(12px);
+      border-radius: 8px;
+      padding: 6px 12px;
+    }
+
+    /* 🎮 GAME AREA */
+    #game-container {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+    }
+    .alien, .boss {
+      position: absolute;
+      pointer-events: none;
+      transform-origin: center;
+    }
+
+    /* 💥 EXPLOSION EFFECT */
+    .explosion {
+      position: absolute;
+      font-size: 1.5rem;
+      animation: pop 0.6s forwards;
+      pointer-events: none;
+    }
+    @keyframes pop {
+      0%   { opacity: 1; transform: scale(1) translate(-50%, -50%); }
+      100% { opacity: 0; transform: scale(2) translate(-50%, -50%); }
+    }
+
+    /* ⚔️ GAME OVER MODAL */
     .modal {
-      position: fixed; top:0; left:0; width:100%; height:100%;
-      display:flex; align-items:center; justify-content:center;
-      background:rgba(0,0,0,0.85); visibility:hidden; opacity:0;
-      transition:visibility 0.3s,opacity 0.3s; z-index:10;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.4);
+      backdrop-filter: blur(12px);
+      padding: 24px 32px;
+      border-radius: 12px;
+      text-align: center;
+      display: none;
+      z-index: 20;
     }
-    .modal.active { visibility:visible; opacity:1; }
-    .modal-content {
-      background:#111; padding:2rem; border-radius:8px; text-align:center; color:#fff;
-      max-width:90%;
-    }
-    .modal-content h2 { margin-bottom:1rem; font-size:1.6rem; }
-    .modal-content p { margin-bottom:1.5rem; line-height:1.4; }
-    .btn {
-      background:#fff; color:#000; padding:0.6rem 1.2rem; border:none; border-radius:4px;
-      font-family:'Antonio',sans-serif; margin:0 5px; cursor:pointer;
-    }
-
-    /* WATERMARK */
-    #watermark {
-      position: fixed; bottom:10px; width:100%; text-align:center;
-      color:#fff; font-size:0.8rem; opacity:0.1; pointer-events:none; user-select:none;
+    .modal.active { display: block; }
+    .modal h2 { margin-bottom: 12px; }
+    .modal button {
+      padding: 8px 16px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #ffc4e1;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <!-- SCOREBOARD -->
-  <div id="scoreboard">
-    <div><div class="label">Score</div><div id="score" class="value">0</div></div>
-    <div><div class="label">Best</div><div id="best" class="value">0</div></div>
+  <!-- 🎯 UI -->
+  <div id="game-ui">
+    <div class="level-banner" id="level-banner">🌟 LEVEL 1 – Moon Base 🌕 🌟</div>
+    <div class="score-panel">Score 💯: <span id="score">0</span> | Best 🏆: <span id="best">0</span></div>
   </div>
 
-  <!-- CONTROLS -->
-  <div id="controls">
-    <button id="btn-left" class="control-btn">◀</button>
-    <button id="btn-fire" class="control-btn">⬆</button>
-    <button id="btn-right" class="control-btn">▶</button>
+  <!-- 🌌 GAME AREA -->
+  <div id="game-container"></div>
+
+  <!-- 💥 GAME OVER -->
+  <div class="modal" id="game-over">
+    <h2>💥 Game Over!</h2>
+    <button onclick="restartGame()">🔁 Play Again</button>
   </div>
-
-  <!-- CANVAS -->
-  <canvas id="gameCanvas"></canvas>
-
-  <!-- MODALS -->
-  <div id="modal-start" class="modal active">
-    <div class="modal-content">
-      <h2>Space Invaders</h2>
-      <p>Move your ship with arrow keys (or ◀ ▶). Press up (or ⬆) to shoot. Destroy all aliens before they reach you!</p>
-      <button id="start-btn" class="btn">Start Game</button>
-    </div>
-  </div>
-
-  <div id="modal-win" class="modal">
-    <div class="modal-content">
-      <h2>You Win!</h2>
-      <p>CutIt.sbs ✦ your vibe. your code</p>
-      <button id="win-play" class="btn">Play Again</button>
-      <button id="win-home" class="btn">Home</button>
-    </div>
-  </div>
-
-  <div id="modal-lose" class="modal">
-    <div class="modal-content">
-      <h2>Game Over</h2>
-      <button id="lose-play" class="btn">Play Again</button>
-      <button id="lose-home" class="btn">Home</button>
-    </div>
-  </div>
-
-  <!-- WATERMARK -->
-  <div id="watermark">CutIt.sbs ✦ your vibe. your code</div>
 
   <script>
-  (function(){
-    const canvas    = document.getElementById('gameCanvas');
-    const ctx       = canvas.getContext('2d');
-    const scoreEl   = document.getElementById('score');
-    const bestEl    = document.getElementById('best');
-    const controls  = { left:false, right:false };
-    let WIDTH, HEIGHT, lastTime, gameState;
-    let ship, aliens, bullets, alienDir, score, bestScore;
+    // 🚀 LEVEL CONFIG
+    const LEVELS = [
+      { name:"Moon Base 🌕",    count:5,  speed:2,       zigzag:false, shootBack:false },
+      { name:"Asteroid Rush 🪨",count:10, speed:3,       zigzag:false, shootBack:false },
+      { name:"Saturn Drift 🪐", count:15, speed:2.5,     zigzag:false, shootBack:true  },
+      { name:"Cosmic Chaos 🌌", count:20, speed:4,       zigzag:true,  shootBack:false },
+      { name:"Vibe Overlord 👾",boss:true }
+    ];
 
-    // UI elements
-    const startModal = document.getElementById('modal-start');
-    const winModal   = document.getElementById('modal-win');
-    const loseModal  = document.getElementById('modal-lose');
-    const showModal  = m=>{ [startModal,winModal,loseModal].forEach(x=>x.classList.remove('active')); m.classList.add('active'); };
-    const hideModals = ()=>[startModal,winModal,loseModal].forEach(x=>x.classList.remove('active'));
+    let level=0, score=0, best=0, aliens=[];
+    const container = document.getElementById('game-container');
+    const banner = document.getElementById('level-banner');
+    const scoreEl= document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const overModal = document.getElementById('game-over');
 
-    // Buttons
-    document.getElementById('start-btn').onclick = ()=>{ hideModals(); startGame(); };
-    document.getElementById('win-play').onclick = ()=>{ hideModals(); startGame(); };
-    document.getElementById('win-home').onclick = ()=>{ hideModals(); showModal(startModal); };
-    document.getElementById('lose-play').onclick= ()=>{ hideModals(); startGame(); };
-    document.getElementById('lose-home').onclick= ()=>{ hideModals(); showModal(startModal); };
+    function startLevel() {
+      // clear old
+      aliens.forEach(a=>a.el.remove());
+      aliens=[];
+      container.querySelectorAll('.explosion, .boss').forEach(e=>e.remove());
 
-    // Mobile controls
-    document.getElementById('btn-left').addEventListener('touchstart',e=>{ controls.left=true; e.preventDefault(); });
-    document.getElementById('btn-left').addEventListener('touchend', ()=>controls.left=false);
-    document.getElementById('btn-right').addEventListener('touchstart',e=>{ controls.right=true; e.preventDefault(); });
-    document.getElementById('btn-right').addEventListener('touchend',()=>controls.right=false);
-    document.getElementById('btn-fire').addEventListener('touchstart',e=>{ shoot(); e.preventDefault(); });
-
-    // Keyboard
-    window.addEventListener('keydown', e=>{
-      if (e.key==='ArrowLeft')  controls.left = true;
-      if (e.key==='ArrowRight') controls.right = true;
-      if (e.key==='ArrowUp')    shoot();
-    });
-    window.addEventListener('keyup', e=>{
-      if (e.key==='ArrowLeft')  controls.left = false;
-      if (e.key==='ArrowRight') controls.right = false;
-    });
-
-    // Resize canvas
-    function resize(){
-      WIDTH = window.innerWidth;
-      HEIGHT= window.innerHeight;
-      canvas.width  = WIDTH;
-      canvas.height = HEIGHT;
-    }
-    window.addEventListener('resize', resize);
-
-    // Game objects
-    function initShip(){
-      return {
-        w: WIDTH*0.05,
-        h: WIDTH*0.03,
-        x: WIDTH/2 - WIDTH*0.05/2,
-        y: HEIGHT - WIDTH*0.05 - 20,
-        speed: WIDTH*0.5
-      };
-    }
-
-    function initAliens(){
-      const rows = 5, cols = 10;
-      const w = WIDTH*0.05, h = WIDTH*0.03;
-      const gapX = WIDTH*0.015, gapY = WIDTH*0.015;
-      const startX = (WIDTH - (cols*w + (cols-1)*gapX))/2;
-      const startY = 60;
-      let list = [];
-      for(let r=0;r<rows;r++){
-        for(let c=0;c<cols;c++){
-          list.push({ 
-            x: startX + c*(w+gapX), 
-            y: startY + r*(h+gapY), 
-            w, h 
-          });
-        }
+      const cfg = LEVELS[level];
+      showBanner(cfg.name);
+      if (cfg.boss) {
+        spawnBoss();
+      } else {
+        for(let i=0;i<cfg.count;i++) spawnAlien(cfg);
       }
-      alienDir = 1;
-      return list;
     }
 
-    function startGame(){
-      resize();
-      ship   = initShip();
-      aliens = initAliens();
-      bullets = [];
-      score = 0;
-      bestScore = parseInt(localStorage.getItem('svBest'))||0;
-      bestEl.textContent = bestScore;
-      updateScore();
-      gameState = 'running';
-      lastTime = performance.now();
-      requestAnimationFrame(loop);
+    function showBanner(name) {
+      banner.textContent = `🌟 LEVEL ${level+1} – ${name} 🌟`;
+      banner.classList.add('visible');
+      setTimeout(()=> banner.classList.remove('visible'), 2000);
     }
 
-    function shoot(){
-      if (gameState!=='running') return;
-      bullets.push({
-        x: ship.x + ship.w/2 - 3,
-        y: ship.y - 10,
-        w:6, h:10,
-        speed: HEIGHT*0.8
-      });
+    function spawnAlien(cfg) {
+      // Create Blobbit SVG
+      const ns="http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(ns,'svg');
+      svg.setAttribute('viewBox','0 0 64 64');
+      svg.classList.add('alien');
+      svg.innerHTML=`
+        <circle cx="32" cy="32" r="24" fill="#FFC4E1"/>
+        <circle cx="24" cy="28" r="4" fill="#000"/>
+        <circle cx="40" cy="28" r="4" fill="#000"/>
+        <path d="M20,44 Q32,54 44,44" stroke="#000" stroke-width="2" fill="none"/>
+      `;
+      container.appendChild(svg);
+
+      // position & data
+      const x = Math.random()*(window.innerWidth-80)+40;
+      const y = -60;
+      svg.style.left = x+'px';
+      svg.style.top  = y+'px';
+      aliens.push({el:svg,x,y,dir:1, cfg});
     }
 
-    function update(dt){
-      // Ship movement
-      if (controls.left)  ship.x = Math.max(0, ship.x - ship.speed * dt);
-      if (controls.right) ship.x = Math.min(WIDTH-ship.w, ship.x + ship.speed * dt);
+    function spawnBoss() {
+      const boss = document.createElement('div');
+      boss.classList.add('boss');
+      boss.innerHTML=`
+        <pre>╔══ 💜 VIBE OVERLORD 👾 ══╗
+║ ✨ Mood: Chaotic 🌀      ║
+║ 💥 Attack: Triple Beam  ║
+║ 🧠 “You vibin’?” 😎     ║
+╚══════════════════════════╝</pre>
+      `;
+      container.appendChild(boss);
+      boss.style.left = (window.innerWidth/2-150)+'px';
+      boss.style.top = '100px';
+    }
 
-      // Aliens movement & descent
-      let hitEdge = aliens.some(a=>
-        (alienDir>0 && a.x + a.w >= WIDTH-10) ||
-        (alienDir<0 && a.x <= 10)
-      );
-      if (hitEdge){
-        alienDir *= -1;
-        aliens.forEach(a=> a.y += ship.h );
-      }
-      aliens.forEach(a=> a.x += alienDir * 40 * dt);
-
-      // Bullets update & collision
-      bullets = bullets.filter(b=>{
-        b.y -= b.speed * dt;
-        // collision
-        for(let i=0;i<aliens.length;i++){
-          const a = aliens[i];
-          if (b.x < a.x+a.w && b.x+b.w > a.x && b.y < a.y+a.h && b.y+b.h > a.y){
-            aliens.splice(i,1);
-            score += 10; updateScore();
-            return false;
-          }
-        }
-        return b.y + b.h > 0;
-      });
-
-      // Win/Lose?
-      if (aliens.length === 0){
-        gameState = 'won';
-        showModal(winModal);
-      }
+    function update() {
+      const cfg = LEVELS[level];
       aliens.forEach(a=>{
-        if (a.y + a.h >= ship.y){
-          gameState = 'lost';
-          showModal(loseModal);
+        // move
+        a.y += cfg.speed;
+        if(cfg.zigzag) a.x += 4 * Math.sin(a.y/20);
+        a.el.style.left = a.x + 'px';
+        a.el.style.top  = a.y + 'px';
+        // shot back?
+        if (cfg.shootBack && Math.random()<0.005) shootBack(a.x,a.y);
+
+        // off-screen?
+        if (a.y>window.innerHeight+50) {
+          endGame();
         }
       });
-    }
 
-    function updateScore(){
-      scoreEl.textContent = score;
-      if (score > bestScore){
-        bestScore = score;
-        localStorage.setItem('svBest', bestScore);
-        bestEl.textContent = bestScore;
+      // next level?
+      if(!cfg.boss && aliens.every(a=>a.y>window.innerHeight+60)) {
+        level++;
+        if(level<LEVELS.length) startLevel();
+        else winGame();
       }
+      requestAnimationFrame(update);
     }
 
-    function draw(){
-      ctx.clearRect(0,0,WIDTH,HEIGHT);
-
-      // Ship
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(ship.x, ship.y, ship.w, ship.h);
-
-      // Aliens
-      aliens.forEach(a=> ctx.fillRect(a.x, a.y, a.w, a.h));
-
-      // Bullets
-      bullets.forEach(b=> ctx.fillRect(b.x, b.y, b.w, b.h));
+    function shootBack(x,y) {
+      const b = document.createElement('div');
+      b.textContent = '💢';
+      b.style.position='absolute';
+      b.style.left = x+'px';
+      b.style.top  = y+'px';
+      container.appendChild(b);
+      let by = y;
+      ;(function move() {
+        by += 6;
+        b.style.top = by+'px';
+        if (by < window.innerHeight) requestAnimationFrame(move);
+        else b.remove();
+      })();
     }
 
-    function loop(ts){
-      const dt = (ts - lastTime)/1000;
-      lastTime = ts;
-      if (gameState === 'running'){
-        update(dt);
-        draw();
-        requestAnimationFrame(loop);
-      }
+    function endGame() {
+      overModal.classList.add('active');
+      best = Math.max(best, score);
+      bestEl.textContent = best;
+      cancelAnimationFrame(update);
     }
 
-    // initial setup
-    resize();
-    showModal(startModal);
-  })();
+    function winGame() {
+      banner.textContent = '👑 YOU SLAYED THE VIBE OVERLORD! 👑';
+      banner.classList.add('visible');
+    }
+
+    function restartGame() {
+      overModal.classList.remove('active');
+      level=0; score=0; scoreEl.textContent=0;
+      startLevel();
+      update();
+    }
+
+    // 🚀 INIT
+    window.onload = () => {
+      bestEl.textContent = best;
+      startLevel();
+      update();
+    };
   </script>
 </body>
 </html>
