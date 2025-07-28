@@ -1,268 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ping Pong ✦ CutIt.sbs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
-  
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    body {
-        font-family: 'Antonio', sans-serif;
-        background-color: #000;
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        justify-content: space-between;
-        align-items: center;
-    }
-    header {
-        width: 100%;
-        text-align: center;
-        padding: 20px 0;
-        font-size: 2rem;
-        color: #FF2DAF;
-    }
-    .game-container {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        max-width: 900px;
-        padding: 20px;
-    }
-    canvas {
-        border: 3px solid #fff;
-        background-color: #111;
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-    }
-    .scoreboard, .controls, .leaderboard {
-        margin-top: 20px;
-        text-align: center;
-    }
-    button {
-        font-family: 'Antonio', sans-serif;
-        padding: 10px 20px;
-        font-size: 1rem;
-        margin: 10px;
-        background: #FF2DAF;
-        color: #000;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px;
-    }
-    footer {
-        width: 100%;
-        text-align: center;
-        padding: 10px 0;
-        font-size: 0.9rem;
-        color: #888;
-    }
-</style>
+  <meta charset="UTF-8">
+  <title>CutIt.sbs Ping Pong</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Antonio', sans-serif;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    #gameCanvas {
+      display: block;
+      margin: auto;
+      background-color: #111;
+      border: 4px solid #fff;
+    }
+
+    #popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.95);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #popup h1 {
+      font-size: 3em;
+      color: #FF2DAF;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1.2em;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 4px;
+      width: 80%;
+      max-width: 300px;
+      text-align: center;
+    }
+
+    .mode-btn {
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 1.2em;
+      background: #FF2DAF;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .watermark {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 0.9em;
+      color: #666;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
 
-<header>🏓 CutIt.sbs Ping Pong</header>
+<canvas id="gameCanvas" width="900" height="600"></canvas>
+<div class="watermark">Made by CutIt.sbs â¦ your vibe. your code.</div>
 
-<div class="game-container">
-  <div class="menu" id="menu">
-    <label>Choose Mode:</label>
-    <select id="modeSelect">
-      <option value="computer">1 vs Computer</option>
-      <option value="player">1 vs 1 Player</option>
-    </select><br>
-    <input type="text" id="player1" placeholder="Player 1 Name" />
-    <input type="text" id="player2" placeholder="Player 2/Computer Name" />
-    <br>
-    <button onclick="startGame()">Start Game</button>
-  </div>
-
-  <canvas id="gameCanvas" width="800" height="500" class="hide"></canvas>
-
-  <div id="highScoreBadge" class="highscore-badge hide">🎉 New High Score!</div>
-  <div class="controls">
-    <button onclick="resetGame()">Play Again</button>
+<div id="popup">
+  <h1>CutIt Ping Pong</h1>
+  <input type="text" id="playerName" placeholder="Enter your name">
+  <div>
+    <button class="mode-btn" onclick="startGame('cpu')">Play vs Computer</button>
+    <button class="mode-btn" onclick="startGame('1v1')">1 vs 1</button>
   </div>
 </div>
-
-<div class="leaderboard">
-  <h2>🏆 Leaderboard</h2>
-  <table>
-    <thead>
-      <tr><th>Player</th><th>Score</th></tr>
-    </thead>
-    <tbody id="leaderboardBody"></tbody>
-  </table>
-</div>
-
-<footer>Made with ❤️ by CutIt.sbs ✦ your vibe. your code.</footer>
 
 <script>
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
-  let player1Name = "", player2Name = "", isVsComputer = true;
-  let highScore = localStorage.getItem("highscore") || 0;
-  let highScorer = localStorage.getItem("highscorer") || "";
 
-  let paddleWidth = 10, paddleHeight = 80;
-  let ballSpeed = 4, ballX = canvas.width/2, ballY = canvas.height/2;
-  let ballDX = ballSpeed, ballDY = ballSpeed;
-  let leftPaddleY = 200, rightPaddleY = 200;
-  let leftScore = 0, rightScore = 0;
-  let upPressed = false, downPressed = false;
-  let wPressed = false, sPressed = false;
-  let gameRunning = false;
+  let player1Name = "Player 1", player2Name = "Player 2";
+  let playerScore = 0, cpuScore = 0;
+  let paddleWidth = 10, paddleHeight = 100;
+  let ballX = canvas.width / 2, ballY = canvas.height / 2;
+  let ballSpeedX = 5, ballSpeedY = 4;
+  let paddle1Y = (canvas.height - paddleHeight) / 2;
+  let paddle2Y = (canvas.height - paddleHeight) / 2;
+  let keys = {};
+  let gameMode = "cpu";
 
-  function drawRect(x, y, w, h, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, w, h);
-  }
+  document.addEventListener("keydown", (e) => keys[e.key] = true);
+  document.addEventListener("keyup", (e) => keys[e.key] = false);
 
-  function drawCircle(x, y, r, color) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2, false);
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  function drawText(text, x, y, color) {
-    ctx.fillStyle = color;
-    ctx.font = "30px Antonio";
-    ctx.fillText(text, x, y);
-  }
-
-  function render() {
-    drawRect(0, 0, canvas.width, canvas.height, "white");
-    drawRect(0, leftPaddleY, paddleWidth, paddleHeight, "black");
-    drawRect(canvas.width - paddleWidth, rightPaddleY, paddleWidth, paddleHeight, "black");
-    drawCircle(ballX, ballY, 8, "black");
-    drawText(leftScore, canvas.width/4, 50, "black");
-    drawText(rightScore, 3 * canvas.width/4, 50, "black");
-  }
-
-  function update() {
-    ballX += ballDX;
-    ballY += ballDY;
-
-    if (ballY <= 0 || ballY >= canvas.height) ballDY = -ballDY;
-
-    if (ballX <= paddleWidth) {
-      if (ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) {
-        ballDX = -ballDX;
-      } else {
-        rightScore++;
-        resetBall();
-      }
-    }
-
-    if (ballX >= canvas.width - paddleWidth) {
-      if (ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight) {
-        ballDX = -ballDX;
-      } else {
-        leftScore++;
-        resetBall();
-      }
-    }
-
-    if (wPressed && leftPaddleY > 0) leftPaddleY -= 6;
-    if (sPressed && leftPaddleY < canvas.height - paddleHeight) leftPaddleY += 6;
-
-    if (isVsComputer) {
-      if (rightPaddleY + paddleHeight/2 < ballY) rightPaddleY += 4;
-      else rightPaddleY -= 4;
-    } else {
-      if (upPressed && rightPaddleY > 0) rightPaddleY -= 6;
-      if (downPressed && rightPaddleY < canvas.height - paddleHeight) rightPaddleY += 6;
-    }
-  }
-
-  function gameLoop() {
-    if (!gameRunning) return;
-    update();
-    render();
-    requestAnimationFrame(gameLoop);
-  }
-
-  function resetBall() {
-    ballX = canvas.width/2;
-    ballY = canvas.height/2;
-    ballDX = -ballDX;
-    ballDY = (Math.random() > 0.5 ? 1 : -1) * ballSpeed;
-  }
-
-  function startGame() {
-    player1Name = document.getElementById("player1").value || "Player 1";
-    player2Name = document.getElementById("player2").value || "Opponent";
-    isVsComputer = document.getElementById("modeSelect").value === "computer";
-    leftScore = rightScore = 0;
-    document.getElementById("menu").classList.add("hide");
-    canvas.classList.remove("hide");
-    gameRunning = true;
-    gameLoop();
-  }
-
-  function resetGame() {
-    gameRunning = false;
-    document.getElementById("menu").classList.remove("hide");
-    canvas.classList.add("hide");
-    document.getElementById("highScoreBadge").classList.add("hide");
-    updateLeaderboard(player1Name, leftScore);
-  }
-
-  function updateLeaderboard(name, score) {
-    let stored = JSON.parse(localStorage.getItem("leaderboard") || "[]");
-    stored.push({ name, score });
-    stored.sort((a, b) => b.score - a.score);
-    localStorage.setItem("leaderboard", JSON.stringify(stored.slice(0, 5)));
-
-    let html = "";
-    stored.slice(0, 5).forEach(e => {
-      html += `<tr><td>${e.name}</td><td>${e.score}</td></tr>`;
-    });
-    document.getElementById("leaderboardBody").innerHTML = html;
-
-    if (score > highScore) {
-      highScore = score;
-      localStorage.setItem("highscore", score);
-      localStorage.setItem("highscorer", name);
-      document.getElementById("highScoreBadge").classList.remove("hide");
-    }
-  }
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowUp") upPressed = true;
-    if (e.key === "ArrowDown") downPressed = true;
-    if (e.key === "w") wPressed = true;
-    if (e.key === "s") sPressed = true;
-  });
-
-  document.addEventListener("keyup", (e) => {
-    if (e.key === "ArrowUp") upPressed = false;
-    if (e.key === "ArrowDown") downPressed = false;
-    if (e.key === "w") wPressed = false;
-    if (e.key === "s") sPressed = false;
-  });
-
-  canvas.addEventListener("touchmove", (e) => {
+  canvas.addEventListener("touchmove", function(e) {
     const touch = e.touches[0];
     const rect = canvas.getBoundingClientRect();
     const y = touch.clientY - rect.top;
-    if (y < canvas.height / 2) leftPaddleY -= 10;
-    else leftPaddleY += 10;
-  });
+    if (gameMode === 'cpu') paddle1Y = y - paddleHeight / 2;
+  }, { passive: false });
 
-  updateLeaderboard();
+  function startGame(mode) {
+    gameMode = mode;
+    player1Name = document.getElementById("playerName").value || "Player 1";
+    if (gameMode === "1v1") player2Name = "Player 2";
+    document.getElementById("popup").style.display = "none";
+    requestAnimationFrame(draw);
+  }
+
+  function resetBall() {
+    ballX = canvas.width / 2;
+    ballY = canvas.height / 2;
+    ballSpeedX = -ballSpeedX;
+    ballSpeedY = (Math.random() > 0.5 ? 4 : -4);
+  }
+
+  function moveEverything() {
+    if (gameMode === "1v1") {
+      if (keys["w"]) paddle1Y -= 7;
+      if (keys["s"]) paddle1Y += 7;
+      if (keys["ArrowUp"]) paddle2Y -= 7;
+      if (keys["ArrowDown"]) paddle2Y += 7;
+    } else {
+      if (keys["w"]) paddle1Y -= 7;
+      if (keys["s"]) paddle1Y += 7;
+      if (ballY > paddle2Y + paddleHeight / 2) paddle2Y += 4;
+      else paddle2Y -= 4;
+    }
+
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
+
+    if (ballY < 0 || ballY > canvas.height) ballSpeedY = -ballSpeedY;
+
+    // Paddle collisions
+    if (ballX < paddleWidth + 10) {
+      if (ballY > paddle1Y && ballY < paddle1Y + paddleHeight) {
+        ballSpeedX = -ballSpeedX;
+        let deltaY = ballY - (paddle1Y + paddleHeight / 2);
+        ballSpeedY = deltaY * 0.2;
+      } else {
+        cpuScore++;
+        resetBall();
+      }
+    }
+
+    if (ballX > canvas.width - paddleWidth - 10) {
+      if (ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
+        ballSpeedX = -ballSpeedX;
+        let deltaY = ballY - (paddle2Y + paddleHeight / 2);
+        ballSpeedY = deltaY * 0.2;
+      } else {
+        playerScore++;
+        resetBall();
+      }
+    }
+  }
+
+  function drawNet() {
+    ctx.fillStyle = "#555";
+    for (let i = 0; i < canvas.height; i += 40) {
+      ctx.fillRect(canvas.width / 2 - 1, i, 2, 20);
+    }
+  }
+
+  function drawEverything() {
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    drawNet();
+
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(10, paddle1Y, paddleWidth, paddleHeight);
+    ctx.fillRect(canvas.width - paddleWidth - 10, paddle2Y, paddleWidth, paddleHeight);
+
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = "24px Antonio";
+    ctx.fillStyle = "#FF2DAF";
+    ctx.fillText(`${player1Name}: ${playerScore}`, 100, 40);
+    ctx.fillText(`${player2Name}: ${cpuScore}`, canvas.width - 250, 40);
+  }
+
+  function draw() {
+    moveEverything();
+    drawEverything();
+    requestAnimationFrame(draw);
+  }
 </script>
 </body>
 </html>
