@@ -2,110 +2,221 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>👾 vs ⛵️ — Vibe Battle Begins</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
     body {
-      margin: 0;
-      background: radial-gradient(circle, #fbeaff, #d0f1ff);
       font-family: 'Antonio', sans-serif;
-      overflow: hidden;
+      background: radial-gradient(circle at center, #fbeaff, #d0f1ff);
+      position: relative;
     }
-    #splash {
+    canvas {
+      display: block;
       position: absolute;
-      width: 100%;
-      height: 100%;
-      background: #000000cc;
-      color: white;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+    .popup {
+      position: absolute;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      color: #fff;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      z-index: 100;
-      animation: fadeIn 1s ease-in;
+      padding: 20px;
+      text-align: center;
+      z-index: 10;
     }
-    #gameCanvas {
-      display: block;
-      margin: auto;
-      background: #222;
-    }
-    #bossHealth {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 2em;
-      display: none;
-    }
-    #cutitWatermark {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      font-size: 1em;
+    .popup.hidden { display: none; }
+    .popup h1 { font-size: 3em; margin-bottom: 0.5em; text-shadow: 0 0 10px #fff; }
+    .popup p { font-size: 1.2em; margin-bottom: 1.5em; max-width: 400px; }
+    .popup button {
+      font-family: 'Antonio', sans-serif;
+      background: #ff69b4;
       color: #fff;
-      opacity: 0.5;
+      border: none;
+      padding: 0.8em 1.5em;
+      margin: 0.5em;
+      font-size: 1em;
+      border-radius: 5px;
+      cursor: pointer;
+      text-shadow: 0 0 5px #000;
+      transition: transform 0.2s;
     }
-    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+    .popup button:hover { transform: scale(1.05); }
+    #scoreBoard {
+      position: absolute;
+      top: 20px; left: 20px;
+      color: #fff; font-size: 1.5em;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
+      z-index: 5;
+    }
+    #watermark {
+      position: absolute;
+      bottom: 10px; left: 50%;
+      transform: translateX(-50%);
+      color: #fff; opacity: 0.3;
+      font-size: 1em; z-index: 5;
+    }
   </style>
 </head>
 <body>
 
-<div id="splash">
-  <h1>✨ Cosmic Showdown ✨</h1>
-  <p>👾 vs ⛵️ — Vibe Battle Begins</p>
-  <button onclick="startGame()">Start Game</button>
-</div>
+  <!-- Intro Popup -->
+  <div id="introPopup" class="popup">
+    <h1>👾 vs ⛵️ — Vibe Battle Begins</h1>
+    <p>Click or tap to shoot the Vibe Overlord. Hit it 5 times to win. Rack up points and beat your high score!</p>
+    <button onclick="startGame()">Start Vibe</button>
+  </div>
 
-<div id="bossHealth">❤️❤️❤️❤️❤️</div>
-<canvas id="gameCanvas" width="800" height="600"></canvas>
-<div id="cutitWatermark">CutIt.sbs ✦ Iconic Vibes Only</div>
+  <!-- End-of-Game Popup -->
+  <div id="endPopup" class="popup hidden">
+    <h1>Victory!</h1>
+    <p id="endMessage"></p>
+    <button onclick="goHome()">Home</button>
+    <button onclick="startGame()">Play Again</button>
+  </div>
 
-<audio id="pew" src="pew.mp3"></audio>
-<audio id="hit" src="hit.mp3"></audio>
-<audio id="explode" src="explode.mp3"></audio>
+  <!-- Scoreboard & Watermark -->
+  <div id="scoreBoard">Score: 0 | High: 0</div>
+  <div id="watermark">CutIt.sbs ✦ your vibe. your code</div>
+
+  <!-- Game Canvas -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- Sound Effects (replace src with your files) -->
+  <audio id="pew" src="pew.mp3"></audio>
+  <audio id="hit" src="hit.mp3"></audio>
+  <audio id="explode" src="explode.mp3"></audio>
 
 <script>
-  let splash = document.getElementById("splash");
-  let bossHealth = document.getElementById("bossHealth");
-  let pewFX = document.getElementById("pew");
-  let hitFX = document.getElementById("hit");
-  let explodeFX = document.getElementById("explode");
+  // Responsive Canvas Setup
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
 
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
+  // DOM Elements
+  const introPopup = document.getElementById('introPopup');
+  const endPopup   = document.getElementById('endPopup');
+  const endMsg     = document.getElementById('endMessage');
+  const scoreBoard = document.getElementById('scoreBoard');
+  const pewFX      = document.getElementById('pew');
+  const hitFX      = document.getElementById('hit');
+  const explodeFX  = document.getElementById('explode');
 
-  let bossHits = 0;
+  // Game State
+  let score = 0;
+  let highScore = localStorage.getItem('vibeHigh') || 0;
+  let hits = 0;
+  const maxHits = 5;
+  let boss = { x: 0, y: 0, size: 80, dir: 1, speed: 2 };
 
+  // Update scoreboard
+  function updateHUD() {
+    scoreBoard.textContent = `Score: ${score} | High: ${highScore}`;
+  }
+
+  // Show/Hide Popups
+  function show(element) { element.classList.remove('hidden'); }
+  function hide(element) { element.classList.add('hidden'); }
+
+  // Start or Restart Game
   function startGame() {
-    splash.style.display = "none";
-    bossHealth.style.display = "block";
-    loop();
-  }
-
-  function shoot() {
-    pewFX.play();
-    // trigger bullet animation
-  }
-
-  function hitBoss() {
-    bossHits++;
-    hitFX.play();
-    if (bossHits >= 5) {
-      explodeFX.play();
-      bossHealth.innerHTML = "💀 Vibe Overlord Defeated 💀";
-      setTimeout(() => {
-        alert("✨ CutIt.sbs ✦ You Slayed the Vibe Overlord ✦");
-      }, 1000);
-    } else {
-      bossHealth.innerHTML = "❤️".repeat(5 - bossHits);
-    }
-  }
-
-  function loop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // game loop logic here
+    // Reset
+    score = 0; hits = 0;
+    boss.speed = Math.max(2, window.innerWidth / 800 * 2);
+    boss.x = canvas.width / 2 - boss.size / 2;
+    boss.y = 50;
+    updateHUD();
+    hide(endPopup);
+    hide(introPopup);
+    // Enable input
+    canvas.addEventListener('pointerdown', handleShoot);
+    // Begin loop
     requestAnimationFrame(loop);
   }
-</script>
 
+  // Go Home
+  function goHome() {
+    window.location.href = 'https://cutit.sbs';
+  }
+
+  // Handle Shooting
+  function handleShoot(evt) {
+    pewFX.currentTime = 0; pewFX.play();
+    const rect = canvas.getBoundingClientRect();
+    const x = evt.clientX - rect.left;
+    const y = evt.clientY - rect.top;
+    // Simple circle collision vs boss
+    const dx = x - (boss.x + boss.size/2);
+    const dy = y - (boss.y + boss.size/2);
+    if (Math.hypot(dx, dy) < boss.size/2) {
+      hits++;
+      score++;
+      hitFX.currentTime = 0; hitFX.play();
+      if (hits >= maxHits) return endGame();
+    }
+    updateHUD();
+  }
+
+  // End Game Logic
+  function endGame() {
+    // Stop input
+    canvas.removeEventListener('pointerdown', handleShoot);
+    // Explosion SFX
+    explodeFX.currentTime = 0; explodeFX.play();
+    // Save high score
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem('vibeHigh', highScore);
+    }
+    // Show popup
+    endMsg.innerHTML =
+      `You scored <strong>${score}</strong>!<br>` +
+      `High Score: <strong>${highScore}</strong><br><br>` +
+      `CutIt.sbs ✦ your vibe. your code`;
+    show(endPopup);
+  }
+
+  // Main Loop
+  function loop() {
+    // Clear
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Move Boss
+    boss.x += boss.speed * boss.dir;
+    if (boss.x + boss.size > canvas.width || boss.x < 0) boss.dir *= -1;
+
+    // Draw Boss (circle)
+    ctx.fillStyle = '#ff0099';
+    ctx.beginPath();
+    ctx.arc(
+      boss.x + boss.size/2,
+      boss.y + boss.size/2,
+      boss.size/2,
+      0, Math.PI * 2
+    );
+    ctx.fill();
+
+    // Animate Starfield Background (optional)
+    // …insert fancy particles here…
+
+    // Continue if still shooting enabled
+    if (hits < maxHits) requestAnimationFrame(loop);
+  }
+
+  // Initial HUD
+  updateHUD();
+</script>
 </body>
 </html>
