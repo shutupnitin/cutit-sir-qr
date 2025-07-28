@@ -41,8 +41,6 @@
             max-width: 100%;
             max-height: 100%;
             image-rendering: optimizeSpeed;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: -webkit-optimize-contrast;
             image-rendering: crisp-edges;
         }
         
@@ -138,21 +136,6 @@
             border-radius: 8px;
         }
         
-        .mode-btn::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
-        }
-        
-        .mode-btn:hover::after {
-            left: 100%;
-        }
-        
         .mode-btn:hover {
             background: #fff;
             color: #000;
@@ -175,23 +158,6 @@
             font-weight: bold;
             border: 3px solid #fff;
             border-radius: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.2), transparent);
-            transition: 0.5s;
-        }
-        
-        .btn:hover::after {
-            left: 100%;
         }
         
         .btn:hover {
@@ -425,9 +391,6 @@
         let gameRunning = false;
         let animationId;
         let lastTime = 0;
-        const frameRate = 60;
-        const frameInterval = 1000 / frameRate;
-        let deltaTime = 0;
         
         // Game objects
         let paddleHeight;
@@ -439,8 +402,8 @@
         let ballSpeedX, ballSpeedY;
         
         // Scores
-        let playerScore = 0;
-        let opponentScore = 0;
+        let playerScoreVal = 0;
+        let opponentScoreVal = 0;
         let playerHighScore = 0;
         
         // Control variables
@@ -448,9 +411,8 @@
         let playerDown = false;
         let opponentUp = false;
         let opponentDown = false;
-        let touchY = 0;
         let touchMode = '';
-        
+
         // Initialize game
         function init() {
             resizeCanvas();
@@ -488,8 +450,8 @@
         }
         
         function saveHighScore() {
-            if (playerScore > playerHighScore) {
-                playerHighScore = playerScore;
+            if (playerScoreVal > playerHighScore) {
+                playerHighScore = playerScoreVal;
                 localStorage.setItem('pingPongHighScore', playerHighScore.toString());
                 document.getElementById('playerHighScore').textContent = playerHighScore;
             }
@@ -499,8 +461,8 @@
             if (mode) gameMode = mode;
             startPopup.classList.remove('active');
             gameRunning = true;
-            playerScore = 0;
-            opponentScore = 0;
+            playerScoreVal = 0;
+            opponentScoreVal = 0;
             document.getElementById('playerScore').textContent = '0';
             document.getElementById('opponentScore').textContent = '0';
             resetBall();
@@ -522,11 +484,11 @@
             gameRunning = false;
             cancelAnimationFrame(animationId);
             
-            document.getElementById('endPlayerScore').textContent = playerScore;
-            document.getElementById('endOpponentScore').textContent = opponentScore;
+            document.getElementById('endPlayerScore').textContent = playerScoreVal;
+            document.getElementById('endOpponentScore').textContent = opponentScoreVal;
             document.getElementById('highScoreDisplay').textContent = playerHighScore;
             
-            if (playerScore > opponentScore) {
+            if (playerScoreVal > opponentScoreVal) {
                 document.getElementById('winnerText').textContent = "Player Wins!";
             } else {
                 document.getElementById('winnerText').textContent = "Opponent Wins!";
@@ -593,7 +555,7 @@
         function handleMouseMove(e) {
             const rect = canvas.getBoundingClientRect();
             const scaleY = canvas.height / rect.height;
-            touchY = (e.clientY - rect.top) * scaleY;
+            const touchY = (e.clientY - rect.top) * scaleY;
             
             if (gameMode === 'pvc') {
                 // In computer mode, mouse controls player paddle
@@ -631,10 +593,11 @@
             }
         }
         
-        function update(delta) {
+        function update() {
             // Move player paddle with keyboard
-            if (playerUp && playerY > 0) playerY -= 8 * delta;
-            if (playerDown && playerY < canvas.height - paddleHeight) playerY += 8 * delta;
+            const paddleSpeed = 10;
+            if (playerUp && playerY > 0) playerY -= paddleSpeed;
+            if (playerDown && playerY < canvas.height - paddleHeight) playerY += paddleSpeed;
             
             // Move opponent paddle
             if (gameMode === 'pvc') {
@@ -644,22 +607,22 @@
                 
                 // Move towards predicted position with perfect precision
                 if (opponentY + paddleHeight/2 < targetY) {
-                    opponentY += 10 * delta;
+                    opponentY += 10;
                 } else if (opponentY + paddleHeight/2 > targetY) {
-                    opponentY -= 10 * delta;
+                    opponentY -= 10;
                 }
                 
                 // Ensure paddle stays within bounds
                 opponentY = Math.max(0, Math.min(canvas.height - paddleHeight, opponentY));
             } else {
                 // Move opponent paddle with keyboard
-                if (opponentUp && opponentY > 0) opponentY -= 8 * delta;
-                if (opponentDown && opponentY < canvas.height - paddleHeight) opponentY += 8 * delta;
+                if (opponentUp && opponentY > 0) opponentY -= paddleSpeed;
+                if (opponentDown && opponentY < canvas.height - paddleHeight) opponentY += paddleSpeed;
             }
             
             // Move ball
-            ballX += ballSpeedX * delta;
-            ballY += ballSpeedY * delta;
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
             
             // Ball collision with top and bottom
             if (ballY < 0) {
@@ -704,19 +667,19 @@
             
             // Score points
             if (ballX < 0) {
-                opponentScore++;
-                document.getElementById('opponentScore').textContent = opponentScore;
+                opponentScoreVal++;
+                document.getElementById('opponentScore').textContent = opponentScoreVal;
                 resetBall();
             }
             
             if (ballX > canvas.width) {
-                playerScore++;
-                document.getElementById('playerScore').textContent = playerScore;
+                playerScoreVal++;
+                document.getElementById('playerScore').textContent = playerScoreVal;
                 resetBall();
             }
             
             // End game condition
-            if (playerScore >= 7 || opponentScore >= 7) {
+            if (playerScoreVal >= 7 || opponentScoreVal >= 7) {
                 endGame();
             }
         }
@@ -736,7 +699,7 @@
             ctx.stroke();
             ctx.setLineDash([]);
             
-            // Draw paddles with subtle glow
+            // Draw paddles
             ctx.fillStyle = '#fff';
             ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
             ctx.shadowBlur = 15;
@@ -766,8 +729,8 @@
             ctx.font = 'bold 3rem Antonio';
             ctx.textAlign = 'center';
             ctx.fillStyle = '#fff';
-            ctx.fillText(playerScore.toString(), canvas.width / 4, 80);
-            ctx.fillText(opponentScore.toString(), canvas.width * 3 / 4, 80);
+            ctx.fillText(playerScoreVal.toString(), canvas.width / 4, 80);
+            ctx.fillText(opponentScoreVal.toString(), canvas.width * 3 / 4, 80);
             
             // Draw touch areas in 1 vs 1 mode for visual guidance
             if (gameMode === 'pvp' && window.innerWidth < 768) {
@@ -787,15 +750,11 @@
             }
         }
         
-        function gameLoop(timestamp) {
+        function gameLoop() {
             if (!gameRunning) return;
             
-            // Calculate delta time for consistent movement
-            deltaTime = timestamp - lastTime;
-            lastTime = timestamp;
-            
             // Update game state
-            update(deltaTime / 16);
+            update();
             
             // Draw everything
             draw();
