@@ -166,6 +166,7 @@
             gap: 40px;
             font-size: 2rem;
             z-index: 5;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
         
         .player-score {
@@ -190,6 +191,11 @@
         .controls h3 {
             margin-bottom: 10px;
             color: #fff;
+        }
+        
+        .controls p {
+            margin-bottom: 8px;
+            font-size: 1rem;
         }
         
         @media (max-width: 768px) {
@@ -219,6 +225,10 @@
             .score-display {
                 font-size: 1.5rem;
                 gap: 20px;
+            }
+            
+            .controls p {
+                font-size: 0.9rem;
             }
         }
         
@@ -262,7 +272,11 @@
                 
                 <div class="controls">
                     <h3>Controls:</h3>
-                    <p>Player 1: W/S or Arrow Up/Down keys | Player 2: Touch/Mouse or Arrow Keys</p>
+                    <p><strong>1 vs 1 Mode:</strong></p>
+                    <p>Player 1 (Left): W/S keys or touch left side</p>
+                    <p>Player 2 (Right): Arrow keys or touch right side</p>
+                    <p><strong>Computer vs 1 Mode:</strong></p>
+                    <p>Player: W/S, Arrow keys, or touch anywhere</p>
                 </div>
             </div>
         </div>
@@ -338,6 +352,7 @@
         let opponentUp = false;
         let opponentDown = false;
         let touchY = 0;
+        let touchMode = '';
         
         // Initialize game
         function init() {
@@ -347,6 +362,7 @@
             window.addEventListener('keydown', handleKeyDown);
             window.addEventListener('keyup', handleKeyUp);
             canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
             canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
         }
         
@@ -420,58 +436,107 @@
         }
         
         function handleKeyDown(e) {
-            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') playerUp = true;
-            if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') playerDown = true;
+            if (e.key === 'w' || e.key === 'W') playerUp = true;
+            if (e.key === 's' || e.key === 'S') playerDown = true;
             
-            // For two-player mode on keyboard
-            if (e.key === 'ArrowUp') opponentUp = true;
-            if (e.key === 'ArrowDown') opponentDown = true;
+            // Arrow keys control both players depending on mode
+            if (e.key === 'ArrowUp') {
+                if (gameMode === 'pvp') {
+                    opponentUp = true;
+                } else {
+                    playerUp = true;
+                }
+            }
+            if (e.key === 'ArrowDown') {
+                if (gameMode === 'pvp') {
+                    opponentDown = true;
+                } else {
+                    playerDown = true;
+                }
+            }
         }
         
         function handleKeyUp(e) {
-            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') playerUp = false;
-            if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') playerDown = false;
+            if (e.key === 'w' || e.key === 'W') playerUp = false;
+            if (e.key === 's' || e.key === 'S') playerDown = false;
             
-            if (e.key === 'ArrowUp') opponentUp = false;
-            if (e.key === 'ArrowDown') opponentDown = false;
+            if (e.key === 'ArrowUp') {
+                if (gameMode === 'pvp') {
+                    opponentUp = false;
+                } else {
+                    playerUp = false;
+                }
+            }
+            if (e.key === 'ArrowDown') {
+                if (gameMode === 'pvp') {
+                    opponentDown = false;
+                } else {
+                    playerDown = false;
+                }
+            }
         }
         
         function handleMouseMove(e) {
             const rect = canvas.getBoundingClientRect();
             const scaleY = canvas.height / rect.height;
             touchY = (e.clientY - rect.top) * scaleY;
+            
+            if (gameMode === 'pvc') {
+                // In computer mode, mouse controls player paddle
+                playerY = touchY - paddleHeight / 2;
+            }
+        }
+        
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touchX = (e.touches[0].clientX - rect.left) * (canvas.width / rect.width);
+            
+            // Determine which side is being touched
+            if (gameMode === 'pvp') {
+                touchMode = touchX < canvas.width / 2 ? 'player' : 'opponent';
+            } else {
+                touchMode = 'player';
+            }
         }
         
         function handleTouchMove(e) {
             e.preventDefault();
             const rect = canvas.getBoundingClientRect();
             const scaleY = canvas.height / rect.height;
-            touchY = (e.touches[0].clientY - rect.top) * scaleY;
+            const touchYPos = (e.touches[0].clientY - rect.top) * scaleY;
+            
+            if (gameMode === 'pvp') {
+                if (touchMode === 'player') {
+                    playerY = touchYPos - paddleHeight / 2;
+                } else {
+                    opponentY = touchYPos - paddleHeight / 2;
+                }
+            } else {
+                playerY = touchYPos - paddleHeight / 2;
+            }
         }
         
         function update() {
-            // Move player paddle
+            // Move player paddle with keyboard
             if (playerUp && playerY > 0) playerY -= 7;
             if (playerDown && playerY < canvas.height - paddleHeight) playerY += 7;
             
             // Move opponent paddle
             if (gameMode === 'pvc') {
-                // Computer AI
+                // Computer AI with difficulty adjustment
                 const opponentCenter = opponentY + paddleHeight / 2;
+                const reactionSpeed = playerScore > 3 ? 6 : 4; // Increase difficulty as player scores
+                
                 if (opponentCenter < ballY - 15) {
-                    opponentY += 5;
+                    opponentY += reactionSpeed;
                 } else if (opponentCenter > ballY + 15) {
-                    opponentY -= 5;
+                    opponentY -= reactionSpeed;
                 }
             } else {
-                // Player 2 controls
+                // Move opponent paddle with keyboard
                 if (opponentUp && opponentY > 0) opponentY -= 7;
                 if (opponentDown && opponentY < canvas.height - paddleHeight) opponentY += 7;
-                
-                // Touch controls for player 2 on mobile
-                if (touchY > 0 && touchY < canvas.height) {
-                    opponentY = touchY - paddleHeight / 2;
-                }
             }
             
             // Move ball
@@ -532,21 +597,36 @@
             ctx.stroke();
             ctx.setLineDash([]);
             
-            // Draw paddles
+            // Draw paddles with subtle glow
             ctx.fillStyle = '#fff';
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+            ctx.shadowBlur = 10;
             ctx.fillRect(0, playerY, paddleWidth, paddleHeight);
             ctx.fillRect(canvas.width - paddleWidth, opponentY, paddleWidth, paddleHeight);
+            ctx.shadowBlur = 0;
             
-            // Draw ball
+            // Draw ball with glow effect
+            ctx.fillStyle = '#fff';
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.7)';
+            ctx.shadowBlur = 15;
             ctx.beginPath();
             ctx.arc(ballX, ballY, ballSize, 0, Math.PI * 2);
             ctx.fill();
+            ctx.shadowBlur = 0;
             
             // Draw scores
             ctx.font = '48px Antonio';
             ctx.textAlign = 'center';
+            ctx.fillStyle = '#fff';
             ctx.fillText(playerScore.toString(), canvas.width / 4, 70);
             ctx.fillText(opponentScore.toString(), canvas.width * 3 / 4, 70);
+            
+            // Draw touch areas in 1 vs 1 mode for visual guidance
+            if (gameMode === 'pvp' && window.innerWidth < 768) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                ctx.fillRect(0, 0, canvas.width / 2, canvas.height);
+                ctx.fillRect(canvas.width / 2, 0, canvas.width / 2, canvas.height);
+            }
         }
         
         function gameLoop() {
