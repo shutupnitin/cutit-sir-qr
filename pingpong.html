@@ -21,6 +21,7 @@
             background: #000;
             font-family: 'Antonio', sans-serif;
             color: #fff;
+            touch-action: manipulation;
         }
         
         #gameContainer {
@@ -31,6 +32,7 @@
             justify-content: center;
             align-items: center;
             background: #000;
+            overflow: hidden;
         }
         
         #gameCanvas {
@@ -38,6 +40,10 @@
             display: block;
             max-width: 100%;
             max-height: 100%;
+            image-rendering: optimizeSpeed;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
         
         .popup {
@@ -46,97 +52,153 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.92);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 10;
+            z-index: 20;
             padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        
+        .popup.active {
+            opacity: 1;
+            pointer-events: all;
         }
         
         .popup-content {
             background: #111;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 40px;
+            border-radius: 16px;
             text-align: center;
             max-width: 600px;
             width: 90%;
-            border: 2px solid #fff;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            border: 3px solid #fff;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .popup.active .popup-content {
+            transform: scale(1);
         }
         
         .popup h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin-bottom: 10px;
             background: linear-gradient(to right, #fff, #aaa);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
         
         .popup h2 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin-bottom: 20px;
             color: #fff;
+            letter-spacing: 1px;
         }
         
         .popup p {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             margin-bottom: 30px;
-            color: #ccc;
-            line-height: 1.6;
+            color: #ddd;
+            line-height: 1.7;
         }
         
         .game-modes {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 20px;
-            margin: 30px 0;
+            gap: 25px;
+            margin: 35px 0;
         }
         
         .mode-btn {
             background: #000;
             color: #fff;
-            border: 2px solid #fff;
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            border: 3px solid #fff;
+            padding: 18px 35px;
+            font-size: 1.4rem;
             font-family: 'Antonio', sans-serif;
             cursor: pointer;
             transition: all 0.3s;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             flex: 1;
-            min-width: 200px;
+            min-width: 220px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .mode-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .mode-btn:hover::after {
+            left: 100%;
         }
         
         .mode-btn:hover {
             background: #fff;
             color: #000;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
         }
         
         .btn {
             background: #fff;
             color: #000;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.3rem;
+            padding: 18px 45px;
+            font-size: 1.5rem;
             font-family: 'Antonio', sans-serif;
             cursor: pointer;
             transition: all 0.3s;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin: 10px;
+            margin: 15px;
             font-weight: bold;
-            border: 2px solid #fff;
+            border: 3px solid #fff;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover::after {
+            left: 100%;
         }
         
         .btn:hover {
             background: #000;
             color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
         }
         
         .btn-outline {
@@ -146,109 +208,146 @@
         
         .watermark {
             position: absolute;
-            bottom: 20px;
+            bottom: 25px;
             left: 0;
             width: 100%;
             text-align: center;
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.25);
             font-family: 'Antonio', sans-serif;
             z-index: 5;
             pointer-events: none;
+            letter-spacing: 1px;
         }
         
         .score-display {
             position: absolute;
-            top: 20px;
+            top: 25px;
             width: 100%;
             display: flex;
             justify-content: center;
-            gap: 40px;
-            font-size: 2rem;
+            gap: 50px;
+            font-size: 2.5rem;
             z-index: 5;
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
         }
         
         .player-score {
             text-align: center;
+            min-width: 150px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
         
         .high-score {
             color: #aaa;
-            font-size: 1.2rem;
-            margin-top: 5px;
+            font-size: 1.3rem;
+            margin-top: 8px;
+            letter-spacing: 1px;
         }
         
         .controls {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 8px;
-            font-size: 1rem;
-            color: #aaa;
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            color: #bbb;
+            border: 2px solid rgba(255, 255, 255, 0.1);
         }
         
         .controls h3 {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: #fff;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
         }
         
         .controls p {
-            margin-bottom: 8px;
-            font-size: 1rem;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            line-height: 1.6;
         }
         
         @media (max-width: 768px) {
             .popup h1 {
-                font-size: 2rem;
+                font-size: 2.5rem;
             }
             
             .popup h2 {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
             }
             
             .popup p {
-                font-size: 1rem;
-            }
-            
-            .mode-btn {
-                padding: 12px 20px;
-                font-size: 1rem;
-                min-width: 140px;
-            }
-            
-            .btn {
-                padding: 12px 25px;
                 font-size: 1.1rem;
             }
             
+            .mode-btn {
+                padding: 15px 25px;
+                font-size: 1.2rem;
+                min-width: 180px;
+            }
+            
+            .btn {
+                padding: 15px 30px;
+                font-size: 1.3rem;
+            }
+            
             .score-display {
-                font-size: 1.5rem;
-                gap: 20px;
+                font-size: 1.8rem;
+                gap: 30px;
+            }
+            
+            .player-score {
+                min-width: 120px;
+                padding: 8px 15px;
             }
             
             .controls p {
-                font-size: 0.9rem;
+                font-size: 1rem;
             }
         }
         
         @media (max-width: 480px) {
             .popup-content {
-                padding: 20px 15px;
+                padding: 25px 20px;
             }
             
             .popup h1 {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
             
             .game-modes {
                 flex-direction: column;
-                gap: 10px;
+                gap: 15px;
             }
             
             .mode-btn {
                 width: 100%;
                 min-width: auto;
+            }
+            
+            .score-display {
+                font-size: 1.5rem;
+                gap: 15px;
+                top: 15px;
+            }
+            
+            .player-score {
+                min-width: 100px;
+                padding: 5px 10px;
+                font-size: 1.3rem;
+            }
+            
+            .high-score {
+                font-size: 1rem;
+            }
+            
+            .watermark {
+                font-size: 0.9rem;
+                bottom: 15px;
             }
         }
     </style>
@@ -257,11 +356,11 @@
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
         
-        <div id="startPopup" class="popup">
+        <div id="startPopup" class="popup active">
             <div class="popup-content">
                 <h1>CutIt.sbs</h1>
                 <h2>✦ your vibe. your code.</h2>
-                <p>Challenge your friend or test your skills against the computer in this classic ping pong game!</p>
+                <p>Challenge your friend or test your skills against our unbeatable AI in this high-performance ping pong game!</p>
                 
                 <div class="game-modes">
                     <button class="mode-btn" onclick="startGame('pvp')">1 vs 1</button>
@@ -272,19 +371,16 @@
                 
                 <div class="controls">
                     <h3>Controls:</h3>
-                    <p><strong>1 vs 1 Mode:</strong></p>
-                    <p>Player 1 (Left): W/S keys or touch left side</p>
-                    <p>Player 2 (Right): Arrow keys or touch right side</p>
-                    <p><strong>Computer vs 1 Mode:</strong></p>
-                    <p>Player: W/S, Arrow keys, or touch anywhere</p>
+                    <p><strong>1 vs 1 Mode:</strong> Player 1 (Left): W/S keys or touch left side | Player 2 (Right): Arrow keys or touch right side</p>
+                    <p><strong>Computer vs 1 Mode:</strong> Player: W/S, Arrow keys, or touch anywhere</p>
                 </div>
             </div>
         </div>
         
-        <div id="endPopup" class="popup" style="display: none;">
+        <div id="endPopup" class="popup">
             <div class="popup-content">
                 <h1>Game Over</h1>
-                <h2 id="winnerText">Player 1 Wins!</h2>
+                <h2 id="winnerText">Player Wins!</h2>
                 
                 <div class="score-display">
                     <div class="player-score">
@@ -297,7 +393,7 @@
                 
                 <p>High Score: <span id="highScoreDisplay">0</span></p>
                 
-                <div style="margin: 30px 0;">
+                <div style="margin: 40px 0 20px;">
                     <button class="btn" onclick="restartGame()">Play Again</button>
                     <button class="btn btn-outline" onclick="goHome()">Home</button>
                 </div>
@@ -328,18 +424,19 @@
         let gameMode = 'pvp'; // 'pvp' or 'pvc'
         let gameRunning = false;
         let animationId;
+        let lastTime = 0;
+        const frameRate = 60;
+        const frameInterval = 1000 / frameRate;
+        let deltaTime = 0;
         
         // Game objects
-        const paddleHeight = 100;
-        const paddleWidth = 10;
-        const ballSize = 10;
+        let paddleHeight;
+        const paddleWidth = 12;
+        const ballSize = 12;
         
-        let playerY = canvas.height / 2 - paddleHeight / 2;
-        let opponentY = canvas.height / 2 - paddleHeight / 2;
-        let ballX = canvas.width / 2;
-        let ballY = canvas.height / 2;
-        let ballSpeedX = 5;
-        let ballSpeedY = 5;
+        let playerY, opponentY;
+        let ballX, ballY;
+        let ballSpeedX, ballSpeedY;
         
         // Scores
         let playerScore = 0;
@@ -369,10 +466,19 @@
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
+            
+            // Scale elements based on screen size
+            paddleHeight = Math.max(80, Math.min(150, canvas.height * 0.15));
+            
             playerY = canvas.height / 2 - paddleHeight / 2;
             opponentY = canvas.height / 2 - paddleHeight / 2;
             ballX = canvas.width / 2;
             ballY = canvas.height / 2;
+            
+            // Adjust ball speed based on screen size
+            const baseSpeed = Math.min(8, Math.max(4, canvas.width * 0.005));
+            ballSpeedX = baseSpeed * (Math.random() > 0.5 ? 1 : -1);
+            ballSpeedY = baseSpeed * (Math.random() > 0.5 ? 1 : -1);
         }
         
         function loadHighScore() {
@@ -391,17 +497,25 @@
         
         function startGame(mode) {
             if (mode) gameMode = mode;
-            startPopup.style.display = 'none';
+            startPopup.classList.remove('active');
             gameRunning = true;
+            playerScore = 0;
+            opponentScore = 0;
+            document.getElementById('playerScore').textContent = '0';
+            document.getElementById('opponentScore').textContent = '0';
             resetBall();
+            lastTime = performance.now();
             gameLoop();
         }
         
         function resetBall() {
             ballX = canvas.width / 2;
             ballY = canvas.height / 2;
-            ballSpeedX = 5 * (Math.random() > 0.5 ? 1 : -1);
-            ballSpeedY = 5 * (Math.random() > 0.5 ? 1 : -1);
+            
+            // Adjust ball speed based on screen size
+            const baseSpeed = Math.min(8, Math.max(4, canvas.width * 0.005));
+            ballSpeedX = baseSpeed * (Math.random() > 0.5 ? 1 : -1);
+            ballSpeedY = baseSpeed * (Math.random() > 0.5 ? 1 : -1);
         }
         
         function endGame() {
@@ -418,17 +532,17 @@
                 document.getElementById('winnerText').textContent = "Opponent Wins!";
             }
             
-            endPopup.style.display = 'flex';
             saveHighScore();
+            setTimeout(() => {
+                endPopup.classList.add('active');
+            }, 500);
         }
         
         function restartGame() {
-            playerScore = 0;
-            opponentScore = 0;
-            document.getElementById('playerScore').textContent = '0';
-            document.getElementById('opponentScore').textContent = '0';
-            endPopup.style.display = 'none';
-            startGame();
+            endPopup.classList.remove('active');
+            setTimeout(() => {
+                startGame();
+            }, 300);
         }
         
         function goHome() {
@@ -517,50 +631,75 @@
             }
         }
         
-        function update() {
+        function update(delta) {
             // Move player paddle with keyboard
-            if (playerUp && playerY > 0) playerY -= 7;
-            if (playerDown && playerY < canvas.height - paddleHeight) playerY += 7;
+            if (playerUp && playerY > 0) playerY -= 8 * delta;
+            if (playerDown && playerY < canvas.height - paddleHeight) playerY += 8 * delta;
             
             // Move opponent paddle
             if (gameMode === 'pvc') {
-                // Computer AI with difficulty adjustment
-                const opponentCenter = opponentY + paddleHeight / 2;
-                const reactionSpeed = playerScore > 3 ? 6 : 4; // Increase difficulty as player scores
+                // Unbeatable AI with predictive movement
+                const predictY = ballY + (ballSpeedY * (canvas.width - ballX) / ballSpeedX);
+                const targetY = predictY - paddleHeight / 2;
                 
-                if (opponentCenter < ballY - 15) {
-                    opponentY += reactionSpeed;
-                } else if (opponentCenter > ballY + 15) {
-                    opponentY -= reactionSpeed;
+                // Move towards predicted position with perfect precision
+                if (opponentY + paddleHeight/2 < targetY) {
+                    opponentY += 10 * delta;
+                } else if (opponentY + paddleHeight/2 > targetY) {
+                    opponentY -= 10 * delta;
                 }
+                
+                // Ensure paddle stays within bounds
+                opponentY = Math.max(0, Math.min(canvas.height - paddleHeight, opponentY));
             } else {
                 // Move opponent paddle with keyboard
-                if (opponentUp && opponentY > 0) opponentY -= 7;
-                if (opponentDown && opponentY < canvas.height - paddleHeight) opponentY += 7;
+                if (opponentUp && opponentY > 0) opponentY -= 8 * delta;
+                if (opponentDown && opponentY < canvas.height - paddleHeight) opponentY += 8 * delta;
             }
             
             // Move ball
-            ballX += ballSpeedX;
-            ballY += ballSpeedY;
+            ballX += ballSpeedX * delta;
+            ballY += ballSpeedY * delta;
             
             // Ball collision with top and bottom
-            if (ballY < 0 || ballY > canvas.height) {
+            if (ballY < 0) {
+                ballY = 0;
+                ballSpeedY = -ballSpeedY;
+            }
+            if (ballY > canvas.height) {
+                ballY = canvas.height;
                 ballSpeedY = -ballSpeedY;
             }
             
             // Ball collision with paddles
-            if (ballX < paddleWidth && ballY > playerY && ballY < playerY + paddleHeight) {
+            if (ballX - ballSize < paddleWidth && 
+                ballY > playerY && 
+                ballY < playerY + paddleHeight) {
+                
+                // Calculate hit position (from -1 to 1)
+                const hitPosition = (ballY - (playerY + paddleHeight/2)) / (paddleHeight/2);
                 ballSpeedX = Math.abs(ballSpeedX) * 1.05; // Increase speed
-                // Add spin based on paddle movement
-                const deltaY = ballY - (playerY + paddleHeight / 2);
-                ballSpeedY = deltaY * 0.2;
+                
+                // Adjust angle based on where ball hits paddle
+                ballSpeedY = hitPosition * 7;
+                
+                // Ensure ball doesn't get stuck
+                ballX = paddleWidth + ballSize;
             }
             
-            if (ballX > canvas.width - paddleWidth * 2 && ballY > opponentY && ballY < opponentY + paddleHeight) {
+            if (ballX + ballSize > canvas.width - paddleWidth && 
+                ballY > opponentY && 
+                ballY < opponentY + paddleHeight) {
+                
+                // Calculate hit position (from -1 to 1)
+                const hitPosition = (ballY - (opponentY + paddleHeight/2)) / (paddleHeight/2);
                 ballSpeedX = -Math.abs(ballSpeedX) * 1.05; // Increase speed
-                // Add spin based on paddle movement
-                const deltaY = ballY - (opponentY + paddleHeight / 2);
-                ballSpeedY = deltaY * 0.2;
+                
+                // Adjust angle based on where ball hits paddle
+                ballSpeedY = hitPosition * 7;
+                
+                // Ensure ball doesn't get stuck
+                ballX = canvas.width - paddleWidth - ballSize;
             }
             
             // Score points
@@ -587,10 +726,10 @@
             ctx.fillStyle = '#000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Draw center line
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-            ctx.setLineDash([10, 15]);
-            ctx.lineWidth = 4;
+            // Draw center line with glow
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+            ctx.setLineDash([15, 20]);
+            ctx.lineWidth = 5;
             ctx.beginPath();
             ctx.moveTo(canvas.width / 2, 0);
             ctx.lineTo(canvas.width / 2, canvas.height);
@@ -599,47 +738,91 @@
             
             // Draw paddles with subtle glow
             ctx.fillStyle = '#fff';
-            ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
-            ctx.shadowBlur = 10;
-            ctx.fillRect(0, playerY, paddleWidth, paddleHeight);
-            ctx.fillRect(canvas.width - paddleWidth, opponentY, paddleWidth, paddleHeight);
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
+            ctx.shadowBlur = 15;
+            
+            // Player paddle with rounded corners
+            ctx.beginPath();
+            ctx.roundRect(0, playerY, paddleWidth, paddleHeight, 8);
+            ctx.fill();
+            
+            // Opponent paddle with rounded corners
+            ctx.beginPath();
+            ctx.roundRect(canvas.width - paddleWidth, opponentY, paddleWidth, paddleHeight, 8);
+            ctx.fill();
+            
             ctx.shadowBlur = 0;
             
             // Draw ball with glow effect
             ctx.fillStyle = '#fff';
-            ctx.shadowColor = 'rgba(255, 255, 255, 0.7)';
-            ctx.shadowBlur = 15;
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+            ctx.shadowBlur = 20;
             ctx.beginPath();
             ctx.arc(ballX, ballY, ballSize, 0, Math.PI * 2);
             ctx.fill();
             ctx.shadowBlur = 0;
             
             // Draw scores
-            ctx.font = '48px Antonio';
+            ctx.font = 'bold 3rem Antonio';
             ctx.textAlign = 'center';
             ctx.fillStyle = '#fff';
-            ctx.fillText(playerScore.toString(), canvas.width / 4, 70);
-            ctx.fillText(opponentScore.toString(), canvas.width * 3 / 4, 70);
+            ctx.fillText(playerScore.toString(), canvas.width / 4, 80);
+            ctx.fillText(opponentScore.toString(), canvas.width * 3 / 4, 80);
             
             // Draw touch areas in 1 vs 1 mode for visual guidance
             if (gameMode === 'pvp' && window.innerWidth < 768) {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
                 ctx.fillRect(0, 0, canvas.width / 2, canvas.height);
                 ctx.fillRect(canvas.width / 2, 0, canvas.width / 2, canvas.height);
+                
+                // Draw touch indicators
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.beginPath();
+                ctx.arc(canvas.width / 4, canvas.height - 80, 30, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(canvas.width * 3 / 4, canvas.height - 80, 30, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
         
-        function gameLoop() {
+        function gameLoop(timestamp) {
             if (!gameRunning) return;
             
-            update();
+            // Calculate delta time for consistent movement
+            deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            // Update game state
+            update(deltaTime / 16);
+            
+            // Draw everything
             draw();
             
             animationId = requestAnimationFrame(gameLoop);
         }
         
         // Initialize the game when page loads
-        window.onload = init;
+        window.onload = function() {
+            // Add roundRect support if not available
+            if (!CanvasRenderingContext2D.prototype.roundRect) {
+                CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                    if (width < 2 * radius) radius = width / 2;
+                    if (height < 2 * radius) radius = height / 2;
+                    this.beginPath();
+                    this.moveTo(x + radius, y);
+                    this.arcTo(x + width, y, x + width, y + height, radius);
+                    this.arcTo(x + width, y + height, x, y + height, radius);
+                    this.arcTo(x, y + height, x, y, radius);
+                    this.arcTo(x, y, x + width, y, radius);
+                    this.closePath();
+                    return this;
+                };
+            }
+            
+            init();
+        };
     </script>
 </body>
 </html>
