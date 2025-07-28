@@ -8,37 +8,38 @@
     @import url('https://fonts.googleapis.com/css2?family=Antonio&display=swap');
     html, body {
       margin: 0; padding: 0;
-      background: #000; color: #fff;
+      background: #000;
       font-family: 'Antonio', sans-serif;
       overflow: hidden;
-      touch-action: none;
     }
     canvas {
-      display: block;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
       background: #000;
     }
     #popup, #gameOver {
-      position: absolute; top: 0; left: 0;
+      position: fixed;
       width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
       display: flex; flex-direction: column;
-      justify-content: center; align-items: center;
-      z-index: 10;
+      align-items: center; justify-content: center;
+      color: #fff; z-index: 100;
       text-align: center;
+      padding: 0 20px;
     }
     button {
-      font-size: 1.2em; padding: 12px 24px;
+      font-size: 18px; padding: 12px 20px;
       background: #fff; color: #000;
-      border: none; border-radius: 5px;
-      margin: 10px;
-      cursor: pointer;
+      border: none; margin: 10px;
+      border-radius: 5px; cursor: pointer;
     }
     .watermark {
-      position: absolute; bottom: 8px; width: 100%;
+      position: fixed; bottom: 8px; width: 100%;
       text-align: center; font-size: 12px;
       color: rgba(255,255,255,0.3);
-      z-index: 5;
       pointer-events: none;
+      z-index: 1;
     }
   </style>
 </head>
@@ -49,34 +50,29 @@
     <button onclick="startGame('AI')">1 vs Computer</button>
     <button onclick="startGame('2P')">1 vs 1</button>
   </div>
-
   <div id="gameOver" style="display:none">
     <h2>Game Over</h2>
     <p id="scoreDisplay"></p>
     <button onclick="window.location.href='https://cutit.sbs/games'">Home</button>
     <button onclick="restart()">Play Again</button>
   </div>
-
   <canvas id="gameCanvas"></canvas>
   <div class="watermark">CutIt.sbs ✦ your vibe. your code.</div>
 
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    let DPR = window.devicePixelRatio || 1;
-    let mode = 'AI', score = 0;
-    let highScore = localStorage.getItem('cutitHighScore') || 0;
-    let player1, player2, ball, keys = {};
+    let mode = "AI", score = 0;
+    let highScore = localStorage.getItem("cutitHighScore") || 0;
+    let player1, player2, ball;
+    let keys = {};
 
     function resizeCanvas() {
-      canvas.width = window.innerWidth * DPR;
-      canvas.height = window.innerHeight * DPR;
-      canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = window.innerHeight + "px";
-      ctx.scale(DPR, DPR);
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
+    window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
 
     function startGame(selectedMode) {
       mode = selectedMode;
@@ -91,9 +87,9 @@
     }
 
     function init() {
-      ball = { x: window.innerWidth/2, y: window.innerHeight/2, dx: 4, dy: 4, size: 10 };
-      player1 = { x: 20, y: window.innerHeight/2 - 50, w: 10, h: 100 };
-      player2 = { x: window.innerWidth - 30, y: window.innerHeight/2 - 50, w: 10, h: 100 };
+      ball = { x: canvas.width / 2, y: canvas.height / 2, dx: 4, dy: 4, size: 8 };
+      player1 = { x: 30, y: canvas.height / 2 - 50, w: 12, h: 100 };
+      player2 = { x: canvas.width - 42, y: canvas.height / 2 - 50, w: 12, h: 100 };
       requestAnimationFrame(gameLoop);
     }
 
@@ -103,44 +99,40 @@
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw paddles
       ctx.fillStyle = "#fff";
       ctx.fillRect(player1.x, player1.y, player1.w, player1.h);
       ctx.fillRect(player2.x, player2.y, player2.w, player2.h);
 
-      // Draw ball
       ctx.beginPath();
       ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
       ctx.fill();
 
-      // Controls
       if (keys["w"] && player1.y > 0) player1.y -= 6;
-      if (keys["s"] && player1.y < window.innerHeight - player1.h) player1.y += 6;
+      if (keys["s"] && player1.y < canvas.height - player1.h) player1.y += 6;
 
-      if (mode === '2P') {
+      if (mode === "2P") {
         if (keys["ArrowUp"] && player2.y > 0) player2.y -= 6;
-        if (keys["ArrowDown"] && player2.y < window.innerHeight - player2.h) player2.y += 6;
+        if (keys["ArrowDown"] && player2.y < canvas.height - player2.h) player2.y += 6;
       } else {
-        if (player2.y + player2.h/2 < ball.y) player2.y += 4;
+        if (player2.y + player2.h / 2 < ball.y) player2.y += 4;
         else player2.y -= 4;
       }
 
-      // Ball movement
       ball.x += ball.dx;
       ball.y += ball.dy;
 
-      if (ball.y < 0 || ball.y > window.innerHeight) ball.dy *= -1;
+      if (ball.y < 0 || ball.y > canvas.height) ball.dy *= -1;
       if (collide(ball, player1) || collide(ball, player2)) {
         ball.dx *= -1;
         score++;
       }
 
-      if (ball.x < 0 || ball.x > window.innerWidth) {
+      if (ball.x < 0 || ball.x > canvas.width) {
         document.getElementById("gameOver").style.display = "flex";
         document.getElementById("scoreDisplay").innerText = `Score: ${score}`;
         if (score > highScore) {
           highScore = score;
-          localStorage.setItem('cutitHighScore', highScore);
+          localStorage.setItem("cutitHighScore", highScore);
         }
         return;
       }
