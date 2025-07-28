@@ -1,223 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>CutIt.sbs Ping Pong</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    html, body {
-        height: 100%;
-        width: 100%;
-        background-color: #000;
-        color: #fff;
-        font-family: 'Antonio', sans-serif;
-        overflow: hidden;
-    }
-    body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-    }
-    canvas {
-        background-color: #000;
-        border: 4px solid #fff;
-        width: 100vw;
-        height: 100vh;
-        display: block;
-    }
-    #startPopup {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #000;
-        border: 2px solid #fff;
-        padding: 30px 40px;
-        border-radius: 12px;
-        z-index: 1000;
-        text-align: center;
-        box-shadow: 0 0 15px #fff3;
-    }
-    #startPopup h2 {
-        font-size: 1.8rem;
-        margin-bottom: 20px;
-        color: #fff;
-    }
-    input {
-        padding: 12px;
-        margin: 10px 0;
-        width: 100%;
-        font-size: 1.1rem;
-        border: none;
-        border-radius: 8px;
-        text-align: center;
-        font-family: 'Antonio', sans-serif;
-    }
-    .mode-btn {
-        background-color: #fff;
-        color: #000;
-        font-size: 1rem;
-        padding: 12px 24px;
-        margin: 10px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-family: 'Antonio', sans-serif;
-        transition: transform 0.2s;
-    }
-    .mode-btn:hover {
-        transform: scale(1.05);
-    }
-    footer.watermark {
-        position: absolute;
-        bottom: 10px;
-        width: 100%;
-        text-align: center;
-        font-size: 0.85rem;
-        color: #aaa;
-        font-family: 'Antonio', sans-serif;
-        pointer-events: none;
-        z-index: 5;
-    }
-</style>
-
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CutIt.sbs Ping Pong</title>
+    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Antonio', sans-serif;
+            overflow: hidden;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        canvas {
+            background-color: #000;
+            border: 4px solid #fff;
+            display: block;
+        }
+        #startPopup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #000;
+            border: 2px solid #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            z-index: 1000;
+            text-align: center;
+        }
+        #startPopup h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        input {
+            padding: 12px;
+            margin: 10px 0;
+            width: 100%;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .mode-btn {
+            background-color: #fff;
+            color: #000;
+            font-size: 1rem;
+            padding: 12px 24px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        footer.watermark {
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #aaa;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
+    <div id="startPopup">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="playerName" placeholder="Your Name" />
+        <div>
+            <button class="mode-btn" onclick="startGame('cpu')">1 vs CPU</button>
+            <button class="mode-btn" onclick="startGame('1v1')">1 vs 1</button>
+        </div>
+    </div>
 
-<canvas id="gameCanvas" width="900" height="600"></canvas>
-<div class="watermark">Made by CutIt.sbs â¦ your vibe. your code.</div>
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+    <footer class="watermark">Made by CutIt.sbs â¦ your vibe. your code.</footer>
 
-<div id="popup">
-  <h1>CutIt Ping Pong</h1>
-  <input type="text" id="playerName" placeholder="Enter your name">
-  <div>
-    <button class="mode-btn" onclick="startGame('cpu')">Play vs Computer</button>
-    <button class="mode-btn" onclick="startGame('1v1')">1 vs 1</button>
-  </div>
-</div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let paddleHeight = 100, paddleWidth = 10, ballSize = 10;
+        let playerY = 200, opponentY = 200;
+        let ballX = canvas.width / 2, ballY = canvas.height / 2;
+        let ballSpeedX = 4, ballSpeedY = 3;
+        let gameMode = 'cpu';
+        let playerName = '';
+        let upPressed = false, downPressed = false;
+        let wPressed = false, sPressed = false;
 
-<script>
-  const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
+        function drawEverything() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, playerY, paddleWidth, paddleHeight); // player
+            ctx.fillRect(canvas.width - paddleWidth, opponentY, paddleWidth, paddleHeight); // CPU or 2nd player
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, ballSize, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
-  let player1Name = "Player 1", player2Name = "Player 2";
-  let playerScore = 0, cpuScore = 0;
-  let paddleWidth = 10, paddleHeight = 100;
-  let ballX = canvas.width / 2, ballY = canvas.height / 2;
-  let ballSpeedX = 5, ballSpeedY = 4;
-  let paddle1Y = (canvas.height - paddleHeight) / 2;
-  let paddle2Y = (canvas.height - paddleHeight) / 2;
-  let keys = {};
-  let gameMode = "cpu";
+        function moveEverything() {
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
 
-  document.addEventListener("keydown", (e) => keys[e.key] = true);
-  document.addEventListener("keyup", (e) => keys[e.key] = false);
+            if (ballY <= 0 || ballY >= canvas.height) ballSpeedY *= -1;
 
-  canvas.addEventListener("touchmove", function(e) {
-    const touch = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    const y = touch.clientY - rect.top;
-    if (gameMode === 'cpu') paddle1Y = y - paddleHeight / 2;
-  }, { passive: false });
+            // Player collision
+            if (ballX <= paddleWidth && ballY > playerY && ballY < playerY + paddleHeight) {
+                ballSpeedX *= -1;
+            }
+            // Opponent collision
+            if (ballX >= canvas.width - paddleWidth &&
+                ballY > opponentY && ballY < opponentY + paddleHeight) {
+                ballSpeedX *= -1;
+            }
 
-  function startGame(mode) {
-    gameMode = mode;
-    player1Name = document.getElementById("playerName").value || "Player 1";
-    if (gameMode === "1v1") player2Name = "Player 2";
-    document.getElementById("popup").style.display = "none";
-    requestAnimationFrame(draw);
-  }
+            // CPU movement
+            if (gameMode === 'cpu') {
+                if (opponentY + paddleHeight / 2 < ballY) opponentY += 3;
+                else opponentY -= 3;
+            }
 
-  function resetBall() {
-    ballX = canvas.width / 2;
-    ballY = canvas.height / 2;
-    ballSpeedX = -ballSpeedX;
-    ballSpeedY = (Math.random() > 0.5 ? 4 : -4);
-  }
+            // Player control
+            if (upPressed) playerY -= 6;
+            if (downPressed) playerY += 6;
 
-  function moveEverything() {
-    if (gameMode === "1v1") {
-      if (keys["w"]) paddle1Y -= 7;
-      if (keys["s"]) paddle1Y += 7;
-      if (keys["ArrowUp"]) paddle2Y -= 7;
-      if (keys["ArrowDown"]) paddle2Y += 7;
-    } else {
-      if (keys["w"]) paddle1Y -= 7;
-      if (keys["s"]) paddle1Y += 7;
-      if (ballY > paddle2Y + paddleHeight / 2) paddle2Y += 4;
-      else paddle2Y -= 4;
-    }
+            if (gameMode === '1v1') {
+                if (wPressed) opponentY -= 6;
+                if (sPressed) opponentY += 6;
+            }
 
-    ballX += ballSpeedX;
-    ballY += ballSpeedY;
+            // Reset ball
+            if (ballX < 0 || ballX > canvas.width) {
+                ballX = canvas.width / 2;
+                ballY = canvas.height / 2;
+                ballSpeedX *= -1;
+            }
 
-    if (ballY < 0 || ballY > canvas.height) ballSpeedY = -ballSpeedY;
+            // Limit paddle bounds
+            playerY = Math.max(0, Math.min(canvas.height - paddleHeight, playerY));
+            opponentY = Math.max(0, Math.min(canvas.height - paddleHeight, opponentY));
+        }
 
-    // Paddle collisions
-    if (ballX < paddleWidth + 10) {
-      if (ballY > paddle1Y && ballY < paddle1Y + paddleHeight) {
-        ballSpeedX = -ballSpeedX;
-        let deltaY = ballY - (paddle1Y + paddleHeight / 2);
-        ballSpeedY = deltaY * 0.2;
-      } else {
-        cpuScore++;
-        resetBall();
-      }
-    }
+        function gameLoop() {
+            moveEverything();
+            drawEverything();
+            requestAnimationFrame(gameLoop);
+        }
 
-    if (ballX > canvas.width - paddleWidth - 10) {
-      if (ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
-        ballSpeedX = -ballSpeedX;
-        let deltaY = ballY - (paddle2Y + paddleHeight / 2);
-        ballSpeedY = deltaY * 0.2;
-      } else {
-        playerScore++;
-        resetBall();
-      }
-    }
-  }
+        function startGame(mode) {
+            gameMode = mode;
+            playerName = document.getElementById('playerName').value || 'Player';
+            document.getElementById('startPopup').style.display = 'none';
+            gameLoop();
+        }
 
-  function drawNet() {
-    ctx.fillStyle = "#555";
-    for (let i = 0; i < canvas.height; i += 40) {
-      ctx.fillRect(canvas.width / 2 - 1, i, 2, 20);
-    }
-  }
-
-  function drawEverything() {
-    ctx.fillStyle = "#111";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    drawNet();
-
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(10, paddle1Y, paddleWidth, paddleHeight);
-    ctx.fillRect(canvas.width - paddleWidth - 10, paddle2Y, paddleWidth, paddleHeight);
-
-    ctx.beginPath();
-    ctx.arc(ballX, ballY, 10, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.font = "24px Antonio";
-    ctx.fillStyle = "#FF2DAF";
-    ctx.fillText(`${player1Name}: ${playerScore}`, 100, 40);
-    ctx.fillText(`${player2Name}: ${cpuScore}`, canvas.width - 250, 40);
-  }
-
-  function draw() {
-    moveEverything();
-    drawEverything();
-    requestAnimationFrame(draw);
-  }
-</script>
+        // Keyboard support
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp') upPressed = true;
+            if (e.key === 'ArrowDown') downPressed = true;
+            if (e.key === 'w') wPressed = true;
+            if (e.key === 's') sPressed = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowUp') upPressed = false;
+            if (e.key === 'ArrowDown') downPressed = false;
+            if (e.key === 'w') wPressed = false;
+            if (e.key === 's') sPressed = false;
+        });
+    </script>
 </body>
 </html>
