@@ -5,6 +5,7 @@
   <title>CutIt.sbs Ping Pong</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
+
 <style>
     * {
         margin: 0;
@@ -13,10 +14,11 @@
     }
     html, body {
         height: 100%;
+        width: 100%;
         background-color: #000;
+        color: #fff;
         font-family: 'Antonio', sans-serif;
         overflow: hidden;
-        color: #fff;
     }
     body {
         display: flex;
@@ -25,45 +27,51 @@
         flex-direction: column;
     }
     canvas {
-        border: 3px solid #fff;
         background-color: #000;
-        display: block;
+        border: 4px solid #fff;
         width: 100vw;
         height: 100vh;
+        display: block;
     }
     #startPopup {
-        position: absolute;
-        background: #111;
-        color: #fff;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #000;
         border: 2px solid #fff;
-        padding: 30px;
-        text-align: center;
+        padding: 30px 40px;
         border-radius: 12px;
-        z-index: 10;
+        z-index: 1000;
+        text-align: center;
+        box-shadow: 0 0 15px #fff3;
     }
     #startPopup h2 {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         margin-bottom: 20px;
+        color: #fff;
     }
     input {
-        padding: 10px;
-        font-size: 1.1rem;
+        padding: 12px;
         margin: 10px 0;
-        border-radius: 6px;
+        width: 100%;
+        font-size: 1.1rem;
         border: none;
-        width: 80%;
+        border-radius: 8px;
+        text-align: center;
+        font-family: 'Antonio', sans-serif;
     }
     .mode-btn {
-        background: #fff;
+        background-color: #fff;
         color: #000;
-        font-family: 'Antonio', sans-serif;
         font-size: 1rem;
+        padding: 12px 24px;
         margin: 10px;
-        padding: 10px 20px;
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
-        transition: transform 0.2s ease;
+        font-family: 'Antonio', sans-serif;
+        transition: transform 0.2s;
     }
     .mode-btn:hover {
         transform: scale(1.05);
@@ -73,13 +81,14 @@
         bottom: 10px;
         width: 100%;
         text-align: center;
-        color: #888;
         font-size: 0.85rem;
-        z-index: 5;
-        pointer-events: none;
+        color: #aaa;
         font-family: 'Antonio', sans-serif;
+        pointer-events: none;
+        z-index: 5;
     }
 </style>
+
 
 </head>
 <body>
