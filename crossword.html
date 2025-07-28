@@ -1,220 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>CutIt.sbs Daily Crossword</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
-    :root {
-      --bg:#000;--text:#fff;--cell-bg:#111;--border:#444;--highlight:#555;
-      --pen:#fff;--pencil:rgba(255,255,255,0.4);
-    }
-    .light {
-      --bg:#fff;--text:#000;--cell-bg:#eee;--border:#ccc;--highlight:#ddf;
-      --pen:#000;--pencil:rgba(0,0,0,0.3);
-    }
-    *{box-sizing:border-box;margin:0;padding:0;font-family:'Antonio',sans-serif;}
-    body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;}
-    #grid{display:grid;width:90vmin;height:90vmin;max-width:600px;max-height:600px;margin:80px 0 20px;
-      grid-template:repeat(15,1fr)/repeat(15,1fr);gap:1px;}
-    .cell{background:var(--cell-bg);border:1px solid var(--border);position:relative;}
-    .cell.black{background:var(--text);}
-    .cell input{width:100%;height:100%;border:none;background:transparent;
-      text-transform:uppercase;text-align:center;font-size:2vmin;color:var(--pen);}
-    .cell.pencil input{color:var(--pencil);}
-    .cell.focus{background:var(--highlight);}
-    .controls{position:fixed;top:10px;width:90vw;max-width:600px;display:flex;justify-content:space-between;}
-    .button{background:transparent;color:var(--text);border:1px solid var(--text);
-      padding:6px 12px;border-radius:6px;cursor:pointer;font-size:1rem;}
-    .timer,.best{font-size:1rem;}
-    .watermark{position:fixed;bottom:10px;font-size:0.9rem;color:rgba(255,255,255,0.15);}
-    .popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);
-      display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;text-align:center;z-index:100;}
-    .popup button,a{margin:8px;padding:10px 20px;font-size:1.2rem;border:none;border-radius:6px;cursor:pointer;}
-    .popup a{background:#fff;color:#000;text-decoration:none;}
-    .leaderboard{margin-top:15px;font-size:0.9rem;}
-    .leaderboard li{background:rgba(255,255,255,0.1);margin:4px;padding:6px;border-radius:4px;}
-  </style>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CutIt.sbs Crossword</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
+  :root {--bg:#000;--text:#fff;--cell:#111;--border:#444;--highlight:#555;--pen:#fff;--pencil:rgba(255,255,255,0.4);}
+  .light {--bg:#fff;--text:#000;--cell:#eee;--border:#ccc;--highlight:#ddf;--pen:#000;--pencil:rgba(0,0,0,0.3);}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Antonio',sans-serif;}
+  body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;}
+  #grid{display:grid;width:90vmin;height:90vmin;max-width:600px;max-height:600px;margin:80px 0 20px;
+    grid-template:repeat(15,1fr)/repeat(15,1fr);gap:1px;}
+  .cell{background:var(--cell);border:1px solid var(--border);position:relative;}
+  .cell.black{background:var(--text);}
+  .cell input{width:100%;height:100%;border:none;background:transparent;text-transform:uppercase;
+    text-align:center;font-size:2vmin;color:var(--pen);}
+  .cell.pencil input{color:var(--pencil);}
+  .cell.focus{background:var(--highlight);}
+  .controls{position:fixed;top:10px;width:90vw;max-width:600px;display:flex;justify-content:space-between;}
+  .button{background:transparent;color:var(--text);border:1px solid var(--text);
+    padding:6px 12px;border-radius:6px;cursor:pointer;font-size:1rem;}
+  .timer,.best{font-size:1rem;}
+  .watermark{position:fixed;bottom:10px;font-size:0.9rem;color:rgba(255,255,255,0.15);}
+  .popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);
+    display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;text-align:center;z-index:100;}
+  .popup button,a{margin:8px;padding:10px 20px;font-size:1.2rem;border:none;border-radius:6px;cursor:pointer;}
+  .popup a{background:#fff;color:#000;text-decoration:none;}
+  .leaderboard{margin-top:15px;font-size:0.9rem;}
+  .leaderboard li{background:rgba(255,255,255,0.1);margin:4px;padding:6px;border-radius:4px;}
+</style>
 <body>
   <div class="controls">
     <div class="best">Best: <span id="bestTime">--:--</span></div>
     <div class="timer">Time: <span id="timer">00:00</span></div>
     <button class="button" onclick="document.body.classList.toggle('light')">🌗 Mode</button>
   </div>
-
   <div id="grid"></div>
   <div class="watermark">CutIt.sbs ✦ your vibe. your code</div>
-
   <div class="popup" id="introPopup">
-    <h2>Welcome to Crossword</h2>
-    <p>15×15 grid. Arrow navigation, tap/type entry, “P” toggles pencil mode.</p>
+    <h2>Welcome to Crossword</h2><p>Tap or type. Arrow nav. “P” toggles pencil.</p>
     <button onclick="startGame()">Start Puzzle</button>
     <a href="https://cutit.sbs/games">🏠 Home</a>
   </div>
-
   <div class="popup" id="winPopup" style="display:none">
-    <h2>🎉 You Solved It!</h2>
-    <p>Your Time: <span id="yourTime">--:--</span></p>
+    <h2>🎉 You Solved It!</h2><p>Your Time: <span id="yourTime">--:--</span></p>
     <p>CutIt.sbs ✦ your vibe. your code</p>
     <button onclick="restartGame()">Play Again</button>
     <a href="https://cutit.sbs/games">🏠 Home</a>
-    <div class="leaderboard">
-      <strong>🏆 Today's Top Times</strong>
-      <ul id="leaderList"></ul>
-    </div>
+    <div class="leaderboard"><strong>🏆 Today's Top Times</strong><ul id="leaderList"></ul></div>
   </div>
-
 <script>
 // Word + clue list
-const crosswordWords = [
-  { word: "INTERNET", clue: "Where memes are born" },
-  { word: "VIRAL", clue: "Something that spreads faster than fire" },
-  { word: "MEME", clue: "Gen Z communication style" },
-  { word: "HASHTAG", clue: "Precedes a trending word" },
-  { word: "CLOUD", clue: "Not the one in the sky" },
-  { word: "STREAM", clue: "How we binge" },
-  { word: "TIKTOK", clue: "Platform for viral dances" },
-  { word: "AVATAR", clue: "Digital version of yourself" },
-  { word: "DM", clue: "Slide into these" },
-  { word: "SNAP", clue: "Ghost logo app" },
-  { word: "CANCEL", clue: "Culture of rejection" },
-  { word: "EMOJI", clue: "Expressive yellow faces" },
-  { word: "REACT", clue: "JavaScript library and human emotion" },
-  { word: "FLAME", clue: "🔥" },
-  { word: "CODE", clue: "What devs write daily" },
-  { word: "LOOP", clue: "It never ends" },
-  { word: "ARRAY", clue: "List in JS" },
-  { word: "VIBE", clue: "Mood" },
-  { word: "ZEN", clue: "Peaceful mindset" },
-  { word: "NFT", clue: "Digital ownership badge" },
-  { word: "BOT", clue: "Not a human" },
-  { word: "CUTIE", clue: "Your CutIt.sbs AI assistant" },
-  { word: "GENZ", clue: "Post‑millennial crew" },
-  { word: "LINK", clue: "What CutIt.sbs cuts" },
-  { word: "SHORT", clue: "Opposite of long" },
-  { word: "FIRE", clue: "🔥 synonym" },
-  { word: "HYPE", clue: "Excitement level" },
-  { word: "LOL", clue: "Laughing out loud" },
-  { word: "CAP", clue: "Lie, according to Gen Z" },
-  { word: "REAL", clue: "No cap" },
-  { word: "GOAT", clue: "Greatest of all time" },
-  { word: "RIZZ", clue: "Flirt power" },
-  { word: "SLAY", clue: "Serve looks and win" },
-  { word: "DRIP", clue: "Outfit game" },
-  { word: "QR", clue: "Square barcode" },
-  { word: "SCAN", clue: "What you do with a QR" },
-  { word: "SBS", clue: "CutIt.____" },
-  { word: "FAM", clue: "Friends, close ones" },
-  { word: "GRIND", clue: "Hard work hustle" },
-  { word: "LAG", clue: "The enemy of gamers" },
-  { word: "AI", clue: "Artificial Intelligence" },
-  { word: "GPT", clue: "OpenAI brain" },
-  { word: "URL", clue: "Web address" },
-  { word: "WEB", clue: "Another word for internet" },
-  { word: "BETA", clue: "Testing stage" },
-  { word: "PRO", clue: "Opposite of noob" },
-  { word: "NOOB", clue: "Rookie" },
-  { word: "SWAG", clue: "Coolness" },
-  { word: "MOOD", clue: "Big vibe" },
-  { word: "ALT", clue: "Instagram finsta energy" },
-  { word: "SKRRT", clue: "Drifting sound (meme)" },
-];
+const words = [
+  {w:"MEME",c:"Gen Z communication"},
+  {w:"VIRAL",c:"Quickly spreading"},
+  {w:"CODE",c:"What devs write"},
+  {w:"BOT",c:"Automated helper"},
+  {w:"VIBE",c:"Mood"},
+  {w:"UI",c:"User Interface"}];
+const size=15;
+let across=[];
+// pick three or two words depending length
+words.sort((a,b)=>b.w.length - a.w.length);
+across = words.slice(0,3).map((e,i)=>({x:1,y: i*5+2,answer:e.w,clue:e.c,num:i+1}));
+let timerId,sec=0, today = new Date().toISOString().slice(0,10);
 
-// Build a simple daily layout: pick 5 random words, place horizontally in every 3rd row
-const size = 15;
-let acrossData = [];
-const today = new Date().toISOString().slice(0,10);
-const seed = today.split('-').join('');
-const rng = s => parseInt(s.substr(0,8)) % crosswordWords.length;
-const w1 = crosswordWords[(rng(seed)+1)%crosswordWords.length];
-const w2 = crosswordWords[(rng(seed)+3)%crosswordWords.length];
-const daily = [w1,w2, crosswordWords[(rng(seed)+5)%crosswordWords.length]];
-daily.forEach((w,i) => {
-  acrossData.push({ x:2, y: i*4+1, answer: w.word, clue: w.clue, num: i+1 });
-});
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function startTimer(){sec=0;clearInterval(timerId);timerId=setInterval(()=>{sec++;document.getElementById('timer').textContent=fmt(sec);},1000);}
+function rec(d,t){let k='cutit_'+d;let a=JSON.parse(localStorage.getItem(k)||'[]');a.push(t);a.sort((a,b)=>a-b);localStorage.setItem(k,JSON.stringify(a.slice(0,5)));}
+function best(d){let a=JSON.parse(localStorage.getItem('cutit_'+d)||'[]');return a.length?fmt(a[0]):null;}
+function showBoard(d){let a=JSON.parse(localStorage.getItem('cutit_'+d)||'[]')||[];document.getElementById('leaderList').innerHTML=a.map(t=>`<li>${fmt(t)}</li>`).join('');}
 
-let timerId, seconds=0;
-function fmt(s){ return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); }
-function startTimer(){ seconds=0; clearInterval(timerId); timerId = setInterval(()=>{ seconds++; document.getElementById('timer').textContent = fmt(seconds); },1000);}
-function recordTime(d,t){ const k='cutit_'+d; const a=JSON.parse(localStorage.getItem(k)||'[]'); a.push(t); a.sort((a,b)=>a-b); localStorage.setItem(k,JSON.stringify(a.slice(0,5))); }
-function getBest(d){ const a=JSON.parse(localStorage.getItem('cutit_'+d)||'[]'); return a.length? fmt(a[0]) : null; }
-function showBoard(d){ const a=JSON.parse(localStorage.getItem('cutit_'+d)||'[]')||[]; document.getElementById('leaderList').innerHTML = a.map(t=>`<li>${fmt(t)}</li>`).join(''); }
-
-function buildGrid(){
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
-  for(let i=0;i<225;i++){
-    const div=document.createElement('div');
-    div.className='cell';
-    const inp=document.createElement('input');
-    inp.maxLength=1; inp.dataset.idx=i;
-    inp.addEventListener('keydown',nav);
-    inp.addEventListener('input',onInput);
-    div.appendChild(inp);
-    grid.appendChild(div);
+function build(){
+  let grid=document.getElementById('grid');grid.innerHTML='';
+  for(let i=0;i<size*size;i++){
+    let div=document.createElement('div');div.className='cell';
+    let inp=document.createElement('input');inp.maxLength=1;inp.dataset.i=i;
+    inp.addEventListener('keydown',nav);inp.addEventListener('input',onI);
+    div.appendChild(inp);grid.appendChild(div);
   }
-  acrossData.forEach(c=>{
-    for(let k=0;k<c.answer.length;k++){
-      const idx = (c.y*size)+(c.x+k);
-      const inp = document.querySelector(`input[data-idx="${idx}"]`);
-      inp.dataset.answer = c.answer;
-      inp.dataset.num = c.num;
-    }
-  });
+  across.forEach(c=>{for(let k=0;k<c.answer.length;k++){
+    let idx = c.y*size + c.x + k;
+    let inp=document.querySelector(`input[data-i="${idx}"]`);
+    inp.dataset.ans=c.answer;inp.dataset.num=c.num;
+  }});
 }
 
 function nav(e){
-  const idx = +e.target.dataset.idx;
-  let ni = idx;
-  if(e.key==='ArrowRight') ni = idx+1;
-  else if(e.key==='ArrowLeft') ni = idx-1;
-  else if(e.key==='ArrowDown') ni = idx+size;
-  else if(e.key==='ArrowUp') ni = idx-size;
-  else if(e.key==='p' || e.key==='P') {
-    e.target.parentNode.classList.toggle('pencil');
-    return;
-  } else return;
-  const n = document.querySelector(`input[data-idx="${ni}"]`);
-  if(n) n.focus();
+  let i=+e.target.dataset.i,n=i;
+  if(e.key==='ArrowRight') n=i+1;
+  else if(e.key==='ArrowLeft') n=i-1;
+  else if(e.key==='ArrowDown') n=i+size;
+  else if(e.key==='ArrowUp') n=i-size;
+  else if(e.key==='p'||e.key==='P'){e.target.parentNode.classList.toggle('pencil');return;}
+  else return;
+  let ni=document.querySelector(`input[data-i="${n}"]`); if(ni) ni.focus();
   e.preventDefault();
 }
-
-function onInput(e){
-  e.target.value = e.target.value.toUpperCase();
-  checkWin();
+function onI(e){
+  e.target.value=e.target.value.toUpperCase();
+  check();
 }
-
-function checkWin(){
-  let good = true;
-  acrossData.forEach(c=>{
-    for(let k=0;k<c.answer.length;k++){
-      const idx = (c.y*size)+(c.x+k);
-      const v = document.querySelector(`input[data-idx="${idx}"]`).value;
-      if(v !== c.answer[k]) good = false;
-    }
-  });
-  if(good) finish();
+function check(){
+  let ok=true;
+  across.forEach(c=>{for(let k=0;k<c.answer.length;k++){let idx=c.y*size+c.x+k;
+      if(document.querySelector(`input[data-i="${idx}"]`).value!==c.answer[k]) ok=false;}});
+  if(ok) finish();
 }
 
 function startGame(){
-  document.getElementById('introPopup').style.display = 'none';
-  document.getElementById('bestTime').textContent = getBest(today)||'--:--';
-  buildGrid();
-  startTimer();
+  document.getElementById('introPopup').style.display='none';
+  document.getElementById('bestTime').textContent=best(today)||'--:--';
+  build();startTimer();
 }
-
 function finish(){
-  clearInterval(timerId);
-  document.getElementById('yourTime').textContent = fmt(seconds);
-  recordTime(today, seconds);
-  showBoard(today);
-  document.getElementById('winPopup').style.display = 'flex';
+  clearInterval(timerId);document.getElementById('yourTime').textContent=fmt(sec);
+  rec(today,sec);showBoard(today);document.getElementById('winPopup').style.display='flex';
 }
-
 function restartGame(){
-  document.getElementById('winPopup').style.display = 'none';
-  document.querySelectorAll('#grid input').forEach(i=>i.value='');
-  startTimer();
+  document.getElementById('winPopup').style.display='none';
+  document.querySelectorAll('input').forEach(i=>i.value='');startTimer();
 }
 </script>
 </body>
