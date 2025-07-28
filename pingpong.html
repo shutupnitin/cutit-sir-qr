@@ -90,7 +90,7 @@
     }
 
     function init() {
-      ball = { x: canvas.width / 2, y: canvas.height / 2, dx: 4, dy: 4, size: 8 };
+      ball = { x: canvas.width / 2, y: canvas.height / 2, dx: 5, dy: 5, size: 8 };
       player1 = { x: 30, y: canvas.height / 2 - 50, w: 12, h: 100 };
       player2 = { x: canvas.width - 42, y: canvas.height / 2 - 50, w: 12, h: 100 };
       requestAnimationFrame(gameLoop);
@@ -135,11 +135,12 @@
       if (mode === "2P") {
         if (keys["ArrowUp"] && player2.y > 0) player2.y -= 6;
         if (keys["ArrowDown"] && player2.y < canvas.height - player2.h) player2.y += 6;
-      } else {
-        if (!draggingPaddle) {
-          if (player2.y + player2.h / 2 < ball.y) player2.y += 4;
-          else player2.y -= 4;
-        }
+      } else if (!draggingPaddle) {
+        // ✨ Smart AI logic
+        const targetY = ball.y - player2.h / 2;
+        const speed = Math.min(8, Math.abs(targetY - player2.y) * 0.2);
+        player2.y += targetY > player2.y ? speed : -speed;
+        player2.y = Math.max(0, Math.min(canvas.height - player2.h, player2.y));
       }
 
       ball.x += ball.dx;
