@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ping Pong ✦ CutIt.sbs</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Antonio', sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: #f9e000;
+      margin-bottom: 1rem;
+    }
+
+    #gameArea {
+      background: #111;
+      border: 3px solid #f9e000;
+      width: 400px;
+      height: 300px;
+      position: relative;
+    }
+
+    #leaderboard {
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 400px;
+      background: #1a1a1a;
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid #333;
+    }
+
+    #leaderboard h2 {
+      color: #f9e000;
+      margin-bottom: 0.5rem;
+    }
+
+    ol {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    li {
+      margin-bottom: 0.3rem;
+      font-size: 1rem;
+    }
+
+    .score {
+      color: #bbb;
+    }
+
+    #scoreDisplay {
+      margin-top: 1rem;
+      font-size: 1.2rem;
+      color: #aaa;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #f9e000;
+      border: none;
+      color: #000;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🏓 Ping Pong</h1>
+  <div id="gameArea">
+    <!-- Game logic would be here -->
+  </div>
+
+  <div id="scoreDisplay">Score: <span id="scoreValue">0</span></div>
+  <button onclick="endGame()">Finish Game</button>
+
+  <div id="leaderboard">
+    <h2>🏆 Leaderboard</h2>
+    <ol id="leaderboardList"></ol>
+  </div>
+
+  <script>
+    let score = 0;
+
+    // Dummy score increase (simulate game play)
+    const scoreInterval = setInterval(() => {
+      score++;
+      document.getElementById('scoreValue').textContent = score;
+    }, 500);
+
+    // Load leaderboard from localStorage
+    function loadLeaderboard() {
+      const board = JSON.parse(localStorage.getItem('pingpong_leaderboard')) || [];
+      const list = document.getElementById('leaderboardList');
+      list.innerHTML = '';
+      board.slice(0, 5).forEach((entry, i) => {
+        list.innerHTML += `<li>#${i + 1} — <span class="score">${entry} pts</span></li>`;
+      });
+    }
+
+    // End game and save score
+    function endGame() {
+      clearInterval(scoreInterval);
+
+      let board = JSON.parse(localStorage.getItem('pingpong_leaderboard')) || [];
+      board.push(score);
+      board.sort((a, b) => b - a); // Descending order
+      board = board.slice(0, 5); // Keep top 5
+
+      localStorage.setItem('pingpong_leaderboard', JSON.stringify(board));
+      loadLeaderboard();
+      alert(`Game over! Your score: ${score}`);
+    }
+
+    // On load
+    loadLeaderboard();
+  </script>
+
+</body>
+</html>
