@@ -1,125 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CutIt.sbs Crossword</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
-  :root {--bg:#000;--text:#fff;--cell:#111;--border:#444;--highlight:#555;--pen:#fff;--pencil:rgba(255,255,255,0.4);}
-  .light {--bg:#fff;--text:#000;--cell:#eee;--border:#ccc;--highlight:#ddf;--pen:#000;--pencil:rgba(0,0,0,0.3);}
-  *{box-sizing:border-box;margin:0;padding:0;font-family:'Antonio',sans-serif;}
-  body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;}
-  #grid{display:grid;width:90vmin;height:90vmin;max-width:600px;max-height:600px;margin:80px 0 20px;
-    grid-template:repeat(15,1fr)/repeat(15,1fr);gap:1px;}
-  .cell{background:var(--cell);border:1px solid var(--border);position:relative;}
-  .cell.black{background:var(--text);}
-  .cell input{width:100%;height:100%;border:none;background:transparent;text-transform:uppercase;
-    text-align:center;font-size:2vmin;color:var(--pen);}
-  .cell.pencil input{color:var(--pencil);}
-  .cell.focus{background:var(--highlight);}
-  .controls{position:fixed;top:10px;width:90vw;max-width:600px;display:flex;justify-content:space-between;}
-  .button{background:transparent;color:var(--text);border:1px solid var(--text);
-    padding:6px 12px;border-radius:6px;cursor:pointer;font-size:1rem;}
-  .timer,.best{font-size:1rem;}
-  .watermark{position:fixed;bottom:10px;font-size:0.9rem;color:rgba(255,255,255,0.15);}
-  .popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);
-    display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;text-align:center;z-index:100;}
-  .popup button,a{margin:8px;padding:10px 20px;font-size:1.2rem;border:none;border-radius:6px;cursor:pointer;}
-  .popup a{background:#fff;color:#000;text-decoration:none;}
-  .leaderboard{margin-top:15px;font-size:0.9rem;}
-  .leaderboard li{background:rgba(255,255,255,0.1);margin:4px;padding:6px;border-radius:4px;}
-</style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CutIt Crossword</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000;
+      --text: #fff;
+      --accent: #00ffc8;
+      --border: #222;
+      --input-bg: #111;
+    }
+    body {
+      margin: 0;
+      font-family: 'Antonio', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    .clue-box {
+      font-size: 1.1rem;
+      margin: 10px 0;
+      color: var(--accent);
+    }
+    .grid {
+      display: flex;
+      gap: 6px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .letter {
+      width: 48px;
+      height: 48px;
+      background: var(--input-bg);
+      border: 2px solid var(--border);
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      text-align: center;
+      color: var(--text);
+    }
+    .letter:focus {
+      outline: 2px solid var(--accent);
+    }
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--accent);
+      padding: 8px 16px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .progress {
+      height: 8px;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 0.8rem;
+      opacity: 0.3;
+    }
+    .hidden {
+      display: none;
+    }
+    .win-message {
+      font-size: 1.3rem;
+      color: lime;
+      margin-top: 30px;
+      animation: pop 0.6s ease-in-out;
+    }
+    .level-info {
+      font-size: 1rem;
+      margin-top: 10px;
+      opacity: 0.7;
+    }
+    @keyframes pop {
+      0% {transform: scale(0.8);opacity: 0;}
+      100% {transform: scale(1);opacity: 1;}
+    }
+  </style>
+</head>
 <body>
+  <h1>🧠 CutIt Crossword</h1>
+  <div class="level-info" id="levelInfo">Level 1</div>
+  <div class="clue-box" id="clue">Clue appears here</div>
+  <div class="grid" id="letterGrid"></div>
   <div class="controls">
-    <div class="best">Best: <span id="bestTime">--:--</span></div>
-    <div class="timer">Time: <span id="timer">00:00</span></div>
-    <button class="button" onclick="document.body.classList.toggle('light')">🌗 Mode</button>
+    <button onclick="checkWord()">Check</button>
+    <button onclick="nextWord()">Next</button>
   </div>
-  <div id="grid"></div>
-  <div class="watermark">CutIt.sbs ✦ your vibe. your code</div>
-  <div class="popup" id="introPopup">
-    <h2>Welcome to Crossword</h2><p>Tap or type. Arrow nav. “P” toggles pencil.</p>
-    <button onclick="startGame()">Start Puzzle</button>
-    <a href="https://cutit.sbs/games">🏠 Home</a>
-  </div>
-  <div class="popup" id="winPopup" style="display:none">
-    <h2>🎉 You Solved It!</h2><p>Your Time: <span id="yourTime">--:--</span></p>
-    <p>CutIt.sbs ✦ your vibe. your code</p>
-    <button onclick="restartGame()">Play Again</button>
-    <a href="https://cutit.sbs/games">🏠 Home</a>
-    <div class="leaderboard"><strong>🏆 Today's Top Times</strong><ul id="leaderList"></ul></div>
-  </div>
+  <div class="progress" id="progressBar"></div>
+  <div class="win-message hidden" id="winMessage">🎉 You completed all 15 levels!</div>
+  <div class="footer">CutIt.sbs ✦ your vibe. your code.</div>
+
 <script>
-// Word + clue list
-const words = [
-  {w:"MEME",c:"Gen Z communication"},
-  {w:"VIRAL",c:"Quickly spreading"},
-  {w:"CODE",c:"What devs write"},
-  {w:"BOT",c:"Automated helper"},
-  {w:"VIBE",c:"Mood"},
-  {w:"UI",c:"User Interface"}];
-const size=15;
-let across=[];
-// pick three or two words depending length
-words.sort((a,b)=>b.w.length - a.w.length);
-across = words.slice(0,3).map((e,i)=>({x:1,y: i*5+2,answer:e.w,clue:e.c,num:i+1}));
-let timerId,sec=0, today = new Date().toISOString().slice(0,10);
+const levels = [
+  [ // Level 1
+    { word: "ATOM", clue: "Smallest unit of matter" },
+    { word: "RAIN", clue: "Water falling from clouds" },
+  ],
+  [ // Level 2
+    { word: "VIRUS", clue: "Non-living disease agent" },
+    { word: "PLUTO", clue: "Dwarf planet" }
+  ],
+  [ // Level 3
+    { word: "CIVIL", clue: "Polite and respectful" },
+    { word: "DELTA", clue: "River mouth or Greek letter" }
+  ],
+  [ // Level 4
+    { word: "NEURON", clue: "Brain signal cell" },
+    { word: "SOLAR", clue: "Related to the Sun" }
+  ],
+  [ // Level 5
+    { word: "GRAVITY", clue: "Force that pulls us down" },
+    { word: "PYRAMID", clue: "Ancient Egyptian tomb" }
+  ],
+  [ // Level 6
+    { word: "GALAXY", clue: "Huge collection of stars" },
+    { word: "CIPHER", clue: "Secret code" }
+  ],
+  [ // Level 7
+    { word: "ECOSYSTEM", clue: "Community of living things" },
+    { word: "ISOTOPE", clue: "Atom with same protons, diff neutrons" }
+  ],
+  [ // Level 8
+    { word: "CULTURE", clue: "Beliefs and practices" },
+    { word: "TISSUE", clue: "Group of similar cells" }
+  ],
+  [ // Level 9
+    { word: "EQUATOR", clue: "Earth's center line" },
+    { word: "THEOREM", clue: "Mathematical statement to prove" }
+  ],
+  [ // Level 10
+    { word: "QUANTUM", clue: "Tiny unit in physics" },
+    { word: "SYNAPSE", clue: "Gap between neurons" }
+  ],
+  [ // Level 11
+    { word: "FOSSIL", clue: "Preserved ancient organism" },
+    { word: "ENERGY", clue: "Power to do work" }
+  ],
+  [ // Level 12
+    { word: "FREQUENCY", clue: "Rate of vibration" },
+    { word: "MOMENTUM", clue: "Mass x velocity" }
+  ],
+  [ // Level 13
+    { word: "NARRATIVE", clue: "Story or account" },
+    { word: "SYMMETRY", clue: "Balanced proportions" }
+  ],
+  [ // Level 14
+    { word: "EVOLUTION", clue: "Change in species over time" },
+    { word: "MATRIX", clue: "Grid or environment" }
+  ],
+  [ // Level 15
+    { word: "PHOTOSYNTHESIS", clue: "Plants make food using light" },
+    { word: "BIODIVERSITY", clue: "Variety of life forms" }
+  ]
+];
 
-function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
-function startTimer(){sec=0;clearInterval(timerId);timerId=setInterval(()=>{sec++;document.getElementById('timer').textContent=fmt(sec);},1000);}
-function rec(d,t){let k='cutit_'+d;let a=JSON.parse(localStorage.getItem(k)||'[]');a.push(t);a.sort((a,b)=>a-b);localStorage.setItem(k,JSON.stringify(a.slice(0,5)));}
-function best(d){let a=JSON.parse(localStorage.getItem('cutit_'+d)||'[]');return a.length?fmt(a[0]):null;}
-function showBoard(d){let a=JSON.parse(localStorage.getItem('cutit_'+d)||'[]')||[];document.getElementById('leaderList').innerHTML=a.map(t=>`<li>${fmt(t)}</li>`).join('');}
+let currentLevel = 0;
+let currentWordIndex = 0;
 
-function build(){
-  let grid=document.getElementById('grid');grid.innerHTML='';
-  for(let i=0;i<size*size;i++){
-    let div=document.createElement('div');div.className='cell';
-    let inp=document.createElement('input');inp.maxLength=1;inp.dataset.i=i;
-    inp.addEventListener('keydown',nav);inp.addEventListener('input',onI);
-    div.appendChild(inp);grid.appendChild(div);
+const clueBox = document.getElementById("clue");
+const grid = document.getElementById("letterGrid");
+const progress = document.getElementById("progressBar");
+const winMsg = document.getElementById("winMessage");
+const levelInfo = document.getElementById("levelInfo");
+
+function renderWord() {
+  grid.innerHTML = "";
+  const { word, clue } = levels[currentLevel][currentWordIndex];
+  clueBox.textContent = clue;
+  levelInfo.textContent = `Level ${currentLevel + 1}`;
+  for (let i = 0; i < word.length; i++) {
+    const input = document.createElement("input");
+    input.maxLength = 1;
+    input.className = "letter";
+    input.addEventListener("input", (e) => {
+      e.target.value = e.target.value.toUpperCase();
+      if (e.target.nextElementSibling) e.target.nextElementSibling.focus();
+    });
+    grid.appendChild(input);
   }
-  across.forEach(c=>{for(let k=0;k<c.answer.length;k++){
-    let idx = c.y*size + c.x + k;
-    let inp=document.querySelector(`input[data-i="${idx}"]`);
-    inp.dataset.ans=c.answer;inp.dataset.num=c.num;
-  }});
+  grid.firstChild.focus();
+  updateProgress();
 }
 
-function nav(e){
-  let i=+e.target.dataset.i,n=i;
-  if(e.key==='ArrowRight') n=i+1;
-  else if(e.key==='ArrowLeft') n=i-1;
-  else if(e.key==='ArrowDown') n=i+size;
-  else if(e.key==='ArrowUp') n=i-size;
-  else if(e.key==='p'||e.key==='P'){e.target.parentNode.classList.toggle('pencil');return;}
-  else return;
-  let ni=document.querySelector(`input[data-i="${n}"]`); if(ni) ni.focus();
-  e.preventDefault();
-}
-function onI(e){
-  e.target.value=e.target.value.toUpperCase();
-  check();
-}
-function check(){
-  let ok=true;
-  across.forEach(c=>{for(let k=0;k<c.answer.length;k++){let idx=c.y*size+c.x+k;
-      if(document.querySelector(`input[data-i="${idx}"]`).value!==c.answer[k]) ok=false;}});
-  if(ok) finish();
+function checkWord() {
+  const inputs = grid.querySelectorAll("input");
+  let guess = "";
+  inputs.forEach(i => guess += i.value.toUpperCase());
+  const actual = levels[currentLevel][currentWordIndex].word;
+  if (guess === actual) {
+    inputs.forEach(i => i.style.background = "#0f0");
+  } else {
+    inputs.forEach(i => i.style.background = "#f00");
+  }
 }
 
-function startGame(){
-  document.getElementById('introPopup').style.display='none';
-  document.getElementById('bestTime').textContent=best(today)||'--:--';
-  build();startTimer();
+function nextWord() {
+  if (currentWordIndex < levels[currentLevel].length - 1) {
+    currentWordIndex++;
+    renderWord();
+  } else {
+    if (currentLevel < levels.length - 1) {
+      currentLevel++;
+      currentWordIndex = 0;
+      renderWord();
+    } else {
+      winMsg.classList.remove("hidden");
+      progress.style.width = "100%";
+    }
+  }
 }
-function finish(){
-  clearInterval(timerId);document.getElementById('yourTime').textContent=fmt(sec);
-  rec(today,sec);showBoard(today);document.getElementById('winPopup').style.display='flex';
+
+function updateProgress() {
+  const total = levels.length;
+  const completed = currentLevel + currentWordIndex / levels[currentLevel].length;
+  const percent = (completed / total) * 100;
+  progress.style.width = percent + "%";
 }
-function restartGame(){
-  document.getElementById('winPopup').style.display='none';
-  document.querySelectorAll('input').forEach(i=>i.value='');startTimer();
-}
+
+renderWord();
 </script>
 </body>
 </html>
