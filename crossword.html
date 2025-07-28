@@ -1,278 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CutIt.sbs Crossword ✦ your vibe. your code</title>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CutIt.sbs Daily Crossword ✦ your code</title>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/crosswords-js/dist/crosswords.css" rel="stylesheet">
   <style>
     :root {
-      --bg: #000;
-      --text: #fff;
-      --accent: #fff;
-      --cell-bg: #111;
+      --bg:#000;--text:#fff;--accent:#444;
     }
-    .light {
-      --bg: #fff;
-      --text: #000;
-      --accent: #000;
-      --cell-bg: #eee;
-    }
-    * {
-      box-sizing: border-box;
-      font-family: 'Antonio', sans-serif;
-      margin: 0; padding: 0;
-    }
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      overflow: hidden;
-      transition: background 0.3s, color 0.3s;
-    }
-    .score {
-      font-size: 1.6rem;
-      margin: 12px;
-    }
-    .board {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
-      padding: 10px;
-    }
-    .cell {
-      width: 60px;
-      height: 60px;
-      background: var(--cell-bg);
-      color: var(--text);
-      font-size: 1.8rem;
-      text-align: center;
-      line-height: 60px;
-      border: 1px solid #333;
-      border-radius: 8px;
-      transition: all 0.2s ease;
-      user-select: none;
-    }
-    .cell.selected {
-      background: var(--accent);
-      color: var(--bg);
-      transform: scale(1.1);
-    }
-    .popup {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.96);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-      padding: 20px;
-      text-align: center;
-      color: #fff;
-    }
-    .popup button {
-      padding: 10px 20px;
-      font-size: 1.2rem;
-      margin: 10px 5px;
-      background: #fff;
-      color: #000;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-    }
-    .popup a {
-      color: #ccc;
-      margin-top: 10px;
-      font-size: 0.9rem;
-    }
-    .watermark {
-      position: absolute;
-      bottom: 12px;
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.15);
-    }
-    .leaderboard {
-      font-size: 1rem;
-      margin-top: 15px;
-      text-align: center;
-    }
-    .leaderboard ul {
-      list-style: none;
-      padding: 0;
-      margin-top: 5px;
-    }
-    .leaderboard li {
-      background: rgba(255,255,255,0.08);
-      margin: 3px;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.95rem;
-    }
-    .mode-toggle {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: transparent;
-      border: 1px solid var(--accent);
-      color: var(--text);
-      padding: 6px 12px;
-      font-size: 0.9rem;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    @media (max-width: 600px) {
-      .cell {
-        width: 45px;
-        height: 45px;
-        line-height: 45px;
-        font-size: 1.4rem;
-      }
-    }
+    .light { --bg:#fff;--text:#000;--accent:#ddd; }
+    body{background:var(--bg);color:var(--text);font-family:'Antonio',sans-serif;margin:0;padding:0;}
+    .container{max-width:600px;margin:60px auto 20px;padding:0 10px;position:relative;}
+    .controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .button{border:1px solid var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;background:transparent;color:var(--text);}
+    .timer,.best{font-size:1rem;}
+    .watermark{text-align:center;color:rgba(255,255,255,0.15);font-size:0.9rem;margin-top:10px;}
+    .popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:20px;z-index:100;}
+    .popup button,a{margin:8px;padding:10px 20px;font-size:1.2rem;border:none;border-radius:6px;cursor:pointer;}
+    .popup a{background:#fff;color:#000;text-decoration:none;}
+    .leaderboard{margin-top:15px;font-size:0.9rem;}
+    .leaderboard li{background:rgba(255,255,255,0.1);padding:6px;margin:4px 0;border-radius:4px;}
   </style>
 </head>
 <body>
+  <div class="container controls">
+    <div class="best">Best: <span id="bestTime">--:--</span></div>
+    <div class="timer">Time: <span id="timer">00:00</span></div>
+    <button class="button mode-toggle" onclick="toggleMode()">🌗 Mode</button>
+  </div>
 
-  <button class="mode-toggle" onclick="toggleMode()">🌗 Mode</button>
-
-  <div class="score">Score: <span id="score">0</span></div>
-  <div class="board" id="board"></div>
+  <div id="crossword-container" class="container"></div>
   <div class="watermark">CutIt.sbs ✦ your vibe. your code</div>
 
-  <!-- Popups -->
   <div class="popup" id="introPopup">
-    <h2>Welcome to Crossword</h2>
-    <p>🌞 Daily challenge. 🎯 No repeats. 🧠 Outsmart friends.<br>Try the TikTok-style leaderboard!</p>
-    <button onclick="startGame()">🎮 Start Game</button>
-    <a href="https://cutit.sbs/games">🏠 Go Home</a>
+    <h2>Welcome to Daily Crossword</h2>
+    <p>Your minimalist NYT‑style puzzle in CutIt theme.<br>Complete it as fast as you can!</p>
+    <button onclick="startGame()">Start Puzzle</button>
+    <a href="https://cutit.sbs/games">🏠 Home</a>
   </div>
 
   <div class="popup" id="winPopup" style="display:none">
-    <h2>🎉 You Win!</h2>
+    <h2>🎉 Solved!</h2>
+    <p>Your Time: <span id="yourTime">--:--</span></p>
     <p>CutIt.sbs ✦ your vibe. your code</p>
-    <button onclick="restartGame()">🔁 Play Again</button>
-    <a href="https://cutit.sbs/games">🏠 Go Home</a>
-  </div>
-
-  <div class="popup" id="endPopup" style="display:none">
-    <h2>💀 Game Over</h2>
-    <p>Your final score: <span id="finalScore"></span></p>
-    <button onclick="restartGame()">🔁 Play Again</button>
+    <button onclick="restartGame()">Play Again</button>
     <a href="https://cutit.sbs/games">🏠 Home</a>
     <div class="leaderboard">
-      <strong>🏆 Leaderboard</strong>
-      <ul id="leaderboardList"></ul>
+      <strong>🏆 Today’s Top Times</strong>
+      <ul id="leaderList"></ul>
     </div>
   </div>
 
+  <script src="https://unpkg.com/crosswords-js/dist/crosswords.js"></script>
   <script>
-    const boardEl = document.getElementById('board');
-    const scoreEl = document.getElementById('score');
-    const finalScoreEl = document.getElementById('finalScore');
-    const leaderboardEl = document.getElementById('leaderboardList');
+    // Sample puzzle dictionary
+    const puzzles = {
+      "2025-07-29": {
+        width: 15, height: 15,
+        acrossClues: [
+          { x:1, y:1, clue:"Brand name", answer:"CUTIT" },
+          { x:5, y:3, clue:"Your vibe slogan", answer:"VIBE" }
+        ],
+        downClues: [
+          { x:1, y:1, clue:"Your initials", answer:"CV" },
+          { x:3, y:2, clue:"User Interface", answer:"UI" }
+        ]
+      },
+      // add more daily puzzles keyed by date
+    };
 
-    const allWords = ["CODE", "HTML", "CSS", "CUTIT", "VIBE", "BOT", "AI", "GRID", "TECH", "JS", "NODE", "REACT", "PIXEL", "BLACK", "WHITE", "LOGIC", "HACK", "APP", "BRAIN", "STACK", "ARRAY"];
-    const dailySeed = new Date().toISOString().slice(0,10); // YYYY-MM-DD
-    const wordIndex = [...dailySeed].reduce((acc, c) => acc + c.charCodeAt(0), 0) % allWords.length;
-    const dailyWord = allWords[wordIndex];
+    let controller, timerId, seconds = 0;
 
-    let currentWord = dailyWord;
-    let selectedCells = [];
-    let score = 0;
-
-    function renderBoard(word) {
-      boardEl.innerHTML = "";
-      selectedCells = [];
-      const board = [];
-      for (let i = 0; i < 25; i++) {
-        board.push(String.fromCharCode(65 + Math.floor(Math.random() * 26)));
-      }
-      const start = Math.floor(Math.random() * (25 - word.length));
-      for (let i = 0; i < word.length; i++) {
-        board[start + i] = word[i];
-      }
-      board.forEach((letter, idx) => {
-        const cell = document.createElement("div");
-        cell.className = "cell";
-        cell.innerText = letter;
-        cell.dataset.index = idx;
-        cell.addEventListener("click", () => handleCellClick(cell));
-        boardEl.appendChild(cell);
-      });
+    function format(sec) {
+      const m = String(Math.floor(sec/60)).padStart(2,'0');
+      const s = String(sec%60).padStart(2,'0');
+      return m + ':' + s;
     }
 
-    function isAdjacent(a, b) {
-      const ax = a % 5, ay = Math.floor(a / 5);
-      const bx = b % 5, by = Math.floor(b / 5);
-      return Math.abs(ax - bx) <= 1 && Math.abs(ay - by) <= 1;
+    function startTimer(){
+      seconds = 0;
+      document.getElementById('timer').textContent = "00:00";
+      timerId = setInterval(()=>{
+        seconds++;
+        document.getElementById('timer').textContent = format(seconds);
+      },1000);
     }
 
-    function handleCellClick(cell) {
-      const index = parseInt(cell.dataset.index);
-      if (cell.classList.contains("selected")) return;
-      if (selectedCells.length > 0) {
-        const lastIndex = parseInt(selectedCells[selectedCells.length - 1].dataset.index);
-        if (!isAdjacent(index, lastIndex)) return;
-      }
-      cell.classList.add("selected");
-      selectedCells.push(cell);
-      const wordSoFar = selectedCells.map(c => c.innerText).join('');
-      if (!currentWord.startsWith(wordSoFar)) {
-        endGame();
-        return;
-      }
-      if (wordSoFar === currentWord) {
-        score += currentWord.length;
-        scoreEl.innerText = score;
-        document.getElementById("winPopup").style.display = "flex";
-        updateLeaderboard(score);
-      }
+    function startGame(){
+      document.getElementById('introPopup').style.display = 'none';
+      const today = new Date().toISOString().slice(0,10);
+      const puzzle = puzzles[today] || Object.values(puzzles)[0];
+      document.getElementById('bestTime').innerText = getBestTime(today) || '--:--';
+      controller = new CrosswordController(puzzle, document.getElementById('crossword-container'));
+      controller.onFinish = onSolved;
+      startTimer();
     }
 
-    function startGame() {
-      score = 0;
-      scoreEl.innerText = score;
-      renderBoard(currentWord);
-      document.getElementById("introPopup").style.display = "none";
+    function onSolved(){
+      clearInterval(timerId);
+      const t = seconds;
+      document.getElementById('yourTime').textContent = format(t);
+      recordTime(new Date().toISOString().slice(0,10), t);
+      showLeaderboard(new Date().toISOString().slice(0,10));
+      document.getElementById('winPopup').style.display = 'flex';
     }
 
-    function endGame() {
-      finalScoreEl.innerText = score;
-      document.getElementById("endPopup").style.display = "flex";
-      updateLeaderboard(score);
+    function restartGame(){
+      document.getElementById('winPopup').style.display = 'none';
+      controller.reset();
+      startTimer();
     }
 
-    function restartGame() {
-      selectedCells = [];
-      document.querySelectorAll(".cell").forEach(c => c.classList.remove("selected"));
-      document.getElementById("winPopup").style.display = "none";
-      document.getElementById("endPopup").style.display = "none";
-      score = 0;
-      scoreEl.innerText = score;
-      renderBoard(currentWord);
+    function toggleMode(){
+      document.body.classList.toggle('light');
     }
 
-    function updateLeaderboard(newScore) {
-      const scores = JSON.parse(localStorage.getItem("cutit_leaderboard") || "[]");
-      scores.push({ score: newScore, date: new Date().toLocaleDateString() });
-      scores.sort((a, b) => b.score - a.score);
-      const top5 = scores.slice(0, 5);
-      localStorage.setItem("cutit_leaderboard", JSON.stringify(top5));
-      leaderboardEl.innerHTML = top5.map(s => `<li>⭐ ${s.score} pts (${s.date})</li>`).join("");
+    function recordTime(dateKey, time){
+      const key = 'cutit_lb_' + dateKey;
+      const arr = JSON.parse(localStorage.getItem(key) || '[]');
+      arr.push(time);
+      arr.sort((a,b)=>a-b);
+      const top = arr.slice(0,5);
+      localStorage.setItem(key, JSON.stringify(top));
     }
 
-    function toggleMode() {
-      document.body.classList.toggle("light");
+    function getBestTime(dateKey){
+      const arr = JSON.parse(localStorage.getItem('cutit_lb_' + dateKey) || '[]');
+      return arr.length ? format(arr[0]) : null;
     }
 
-    // Load leaderboard if already played
-    const existing = JSON.parse(localStorage.getItem("cutit_leaderboard") || "[]");
-    leaderboardEl.innerHTML = existing.map(s => `<li>⭐ ${s.score} pts (${s.date})</li>`).join("");
+    function showLeaderboard(dateKey){
+      const arr = JSON.parse(localStorage.getItem('cutit_lb_' + dateKey) || '[]') || [];
+      document.getElementById('leaderList').innerHTML =
+        arr.map(t => `<li>${format(t)}</li>`).join('');
+    }
   </script>
 </body>
 </html>
