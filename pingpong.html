@@ -2,131 +2,232 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ping Pong ✦ CutIt.sbs</title>
+  <title>CutIt.sbs Ping Pong</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      margin: 0;
       font-family: 'Antonio', sans-serif;
-      background: #0a0a0a;
-      color: #fff;
+      background: #000;
+      color: white;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding: 2rem;
+      height: 100vh;
+      overflow: hidden;
     }
-
-    h1 {
-      color: #f9e000;
-      margin-bottom: 1rem;
-    }
-
-    #gameArea {
+    header {
+      padding: 20px;
+      font-size: 2rem;
+      text-align: center;
       background: #111;
-      border: 3px solid #f9e000;
-      width: 400px;
-      height: 300px;
-      position: relative;
+      border-bottom: 2px solid #fff;
     }
-
-    #leaderboard {
-      margin-top: 2rem;
-      width: 100%;
-      max-width: 400px;
-      background: #1a1a1a;
-      padding: 1rem;
-      border-radius: 12px;
-      border: 1px solid #333;
+    canvas {
+      flex: 1;
+      background: #000;
+      display: block;
+      border-top: 2px solid #fff;
+      border-bottom: 2px solid #fff;
     }
-
-    #leaderboard h2 {
-      color: #f9e000;
-      margin-bottom: 0.5rem;
+    footer {
+      padding: 12px;
+      text-align: center;
+      background: #111;
+      font-size: 0.9rem;
+      color: #ccc;
     }
-
-    ol {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    li {
-      margin-bottom: 0.3rem;
-      font-size: 1rem;
-    }
-
-    .score {
-      color: #bbb;
-    }
-
-    #scoreDisplay {
-      margin-top: 1rem;
-      font-size: 1.2rem;
-      color: #aaa;
-    }
-
-    button {
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      background: #f9e000;
-      border: none;
+    #highScoreBadge {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
       color: #000;
-      border-radius: 6px;
-      cursor: pointer;
+      padding: 12px 24px;
+      border-radius: 8px;
       font-weight: bold;
+      font-size: 1.2rem;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+      pointer-events: none;
+    }
+    #modeToggle {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
 
-  <h1>🏓 Ping Pong</h1>
-  <div id="gameArea">
-    <!-- Game logic would be here -->
-  </div>
+<header>🏓 CutIt.sbs Ping Pong Mode</header>
+<button id="modeToggle">Mode: Player vs CPU</button>
+<div id="highScoreBadge">🔥 New High Score!</div>
+<canvas id="gameCanvas"></canvas>
+<footer>Made with ❤️ by CutIt.sbs ✦ your vibe. your code.</footer>
 
-  <div id="scoreDisplay">Score: <span id="scoreValue">0</span></div>
-  <button onclick="endGame()">Finish Game</button>
+<script>
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
 
-  <div id="leaderboard">
-    <h2>🏆 Leaderboard</h2>
-    <ol id="leaderboardList"></ol>
-  </div>
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight - 120;
 
-  <script>
-    let score = 0;
+  const paddleWidth = 10, paddleHeight = 100;
+  let playerY = canvas.height / 2 - paddleHeight / 2;
+  let aiY = canvas.height / 2 - paddleHeight / 2;
+  let player2Y = canvas.height / 2 - paddleHeight / 2;
+  const ballSize = 10;
+  let ballX = canvas.width / 2;
+  let ballY = canvas.height / 2;
+  let ballSpeedX = 6, ballSpeedY = 4;
+  const paddleSpeed = 6;
 
-    // Dummy score increase (simulate game play)
-    const scoreInterval = setInterval(() => {
-      score++;
-      document.getElementById('scoreValue').textContent = score;
-    }, 500);
+  let playerScore = 0, aiScore = 0;
+  let isPlayer2 = false;
+  let playerInitials = "";
 
-    // Load leaderboard from localStorage
-    function loadLeaderboard() {
-      const board = JSON.parse(localStorage.getItem('pingpong_leaderboard')) || [];
-      const list = document.getElementById('leaderboardList');
-      list.innerHTML = '';
-      board.slice(0, 5).forEach((entry, i) => {
-        list.innerHTML += `<li>#${i + 1} — <span class="score">${entry} pts</span></li>`;
-      });
+  const highScoreBadge = document.getElementById("highScoreBadge");
+
+  function showHighScoreBadge() {
+    highScoreBadge.style.opacity = 1;
+    setTimeout(() => {
+      highScoreBadge.style.opacity = 0;
+    }, 2000);
+  }
+
+  function drawRect(x, y, w, h, color = "#fff") {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, w, h);
+  }
+
+  function drawCircle(x, y, r, color = "#fff") {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawText(text, x, y) {
+    ctx.fillStyle = "#fff";
+    ctx.font = "36px Antonio, sans-serif";
+    ctx.fillText(text, x, y);
+  }
+
+  function drawNet() {
+    for (let i = 0; i < canvas.height; i += 30) {
+      drawRect(canvas.width / 2 - 1, i, 2, 20, "#555");
+    }
+  }
+
+  function resetBall() {
+    ballX = canvas.width / 2;
+    ballY = canvas.height / 2;
+    ballSpeedX = -ballSpeedX;
+    ballSpeedY = 4 * (Math.random() > 0.5 ? 1 : -1);
+  }
+
+  function updateLeaderboard() {
+    const scores = JSON.parse(localStorage.getItem("pingpongLeaderboard") || "[]");
+    if (playerScore > (scores[0]?.score || 0)) {
+      playerInitials = prompt("🎉 New High Score! Enter your initials:") || "Player";
+      scores.unshift({ name: playerInitials, score: playerScore });
+      localStorage.setItem("pingpongLeaderboard", JSON.stringify(scores.slice(0, 5)));
+      showHighScoreBadge();
+    }
+  }
+
+  function update() {
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
+
+    if (ballY <= 0 || ballY >= canvas.height) ballSpeedY *= -1;
+
+    // Player 1
+    if (ballX < 30 && ballY > playerY && ballY < playerY + paddleHeight) {
+      ballSpeedX *= -1;
+      let deltaY = ballY - (playerY + paddleHeight / 2);
+      ballSpeedY = deltaY * 0.3;
     }
 
-    // End game and save score
-    function endGame() {
-      clearInterval(scoreInterval);
-
-      let board = JSON.parse(localStorage.getItem('pingpong_leaderboard')) || [];
-      board.push(score);
-      board.sort((a, b) => b - a); // Descending order
-      board = board.slice(0, 5); // Keep top 5
-
-      localStorage.setItem('pingpong_leaderboard', JSON.stringify(board));
-      loadLeaderboard();
-      alert(`Game over! Your score: ${score}`);
+    // Player 2 or AI
+    const paddle2Y = isPlayer2 ? player2Y : aiY;
+    if (ballX > canvas.width - 40 && ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
+      ballSpeedX *= -1;
+      let deltaY = ballY - (paddle2Y + paddleHeight / 2);
+      ballSpeedY = deltaY * 0.3;
     }
 
-    // On load
-    loadLeaderboard();
-  </script>
+    // Score
+    if (ballX < 0) {
+      aiScore++;
+      updateLeaderboard();
+      resetBall();
+    } else if (ballX > canvas.width) {
+      playerScore++;
+      updateLeaderboard();
+      resetBall();
+    }
 
+    // AI movement
+    if (!isPlayer2) {
+      const aiCenter = aiY + paddleHeight / 2;
+      if (aiCenter < ballY - 35) aiY += paddleSpeed;
+      else if (aiCenter > ballY + 35) aiY -= paddleSpeed;
+    }
+  }
+
+  function draw() {
+    drawRect(0, 0, canvas.width, canvas.height, "#000");
+    drawNet();
+    drawText(playerScore, canvas.width / 4, 50);
+    drawText(aiScore, (3 * canvas.width) / 4, 50);
+    drawRect(20, playerY, paddleWidth, paddleHeight);
+    drawRect(canvas.width - 30, isPlayer2 ? player2Y : aiY, paddleWidth, paddleHeight);
+    drawCircle(ballX, ballY, ballSize);
+  }
+
+  function loop() {
+    update();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  canvas.addEventListener("mousemove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    if (!isPlayer2) {
+      playerY = e.clientY - rect.top - paddleHeight / 2;
+    } else {
+      const x = e.clientX - rect.left;
+      if (x < canvas.width / 2) {
+        playerY = e.clientY - rect.top - paddleHeight / 2;
+      } else {
+        player2Y = e.clientY - rect.top - paddleHeight / 2;
+      }
+    }
+  });
+
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight - 120;
+  });
+
+  document.getElementById("modeToggle").addEventListener("click", () => {
+    isPlayer2 = !isPlayer2;
+    document.getElementById("modeToggle").innerText =
+      isPlayer2 ? "Mode: Player vs Player" : "Mode: Player vs CPU";
+    playerScore = aiScore = 0;
+    resetBall();
+  });
+
+  loop();
+</script>
 </body>
 </html>
