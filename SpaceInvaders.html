@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🚀 Space Invaders • CutIt.sbs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Antonio',sans-serif; }
+    canvas { display:block; }
+
+    /* SCOREBOARD */
+    #scoreboard {
+      position: fixed; top:10px; left:50%; transform:translateX(-50%);
+      display:flex; gap:20px; color:#fff; font-size:1.2rem; z-index:5;
+    }
+    #scoreboard div { text-align:center; }
+    #scoreboard .label { font-size:0.8rem; color:#bbb; text-transform:uppercase; }
+    #scoreboard .value { font-size:1.4rem; }
+
+    /* CONTROLS (mobile) */
+    #controls {
+      position: fixed; bottom:20px; width:100%; display:flex; justify-content:space-between;
+      padding: 0 30px; z-index:5;
+    }
+    .control-btn {
+      width:60px; height:60px; border-radius:50%;
+      background:rgba(255,255,255,0.1); color:#fff; border:none;
+      font-size:2rem; display:flex; align-items:center; justify-content:center;
+      user-select:none;
+    }
+
+    /* MODALS */
+    .modal {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,0.85); visibility:hidden; opacity:0;
+      transition:visibility 0.3s,opacity 0.3s; z-index:10;
+    }
+    .modal.active { visibility:visible; opacity:1; }
+    .modal-content {
+      background:#111; padding:2rem; border-radius:8px; text-align:center; color:#fff;
+      max-width:90%;
+    }
+    .modal-content h2 { margin-bottom:1rem; font-size:1.6rem; }
+    .modal-content p { margin-bottom:1.5rem; line-height:1.4; }
+    .btn {
+      background:#fff; color:#000; padding:0.6rem 1.2rem; border:none; border-radius:4px;
+      font-family:'Antonio',sans-serif; margin:0 5px; cursor:pointer;
+    }
+
+    /* WATERMARK */
+    #watermark {
+      position: fixed; bottom:10px; width:100%; text-align:center;
+      color:#fff; font-size:0.8rem; opacity:0.1; pointer-events:none; user-select:none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SCOREBOARD -->
+  <div id="scoreboard">
+    <div><div class="label">Score</div><div id="score" class="value">0</div></div>
+    <div><div class="label">Best</div><div id="best" class="value">0</div></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div id="controls">
+    <button id="btn-left" class="control-btn">◀</button>
+    <button id="btn-fire" class="control-btn">⬆</button>
+    <button id="btn-right" class="control-btn">▶</button>
+  </div>
+
+  <!-- CANVAS -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- MODALS -->
+  <div id="modal-start" class="modal active">
+    <div class="modal-content">
+      <h2>Space Invaders</h2>
+      <p>Move your ship with arrow keys (or ◀ ▶). Press up (or ⬆) to shoot. Destroy all aliens before they reach you!</p>
+      <button id="start-btn" class="btn">Start Game</button>
+    </div>
+  </div>
+
+  <div id="modal-win" class="modal">
+    <div class="modal-content">
+      <h2>You Win!</h2>
+      <p>CutIt.sbs ✦ your vibe. your code</p>
+      <button id="win-play" class="btn">Play Again</button>
+      <button id="win-home" class="btn">Home</button>
+    </div>
+  </div>
+
+  <div id="modal-lose" class="modal">
+    <div class="modal-content">
+      <h2>Game Over</h2>
+      <button id="lose-play" class="btn">Play Again</button>
+      <button id="lose-home" class="btn">Home</button>
+    </div>
+  </div>
+
+  <!-- WATERMARK -->
+  <div id="watermark">CutIt.sbs ✦ your vibe. your code</div>
+
+  <script>
+  (function(){
+    const canvas    = document.getElementById('gameCanvas');
+    const ctx       = canvas.getContext('2d');
+    const scoreEl   = document.getElementById('score');
+    const bestEl    = document.getElementById('best');
+    const controls  = { left:false, right:false };
+    let WIDTH, HEIGHT, lastTime, gameState;
+    let ship, aliens, bullets, alienDir, score, bestScore;
+
+    // UI elements
+    const startModal = document.getElementById('modal-start');
+    const winModal   = document.getElementById('modal-win');
+    const loseModal  = document.getElementById('modal-lose');
+    const showModal  = m=>{ [startModal,winModal,loseModal].forEach(x=>x.classList.remove('active')); m.classList.add('active'); };
+    const hideModals = ()=>[startModal,winModal,loseModal].forEach(x=>x.classList.remove('active'));
+
+    // Buttons
+    document.getElementById('start-btn').onclick = ()=>{ hideModals(); startGame(); };
+    document.getElementById('win-play').onclick = ()=>{ hideModals(); startGame(); };
+    document.getElementById('win-home').onclick = ()=>{ hideModals(); showModal(startModal); };
+    document.getElementById('lose-play').onclick= ()=>{ hideModals(); startGame(); };
+    document.getElementById('lose-home').onclick= ()=>{ hideModals(); showModal(startModal); };
+
+    // Mobile controls
+    document.getElementById('btn-left').addEventListener('touchstart',e=>{ controls.left=true; e.preventDefault(); });
+    document.getElementById('btn-left').addEventListener('touchend', ()=>controls.left=false);
+    document.getElementById('btn-right').addEventListener('touchstart',e=>{ controls.right=true; e.preventDefault(); });
+    document.getElementById('btn-right').addEventListener('touchend',()=>controls.right=false);
+    document.getElementById('btn-fire').addEventListener('touchstart',e=>{ shoot(); e.preventDefault(); });
+
+    // Keyboard
+    window.addEventListener('keydown', e=>{
+      if (e.key==='ArrowLeft')  controls.left = true;
+      if (e.key==='ArrowRight') controls.right = true;
+      if (e.key==='ArrowUp')    shoot();
+    });
+    window.addEventListener('keyup', e=>{
+      if (e.key==='ArrowLeft')  controls.left = false;
+      if (e.key==='ArrowRight') controls.right = false;
+    });
+
+    // Resize canvas
+    function resize(){
+      WIDTH = window.innerWidth;
+      HEIGHT= window.innerHeight;
+      canvas.width  = WIDTH;
+      canvas.height = HEIGHT;
+    }
+    window.addEventListener('resize', resize);
+
+    // Game objects
+    function initShip(){
+      return {
+        w: WIDTH*0.05,
+        h: WIDTH*0.03,
+        x: WIDTH/2 - WIDTH*0.05/2,
+        y: HEIGHT - WIDTH*0.05 - 20,
+        speed: WIDTH*0.5
+      };
+    }
+
+    function initAliens(){
+      const rows = 5, cols = 10;
+      const w = WIDTH*0.05, h = WIDTH*0.03;
+      const gapX = WIDTH*0.015, gapY = WIDTH*0.015;
+      const startX = (WIDTH - (cols*w + (cols-1)*gapX))/2;
+      const startY = 60;
+      let list = [];
+      for(let r=0;r<rows;r++){
+        for(let c=0;c<cols;c++){
+          list.push({ 
+            x: startX + c*(w+gapX), 
+            y: startY + r*(h+gapY), 
+            w, h 
+          });
+        }
+      }
+      alienDir = 1;
+      return list;
+    }
+
+    function startGame(){
+      resize();
+      ship   = initShip();
+      aliens = initAliens();
+      bullets = [];
+      score = 0;
+      bestScore = parseInt(localStorage.getItem('svBest'))||0;
+      bestEl.textContent = bestScore;
+      updateScore();
+      gameState = 'running';
+      lastTime = performance.now();
+      requestAnimationFrame(loop);
+    }
+
+    function shoot(){
+      if (gameState!=='running') return;
+      bullets.push({
+        x: ship.x + ship.w/2 - 3,
+        y: ship.y - 10,
+        w:6, h:10,
+        speed: HEIGHT*0.8
+      });
+    }
+
+    function update(dt){
+      // Ship movement
+      if (controls.left)  ship.x = Math.max(0, ship.x - ship.speed * dt);
+      if (controls.right) ship.x = Math.min(WIDTH-ship.w, ship.x + ship.speed * dt);
+
+      // Aliens movement & descent
+      let hitEdge = aliens.some(a=>
+        (alienDir>0 && a.x + a.w >= WIDTH-10) ||
+        (alienDir<0 && a.x <= 10)
+      );
+      if (hitEdge){
+        alienDir *= -1;
+        aliens.forEach(a=> a.y += ship.h );
+      }
+      aliens.forEach(a=> a.x += alienDir * 40 * dt);
+
+      // Bullets update & collision
+      bullets = bullets.filter(b=>{
+        b.y -= b.speed * dt;
+        // collision
+        for(let i=0;i<aliens.length;i++){
+          const a = aliens[i];
+          if (b.x < a.x+a.w && b.x+b.w > a.x && b.y < a.y+a.h && b.y+b.h > a.y){
+            aliens.splice(i,1);
+            score += 10; updateScore();
+            return false;
+          }
+        }
+        return b.y + b.h > 0;
+      });
+
+      // Win/Lose?
+      if (aliens.length === 0){
+        gameState = 'won';
+        showModal(winModal);
+      }
+      aliens.forEach(a=>{
+        if (a.y + a.h >= ship.y){
+          gameState = 'lost';
+          showModal(loseModal);
+        }
+      });
+    }
+
+    function updateScore(){
+      scoreEl.textContent = score;
+      if (score > bestScore){
+        bestScore = score;
+        localStorage.setItem('svBest', bestScore);
+        bestEl.textContent = bestScore;
+      }
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,WIDTH,HEIGHT);
+
+      // Ship
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(ship.x, ship.y, ship.w, ship.h);
+
+      // Aliens
+      aliens.forEach(a=> ctx.fillRect(a.x, a.y, a.w, a.h));
+
+      // Bullets
+      bullets.forEach(b=> ctx.fillRect(b.x, b.y, b.w, b.h));
+    }
+
+    function loop(ts){
+      const dt = (ts - lastTime)/1000;
+      lastTime = ts;
+      if (gameState === 'running'){
+        update(dt);
+        draw();
+        requestAnimationFrame(loop);
+      }
+    }
+
+    // initial setup
+    resize();
+    showModal(startModal);
+  })();
+  </script>
+</body>
+</html>
