@@ -3,266 +3,266 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CutIt Pong 🎮</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #000;
-      --fg: #fff;
-      --accent: #00ffcc;
+  <title>Ping Pong ✦ CutIt.sbs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
+  
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
-
     body {
-      margin: 0;
-      font-family: 'Antonio', sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100vh;
-      overflow: hidden;
+        font-family: 'Antonio', sans-serif;
+        background-color: #000;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        justify-content: space-between;
+        align-items: center;
     }
-
-    header, footer {
-      text-align: center;
-      padding: 1rem;
-      font-size: 1.3rem;
-      color: var(--accent);
+    header {
+        width: 100%;
+        text-align: center;
+        padding: 20px 0;
+        font-size: 2rem;
+        color: #FF2DAF;
     }
-
+    .game-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 900px;
+        padding: 20px;
+    }
     canvas {
-      background: #111;
-      display: block;
-      margin: 1rem auto;
-      border: 2px solid var(--accent);
+        border: 3px solid #fff;
+        background-color: #111;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
     }
+    .scoreboard, .controls, .leaderboard {
+        margin-top: 20px;
+        text-align: center;
+    }
+    button {
+        font-family: 'Antonio', sans-serif;
+        padding: 10px 20px;
+        font-size: 1rem;
+        margin: 10px;
+        background: #FF2DAF;
+        color: #000;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+    footer {
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 0.9rem;
+        color: #888;
+    }
+</style>
 
-    #menu {
-      text-align: center;
-    }
-
-    #menu input {
-      padding: 0.5rem;
-      margin: 0.3rem;
-      border: none;
-      font-size: 1rem;
-      border-radius: 5px;
-      font-family: 'Antonio';
-    }
-
-    #menu button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      background: var(--accent);
-      border: none;
-      border-radius: 4px;
-      font-family: 'Antonio';
-      margin: 1rem;
-    }
-
-    #scoreboard {
-      font-size: 1.2rem;
-      margin-top: 0.5rem;
-    }
-
-    #highScore {
-      font-size: 1.1rem;
-      color: gold;
-      animation: flicker 1s infinite alternate;
-    }
-
-    @keyframes flicker {
-      from { opacity: 1; }
-      to { opacity: 0.5; }
-    }
-
-    @media (max-width: 600px) {
-      canvas {
-        width: 90vw;
-        height: 50vh;
-      }
-    }
-  </style>
 </head>
 <body>
-  <header>
-    CutIt.sbs 🏓 Pong Challenge
-  </header>
 
-  <div id="menu">
-    <input id="player1Name" placeholder="Player 1 Name" />
-    <input id="player2Name" placeholder="Player 2 Name or leave blank for AI" />
+<header>🏓 CutIt.sbs Ping Pong</header>
+
+<div class="game-container">
+  <div class="menu" id="menu">
+    <label>Choose Mode:</label>
+    <select id="modeSelect">
+      <option value="computer">1 vs Computer</option>
+      <option value="player">1 vs 1 Player</option>
+    </select><br>
+    <input type="text" id="player1" placeholder="Player 1 Name" />
+    <input type="text" id="player2" placeholder="Player 2/Computer Name" />
+    <br>
     <button onclick="startGame()">Start Game</button>
   </div>
 
-  <canvas id="pong" width="700" height="400"></canvas>
+  <canvas id="gameCanvas" width="800" height="500" class="hide"></canvas>
 
-  <div id="scoreboard">
-    <span id="player1Label">P1</span>: <span id="p1Score">0</span> | 
-    <span id="player2Label">P2</span>: <span id="p2Score">0</span>
+  <div id="highScoreBadge" class="highscore-badge hide">🎉 New High Score!</div>
+  <div class="controls">
+    <button onclick="resetGame()">Play Again</button>
   </div>
-  <div id="highScore"></div>
+</div>
 
-  <footer>
-    Made with ❤️ by CutIt.sbs | <a href="/" style="color: var(--accent); text-decoration: none;">Back to Home</a>
-  </footer>
+<div class="leaderboard">
+  <h2>🏆 Leaderboard</h2>
+  <table>
+    <thead>
+      <tr><th>Player</th><th>Score</th></tr>
+    </thead>
+    <tbody id="leaderboardBody"></tbody>
+  </table>
+</div>
 
-  <script>
-    const canvas = document.getElementById('pong');
-    const ctx = canvas.getContext('2d');
-    const p1Label = document.getElementById('player1Label');
-    const p2Label = document.getElementById('player2Label');
-    const p1ScoreEl = document.getElementById('p1Score');
-    const p2ScoreEl = document.getElementById('p2Score');
-    const highScoreEl = document.getElementById('highScore');
-    let player1 = '', player2 = '', isAI = false;
+<footer>Made with ❤️ by CutIt.sbs ✦ your vibe. your code.</footer>
 
-    const paddleWidth = 10, paddleHeight = 80;
-    let paddle1Y = canvas.height / 2 - paddleHeight / 2;
-    let paddle2Y = canvas.height / 2 - paddleHeight / 2;
-    let ballX = canvas.width / 2, ballY = canvas.height / 2;
-    let ballSpeedX = 4, ballSpeedY = 3;
-    let p1Score = 0, p2Score = 0;
-    const paddleSpeed = 6;
-    let upPressed = false, downPressed = false;
-    let wPressed = false, sPressed = false;
-    let touchY1 = null, touchY2 = null;
-    let playing = false;
+<script>
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+  let player1Name = "", player2Name = "", isVsComputer = true;
+  let highScore = localStorage.getItem("highscore") || 0;
+  let highScorer = localStorage.getItem("highscorer") || "";
 
-    function drawRect(x, y, w, h, color) {
-      ctx.fillStyle = color;
-      ctx.fillRect(x, y, w, h);
-    }
+  let paddleWidth = 10, paddleHeight = 80;
+  let ballSpeed = 4, ballX = canvas.width/2, ballY = canvas.height/2;
+  let ballDX = ballSpeed, ballDY = ballSpeed;
+  let leftPaddleY = 200, rightPaddleY = 200;
+  let leftScore = 0, rightScore = 0;
+  let upPressed = false, downPressed = false;
+  let wPressed = false, sPressed = false;
+  let gameRunning = false;
 
-    function drawBall(x, y) {
-      ctx.beginPath();
-      ctx.arc(x, y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = '#fff';
-      ctx.fill();
-      ctx.closePath();
-    }
+  function drawRect(x, y, w, h, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, w, h);
+  }
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawRect(0, paddle1Y, paddleWidth, paddleHeight, '#fff');
-      drawRect(canvas.width - paddleWidth, paddle2Y, paddleWidth, paddleHeight, '#fff');
-      drawBall(ballX, ballY);
-    }
+  function drawCircle(x, y, r, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2, false);
+    ctx.closePath();
+    ctx.fill();
+  }
 
-    function update() {
-      ballX += ballSpeedX;
-      ballY += ballSpeedY;
+  function drawText(text, x, y, color) {
+    ctx.fillStyle = color;
+    ctx.font = "30px Antonio";
+    ctx.fillText(text, x, y);
+  }
 
-      // Bounce on top/bottom
-      if (ballY <= 0 || ballY >= canvas.height) ballSpeedY = -ballSpeedY;
+  function render() {
+    drawRect(0, 0, canvas.width, canvas.height, "white");
+    drawRect(0, leftPaddleY, paddleWidth, paddleHeight, "black");
+    drawRect(canvas.width - paddleWidth, rightPaddleY, paddleWidth, paddleHeight, "black");
+    drawCircle(ballX, ballY, 8, "black");
+    drawText(leftScore, canvas.width/4, 50, "black");
+    drawText(rightScore, 3 * canvas.width/4, 50, "black");
+  }
 
-      // Paddle collision
-      if (ballX <= paddleWidth) {
-        if (ballY > paddle1Y && ballY < paddle1Y + paddleHeight) {
-          ballSpeedX = -ballSpeedX;
-        } else {
-          p2Score++; reset(); 
-        }
-      }
+  function update() {
+    ballX += ballDX;
+    ballY += ballDY;
 
-      if (ballX >= canvas.width - paddleWidth) {
-        if (ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
-          ballSpeedX = -ballSpeedX;
-        } else {
-          p1Score++; reset(); 
-        }
-      }
+    if (ballY <= 0 || ballY >= canvas.height) ballDY = -ballDY;
 
-      // Move AI paddle
-      if (isAI) {
-        paddle2Y += (ballY - paddle2Y - paddleHeight / 2) * 0.1;
-      }
-
-      // Player 1
-      if (wPressed) paddle1Y -= paddleSpeed;
-      if (sPressed) paddle1Y += paddleSpeed;
-
-      // Player 2 (if 1v1)
-      if (!isAI) {
-        if (upPressed) paddle2Y -= paddleSpeed;
-        if (downPressed) paddle2Y += paddleSpeed;
-      }
-
-      // Clamp paddles
-      paddle1Y = Math.max(0, Math.min(canvas.height - paddleHeight, paddle1Y));
-      paddle2Y = Math.max(0, Math.min(canvas.height - paddleHeight, paddle2Y));
-
-      p1ScoreEl.textContent = p1Score;
-      p2ScoreEl.textContent = p2Score;
-
-      draw();
-      requestAnimationFrame(update);
-    }
-
-    function reset() {
-      ballX = canvas.width / 2;
-      ballY = canvas.height / 2;
-      ballSpeedX = (Math.random() > 0.5 ? 4 : -4);
-      ballSpeedY = (Math.random() > 0.5 ? 3 : -3);
-      checkHighScore();
-    }
-
-    function startGame() {
-      player1 = document.getElementById('player1Name').value || 'Player 1';
-      player2 = document.getElementById('player2Name').value || 'AI';
-      isAI = player2.toLowerCase() === 'ai';
-
-      p1Label.textContent = player1;
-      p2Label.textContent = isAI ? 'AI' : player2;
-
-      document.getElementById('menu').style.display = 'none';
-      playing = true;
-      update();
-    }
-
-    function checkHighScore() {
-      const currentHigh = localStorage.getItem('pongHigh') || 0;
-      const highHolder = localStorage.getItem('pongHighName') || '';
-
-      const current = Math.max(p1Score, p2Score);
-      if (current > currentHigh) {
-        highScoreEl.textContent = `🎉 New High Score by ${current === p1Score ? player1 : player2}! (${current})`;
-        localStorage.setItem('pongHigh', current);
-        localStorage.setItem('pongHighName', current === p1Score ? player1 : player2);
+    if (ballX <= paddleWidth) {
+      if (ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) {
+        ballDX = -ballDX;
       } else {
-        highScoreEl.textContent = `🏆 High Score: ${highHolder} (${currentHigh})`;
+        rightScore++;
+        resetBall();
       }
     }
 
-    // Controls
-    document.addEventListener('keydown', e => {
-      if (e.key === 'ArrowUp') upPressed = true;
-      if (e.key === 'ArrowDown') downPressed = true;
-      if (e.key === 'w') wPressed = true;
-      if (e.key === 's') sPressed = true;
-    });
-
-    document.addEventListener('keyup', e => {
-      if (e.key === 'ArrowUp') upPressed = false;
-      if (e.key === 'ArrowDown') downPressed = false;
-      if (e.key === 'w') wPressed = false;
-      if (e.key === 's') sPressed = false;
-    });
-
-    // Touch support
-    canvas.addEventListener('touchmove', e => {
-      const touch = e.touches[0];
-      const rect = canvas.getBoundingClientRect();
-      const y = touch.clientY - rect.top;
-
-      if (touch.clientX < rect.width / 2) {
-        paddle1Y = y - paddleHeight / 2;
+    if (ballX >= canvas.width - paddleWidth) {
+      if (ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight) {
+        ballDX = -ballDX;
       } else {
-        if (!isAI) paddle2Y = y - paddleHeight / 2;
+        leftScore++;
+        resetBall();
       }
+    }
+
+    if (wPressed && leftPaddleY > 0) leftPaddleY -= 6;
+    if (sPressed && leftPaddleY < canvas.height - paddleHeight) leftPaddleY += 6;
+
+    if (isVsComputer) {
+      if (rightPaddleY + paddleHeight/2 < ballY) rightPaddleY += 4;
+      else rightPaddleY -= 4;
+    } else {
+      if (upPressed && rightPaddleY > 0) rightPaddleY -= 6;
+      if (downPressed && rightPaddleY < canvas.height - paddleHeight) rightPaddleY += 6;
+    }
+  }
+
+  function gameLoop() {
+    if (!gameRunning) return;
+    update();
+    render();
+    requestAnimationFrame(gameLoop);
+  }
+
+  function resetBall() {
+    ballX = canvas.width/2;
+    ballY = canvas.height/2;
+    ballDX = -ballDX;
+    ballDY = (Math.random() > 0.5 ? 1 : -1) * ballSpeed;
+  }
+
+  function startGame() {
+    player1Name = document.getElementById("player1").value || "Player 1";
+    player2Name = document.getElementById("player2").value || "Opponent";
+    isVsComputer = document.getElementById("modeSelect").value === "computer";
+    leftScore = rightScore = 0;
+    document.getElementById("menu").classList.add("hide");
+    canvas.classList.remove("hide");
+    gameRunning = true;
+    gameLoop();
+  }
+
+  function resetGame() {
+    gameRunning = false;
+    document.getElementById("menu").classList.remove("hide");
+    canvas.classList.add("hide");
+    document.getElementById("highScoreBadge").classList.add("hide");
+    updateLeaderboard(player1Name, leftScore);
+  }
+
+  function updateLeaderboard(name, score) {
+    let stored = JSON.parse(localStorage.getItem("leaderboard") || "[]");
+    stored.push({ name, score });
+    stored.sort((a, b) => b.score - a.score);
+    localStorage.setItem("leaderboard", JSON.stringify(stored.slice(0, 5)));
+
+    let html = "";
+    stored.slice(0, 5).forEach(e => {
+      html += `<tr><td>${e.name}</td><td>${e.score}</td></tr>`;
     });
-  </script>
+    document.getElementById("leaderboardBody").innerHTML = html;
+
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem("highscore", score);
+      localStorage.setItem("highscorer", name);
+      document.getElementById("highScoreBadge").classList.remove("hide");
+    }
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp") upPressed = true;
+    if (e.key === "ArrowDown") downPressed = true;
+    if (e.key === "w") wPressed = true;
+    if (e.key === "s") sPressed = true;
+  });
+
+  document.addEventListener("keyup", (e) => {
+    if (e.key === "ArrowUp") upPressed = false;
+    if (e.key === "ArrowDown") downPressed = false;
+    if (e.key === "w") wPressed = false;
+    if (e.key === "s") sPressed = false;
+  });
+
+  canvas.addEventListener("touchmove", (e) => {
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const y = touch.clientY - rect.top;
+    if (y < canvas.height / 2) leftPaddleY -= 10;
+    else leftPaddleY += 10;
+  });
+
+  updateLeaderboard();
+</script>
 </body>
 </html>
