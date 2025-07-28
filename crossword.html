@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crossword ✦ CutIt.sbs</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Antonio&display=swap');
+
+    html, body {
+      margin: 0; padding: 0;
+      font-family: 'Antonio', sans-serif;
+      background: #000; color: #fff;
+      overflow: hidden;
+    }
+
+    #game {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      grid-template-rows: repeat(10, 1fr);
+      width: 100vw; height: 100vh;
+      gap: 2px;
+      padding: 1vw;
+      box-sizing: border-box;
+    }
+
+    .cell {
+      background: #111;
+      border: 1px solid #444;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 2vw;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    #score {
+      position: absolute;
+      top: 1vh; right: 2vw;
+      font-size: 2vw;
+    }
+
+    #watermark {
+      position: absolute;
+      bottom: 1vh; left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.2vw;
+      opacity: 0.2;
+    }
+
+    .popup {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95);
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      color: #fff; font-size: 2vw;
+      z-index: 10;
+    }
+
+    .popup button {
+      margin-top: 2vh;
+      font-size: 1.5vw;
+      background: #fff; color: #000;
+      padding: 1vh 2vw; border: none;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      .cell { font-size: 5vw; }
+      #score { font-size: 5vw; }
+      #watermark { font-size: 3vw; }
+      .popup { font-size: 5vw; }
+      .popup button { font-size: 4vw; }
+    }
+  </style>
+</head>
+<body>
+  <div id="score">Score: <span id="scoreVal">0</span></div>
+  <div id="watermark">CutIt.sbs ✦ your vibe. your code</div>
+  <div id="game"></div>
+
+  <div id="startPopup" class="popup">
+    <div>Match letters to form real words. Every win adds a new challenge. No repeats!</div>
+    <button onclick="startGame()">Let's Go</button>
+  </div>
+
+  <div id="winPopup" class="popup" style="display:none;">
+    <div>🎉 You nailed it! <br> CutIt.sbs ✦ your vibe. your code</div>
+    <button onclick="nextLevel()">Next Puzzle</button>
+  </div>
+
+  <div id="endPopup" class="popup" style="display:none;">
+    <div>Game Over!</div>
+    <button onclick="startGame()">Home</button>
+    <button onclick="nextLevel()">Play Again</button>
+  </div>
+
+  <script>
+    const grid = document.getElementById('game');
+    const scoreVal = document.getElementById('scoreVal');
+    const usedWords = new Set(JSON.parse(localStorage.getItem('usedWords') || "[]"));
+    let score = +localStorage.getItem('score') || 0;
+
+    const words = ["vibe","code","cutit","trend","anime","neon","glass","love","wild","genz"];
+    function getNewWord() {
+      let word;
+      do {
+        word = words[Math.floor(Math.random()*words.length)];
+      } while (usedWords.has(word));
+      usedWords.add(word);
+      localStorage.setItem('usedWords', JSON.stringify([...usedWords]));
+      return word;
+    }
+
+    function renderWord(word) {
+      grid.innerHTML = '';
+      for (let i = 0; i < 100; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.textContent = word[i % word.length].toUpperCase();
+        grid.appendChild(cell);
+      }
+    }
+
+    function startGame() {
+      document.getElementById('startPopup').style.display = 'none';
+      score = 0;
+      scoreVal.textContent = score;
+      localStorage.setItem('score', score);
+      document.getElementById('endPopup').style.display = 'none';
+      nextLevel();
+    }
+
+    function nextLevel() {
+      const word = getNewWord();
+      if (!word) {
+        document.getElementById('endPopup').style.display = 'flex';
+        return;
+      }
+      renderWord(word);
+      score++;
+      scoreVal.textContent = score;
+      localStorage.setItem('score', score);
+      document.getElementById('winPopup').style.display = 'flex';
+      setTimeout(() => {
+        document.getElementById('winPopup').style.display = 'none';
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
