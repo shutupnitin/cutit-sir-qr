@@ -23,6 +23,33 @@
       display: block;
       width: 100vw; height: 100vh;
     }
+
+    /* HUD */
+    #hud {
+      position: absolute;
+      top: 20px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 40px;
+      background: rgba(255,255,255,0.1);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 24px;
+      user-select: none;
+    }
+    .hud-item {
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+    .hud-item.pop {
+      transform: scale(1.3);
+    }
+    /* pop animation fallback */
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
     .overlay {
       position: absolute; top: 0; left: 0;
       width: 100%; height: 100%;
@@ -73,6 +100,11 @@
     </div>
   </div>
 
+  <div id="hud">
+    <div id="score-display" class="hud-item">Score: 0</div>
+    <div id="level-display" class="hud-item">Level: 1</div>
+  </div>
+
   <canvas id="gameCanvas"></canvas>
 
   <div id="overlay-end" class="overlay" style="display: none;">
@@ -103,14 +135,19 @@
     window.addEventListener('resize', resize);
     resize();
 
+    // HUD elements
+    const scoreEl = document.getElementById('score-display');
+    const levelEl = document.getElementById('level-display');
+
     // Game objects
     const paddleWidth = 10, paddleHeight = 100, paddleMargin = 20;
     let playerY, compY, ballX, ballY;
-    let ballVX = 6, ballVY = 6;
-    let score = 0, highScore = +localStorage.getItem('cutit_pp_high') || 0;
+    let ballSpeed = 6, ballVX = ballSpeed, ballVY = ballSpeed;
+    let score = 0, level = 1;
+    let highScore = +localStorage.getItem('cutit_pp_high') || 0;
     let running = false, raf;
 
-    // Start & End overlays
+    // Overlays
     const overlayStart = document.getElementById('overlay-start');
     const overlayEnd = document.getElementById('overlay-end');
     const startBtn = document.getElementById('start-btn');
@@ -122,9 +159,22 @@
       playerY = (H - paddleHeight) / 2;
       compY = (H - paddleHeight) / 2;
       ballX = W / 2; ballY = H / 2;
-      ballVX = Math.random() > .5 ? 6 : -6;
-      ballVY = (Math.random() * 6) - 3;
+      ballSpeed = 6 + (level - 1) * 0.5;
+      ballVX = Math.random() > .5 ? ballSpeed : -ballSpeed;
+      ballVY = (Math.random() * ballSpeed) - (ballSpeed / 2);
       score = 0;
+      level = 1;
+      updateHUD();
+    }
+
+    function updateHUD() {
+      scoreEl.textContent = `Score: ${score}`;
+      levelEl.textContent = `Level: ${level}`;
+    }
+
+    function popEffect(el) {
+      el.classList.add('pop');
+      setTimeout(() => el.classList.remove('pop'), 200);
     }
 
     function startGame() {
@@ -137,7 +187,6 @@
     function endGame() {
       running = false;
       cancelAnimationFrame(raf);
-      // update high score
       if (score > highScore) {
         highScore = score;
         localStorage.setItem('cutit_pp_high', highScore);
@@ -160,29 +209,39 @@
 
     function loop() {
       raf = requestAnimationFrame(loop);
-      // update
       if (!running) return;
+
+      // move ball
       ballX += ballVX;
       ballY += ballVY;
 
       // bounce off top/bottom
       if (ballY < 0 || ballY > H) ballVY *= -1;
 
-      // player paddle collision
+      // player collision
       if (
         ballX - 8 < paddleMargin + paddleWidth &&
         ballY > playerY && ballY < playerY + paddleHeight
       ) {
         ballVX *= -1;
         score++;
-        // slightly randomize
-        ballVY += (Math.random() - 0.5) * 2;
+        // level logic
+        const newLevel = Math.floor(score / 5) + 1;
+        if (newLevel > level) {
+          level = newLevel;
+          ballSpeed += 0.5;
+          // adjust velocity signs
+          ballVX = Math.sign(ballVX) * ballSpeed;
+          ballVY = Math.sign(ballVY) * ballSpeed;
+          popEffect(levelEl);
+        }
+        updateHUD();
+        popEffect(scoreEl);
       }
 
-      // computer paddle (perfect AI)
+      // computer paddle
       compY = ballY - paddleHeight / 2;
-      if (compY < 0) compY = 0;
-      if (compY + paddleHeight > H) compY = H - paddleHeight;
+      compY = Math.max(0, Math.min(compY, H - paddleHeight));
       if (
         ballX + 8 > W - paddleMargin - paddleWidth &&
         ballY > compY && ballY < compY + paddleHeight
@@ -190,10 +249,10 @@
         ballVX *= -1;
       }
 
-      // check miss
+      // miss check
       if (ballX < 0 || ballX > W) return endGame();
 
-      // draw
+      // draw everything
       ctx.clearRect(0, 0, W, H);
       drawRect(paddleMargin, playerY, paddleWidth, paddleHeight);
       drawRect(W - paddleMargin - paddleWidth, compY, paddleWidth, paddleHeight);
@@ -207,22 +266,16 @@
       ctx.lineTo(W/2, H);
       ctx.stroke();
       ctx.setLineDash([]);
-
-      // score
-      ctx.font = '24px Antonio';
-      ctx.fillText(score, W/2 - 12, 40);
     }
 
-    // input handlers
+    // input
     window.addEventListener('mousemove', e => {
       playerY = e.clientY - paddleHeight / 2;
-      if (playerY < 0) playerY = 0;
-      if (playerY + paddleHeight > H) playerY = H - paddleHeight;
+      playerY = Math.max(0, Math.min(playerY, H - paddleHeight));
     });
     window.addEventListener('touchmove', e => {
       playerY = e.touches[0].clientY - paddleHeight / 2;
-      if (playerY < 0) playerY = 0;
-      if (playerY + paddleHeight > H) playerY = H - paddleHeight;
+      playerY = Math.max(0, Math.min(playerY, H - paddleHeight));
       e.preventDefault();
     }, { passive: false });
     window.addEventListener('keydown', e => {
