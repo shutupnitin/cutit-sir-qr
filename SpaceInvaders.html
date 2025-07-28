@@ -2,159 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cosmic Invaders ✦ Cutit.sbs</title>
+  <title>👾 vs ⛵️ — Vibe Battle Begins</title>
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      background: radial-gradient(circle at center, #fceaff, #c2d6ff);
+      background: radial-gradient(circle, #fbeaff, #d0f1ff);
       font-family: 'Antonio', sans-serif;
       overflow: hidden;
     }
-    canvas {
+    #splash {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #000000cc;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      animation: fadeIn 1s ease-in;
+    }
+    #gameCanvas {
       display: block;
       margin: auto;
-      background-color: rgba(255, 255, 255, 0.1);
-      box-shadow: 0 0 20px #fff;
-      border-radius: 12px;
+      background: #222;
     }
-    #scoreboard {
+    #bossHealth {
       position: absolute;
-      top: 20px;
+      top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      color: #000;
-      font-weight: bold;
-      font-size: 20px;
+      font-size: 2em;
+      display: none;
     }
+    #cutitWatermark {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      font-size: 1em;
+      color: #fff;
+      opacity: 0.5;
+    }
+    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
   </style>
 </head>
 <body>
-  <div id="scoreboard">Score: 0 ✦ Level 1</div>
-  <canvas id="gameCanvas"></canvas>
-  <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
 
-    let player = {
-      x: width / 2 - 25,
-      y: height - 80,
-      w: 50,
-      h: 30,
-      speed: 10
-    };
+<div id="splash">
+  <h1>✨ Cosmic Showdown ✨</h1>
+  <p>👾 vs ⛵️ — Vibe Battle Begins</p>
+  <button onclick="startGame()">Start Game</button>
+</div>
 
-    let lasers = [];
-    let aliens = [];
-    let alienDirection = 1;
-    let level = 1;
-    let score = 0;
+<div id="bossHealth">❤️❤️❤️❤️❤️</div>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<div id="cutitWatermark">CutIt.sbs ✦ Iconic Vibes Only</div>
 
-    function createAliens(level) {
-      aliens = [];
-      let rows = level + 2;
-      let cols = 10;
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          aliens.push({
-            x: 80 + c * 60,
-            y: 50 + r * 40,
-            w: 40,
-            h: 30
-          });
-        }
-      }
+<audio id="pew" src="pew.mp3"></audio>
+<audio id="hit" src="hit.mp3"></audio>
+<audio id="explode" src="explode.mp3"></audio>
+
+<script>
+  let splash = document.getElementById("splash");
+  let bossHealth = document.getElementById("bossHealth");
+  let pewFX = document.getElementById("pew");
+  let hitFX = document.getElementById("hit");
+  let explodeFX = document.getElementById("explode");
+
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+
+  let bossHits = 0;
+
+  function startGame() {
+    splash.style.display = "none";
+    bossHealth.style.display = "block";
+    loop();
+  }
+
+  function shoot() {
+    pewFX.play();
+    // trigger bullet animation
+  }
+
+  function hitBoss() {
+    bossHits++;
+    hitFX.play();
+    if (bossHits >= 5) {
+      explodeFX.play();
+      bossHealth.innerHTML = "💀 Vibe Overlord Defeated 💀";
+      setTimeout(() => {
+        alert("✨ CutIt.sbs ✦ You Slayed the Vibe Overlord ✦");
+      }, 1000);
+    } else {
+      bossHealth.innerHTML = "❤️".repeat(5 - bossHits);
     }
+  }
 
-    function drawPlayer() {
-      ctx.fillStyle = "#ff69b4";
-      ctx.fillRect(player.x, player.y, player.w, player.h);
-    }
+  function loop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // game loop logic here
+    requestAnimationFrame(loop);
+  }
+</script>
 
-    function drawAliens() {
-      ctx.fillStyle = "#8a2be2";
-      aliens.forEach(a => ctx.fillRect(a.x, a.y, a.w, a.h));
-    }
-
-    function moveAliens() {
-      let edgeReached = false;
-      aliens.forEach(a => {
-        a.x += alienDirection * (2 + level);
-        if (a.x + a.w >= width || a.x <= 0) {
-          edgeReached = true;
-        }
-      });
-      if (edgeReached) {
-        alienDirection *= -1;
-        aliens.forEach(a => a.y += 30);
-      }
-    }
-
-    function drawLasers() {
-      ctx.fillStyle = "#00f";
-      lasers.forEach(l => ctx.fillRect(l.x, l.y, l.w, l.h));
-    }
-
-    function moveLasers() {
-      lasers.forEach(l => l.y -= 10);
-      lasers = lasers.filter(l => l.y > 0);
-    }
-
-    function handleCollisions() {
-      lasers.forEach(l => {
-        aliens.forEach((a, ai) => {
-          if (
-            l.x < a.x + a.w &&
-            l.x + l.w > a.x &&
-            l.y < a.y + a.h &&
-            l.y + l.h > a.y
-          ) {
-            aliens.splice(ai, 1);
-            score += 10;
-            document.getElementById("scoreboard").innerText = `Score: ${score} ✦ Level ${level}`;
-          }
-        });
-      });
-    }
-
-    function gameLoop() {
-      ctx.clearRect(0, 0, width, height);
-      drawPlayer();
-      moveAliens();
-      drawAliens();
-      drawLasers();
-      moveLasers();
-      handleCollisions();
-
-      if (aliens.length === 0) {
-        level++;
-        createAliens(level);
-        document.getElementById("scoreboard").innerText = `Score: ${score} ✦ Level ${level}`;
-      }
-
-      requestAnimationFrame(gameLoop);
-    }
-
-    document.addEventListener("keydown", e => {
-      if (e.key === "ArrowLeft") player.x -= player.speed;
-      if (e.key === "ArrowRight") player.x += player.speed;
-      if (e.key === " ") {
-        lasers.push({
-          x: player.x + player.w / 2 - 2,
-          y: player.y,
-          w: 4,
-          h: 10
-        });
-      }
-    });
-
-    createAliens(level);
-    gameLoop();
-  </script>
 </body>
 </html>
