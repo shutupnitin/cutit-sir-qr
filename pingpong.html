@@ -4,84 +4,83 @@
   <meta charset="UTF-8">
   <title>CutIt.sbs Ping Pong</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
-
+  
+<style>
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
-
     html, body {
-      width: 100%;
-      height: 100%;
-      font-family: 'Antonio', sans-serif;
-      background: #000;
-      color: #fff;
-      overflow: hidden;
+        height: 100%;
+        background-color: #000;
+        font-family: 'Antonio', sans-serif;
+        overflow: hidden;
+        color: #fff;
     }
-
-    #gameCanvas {
-      display: block;
-      margin: auto;
-      background-color: #111;
-      border: 4px solid #fff;
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
     }
-
-    #popup {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.95);
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #fff;
-      text-align: center;
-      padding: 20px;
+    canvas {
+        border: 3px solid #fff;
+        background-color: #000;
+        display: block;
+        width: 100vw;
+        height: 100vh;
     }
-
-    #popup h1 {
-      font-size: 3em;
-      color: #FF2DAF;
-      margin-bottom: 20px;
+    #startPopup {
+        position: absolute;
+        background: #111;
+        color: #fff;
+        border: 2px solid #fff;
+        padding: 30px;
+        text-align: center;
+        border-radius: 12px;
+        z-index: 10;
     }
-
-    input[type="text"] {
-      padding: 10px;
-      font-size: 1.2em;
-      margin-bottom: 20px;
-      border: none;
-      border-radius: 4px;
-      width: 80%;
-      max-width: 300px;
-      text-align: center;
+    #startPopup h2 {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
     }
-
+    input {
+        padding: 10px;
+        font-size: 1.1rem;
+        margin: 10px 0;
+        border-radius: 6px;
+        border: none;
+        width: 80%;
+    }
     .mode-btn {
-      padding: 15px 30px;
-      margin: 10px;
-      font-size: 1.2em;
-      background: #FF2DAF;
-      color: #000;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+        background: #fff;
+        color: #000;
+        font-family: 'Antonio', sans-serif;
+        font-size: 1rem;
+        margin: 10px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
     }
+    .mode-btn:hover {
+        transform: scale(1.05);
+    }
+    footer.watermark {
+        position: absolute;
+        bottom: 10px;
+        width: 100%;
+        text-align: center;
+        color: #888;
+        font-size: 0.85rem;
+        z-index: 5;
+        pointer-events: none;
+        font-family: 'Antonio', sans-serif;
+    }
+</style>
 
-    .watermark {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      font-size: 0.9em;
-      color: #666;
-      pointer-events: none;
-    }
-  </style>
 </head>
 <body>
 
