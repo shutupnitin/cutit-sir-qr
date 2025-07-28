@@ -7,220 +7,367 @@
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; overflow: hidden; background: #000; color: #fff; font-family: 'Antonio', sans-serif; }
-    #game-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
-    #scoreboard { display: flex; gap: 1rem; margin-bottom: 1rem; }
-    .score-box { background: #111; padding: 0.5rem 1rem; border-radius: 4px; text-align: center; }
-    .score-box div { font-size: 0.9rem; }
-    .score-box span { font-size: 1.4rem; display: block; }
-    #grid-container { position: relative; background: #222; border-radius: 6px; touch-action: none; }
+    html, body {
+      width: 100%; height: 100%;
+      font-family: 'Antonio', sans-serif;
+      background: #000; color: #fff;
+      overflow: hidden;
+    }
+
+    /* SCOREBOARD */
+    #scoreboard {
+      display: flex; justify-content: space-between;
+      width: 90vmin; max-width: 500px;
+      margin: 20px auto;
+    }
+    .score-box {
+      background: #111; border-radius: 6px;
+      padding: 10px 20px; text-align: center;
+    }
+    .score-box .label {
+      font-size: 0.8rem; color: #bbb;
+      text-transform: uppercase;
+    }
+    .score-box .number {
+      font-size: 1.6rem; margin-top: 5px;
+    }
+
+    /* GRID */
+    #grid-container {
+      position: relative;
+      width: 90vmin; max-width: 500px;
+      height: 90vmin; max-height: 500px;
+      margin: 0 auto;
+      background: #222;
+      border-radius: 8px;
+      touch-action: none;
+    }
     .grid-cell {
-      position: absolute; background: #111; border-radius: 4px;
+      position: absolute;
+      background: #111;
+      border-radius: 4px;
     }
     .tile {
-      position: absolute; display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem; font-weight: bold; border-radius: 4px;
-      transition: transform 0.15s ease, background 0.2s;
+      position: absolute;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: transform 0.2s ease, background 0.2s ease;
     }
-    .tile.new { animation: pop 0.15s ease-out; }
-    @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+    .tile.new {
+      animation: pop 0.2s ease-out;
+    }
+    @keyframes pop {
+      from { transform: scale(0); }
+      to   { transform: scale(1); }
+    }
+
+    /* MODALS */
     .modal {
-      position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85);
-      display: flex; align-items: center; justify-content: center; z-index: 10; visibility: hidden;
+      position: fixed; top:0; left:0;
+      width:100%; height:100%;
+      display:flex; align-items:center; justify-content:center;
+      background: rgba(0,0,0,0.85);
+      visibility:hidden; opacity:0;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      z-index:10;
     }
-    .modal.active { visibility: visible; }
+    .modal.active {
+      visibility: visible; opacity:1;
+    }
     .modal-content {
-      background: #111; padding: 2rem; border-radius: 6px; text-align: center; max-width: 90vw;
+      background:#111; padding:2rem;
+      border-radius:8px; text-align:center;
+      max-width:90%;
     }
-    .modal-content h2 { margin-bottom: 1rem; }
-    .modal-content p { margin-bottom: 1.5rem; line-height: 1.4; }
+    .modal-content h2 {
+      margin-bottom:1rem; font-size:1.4rem;
+    }
+    .modal-content p {
+      margin-bottom:1.5rem; line-height:1.4;
+    }
     .btn {
-      background: #fff; color: #000; padding: 0.6rem 1.2rem; border: none;
-      border-radius: 4px; cursor: pointer; font-family: 'Antonio', sans-serif;
+      background: #fff; color: #000;
+      padding: 0.6rem 1.2rem; border:none;
+      border-radius:4px; cursor:pointer;
+      font-family:'Antonio',sans-serif;
+      margin: 0 5px;
     }
+
+    /* WATERMARK */
     #watermark {
-      position: fixed; bottom: 10px; width: 100%; text-align: center;
-      color: #fff; opacity: 0.2; font-size: 0.8rem;
+      position: fixed; bottom:10px; width:100%;
+      text-align:center; color:#fff; opacity:0.1;
+      font-size:0.8rem; pointer-events:none;
+      user-select:none;
     }
   </style>
 </head>
 <body>
-  <div id="game-container">
-    <div id="scoreboard">
-      <div class="score-box">
-        <div>Score</div><span id="score">0</span>
-      </div>
-      <div class="score-box">
-        <div>Best</div><span id="best">0</span>
-      </div>
+
+  <!-- SCOREBOARD -->
+  <div id="scoreboard">
+    <div class="score-box">
+      <div class="label">Score</div>
+      <div id="score" class="number">0</div>
     </div>
-    <div id="grid-container"></div>
+    <div class="score-box">
+      <div class="label">Best</div>
+      <div id="best" class="number">0</div>
+    </div>
   </div>
 
-  <!-- Modals -->
+  <!-- GRID -->
+  <div id="grid-container"></div>
+
+  <!-- MODALS -->
   <div id="modal-start" class="modal active">
     <div class="modal-content">
       <h2>How to Play</h2>
-      <p>Swipe or use arrow keys to move tiles. Matching numbers merge. Reach 2048 to win!</p>
-      <button class="btn" id="start-btn">Start Game</button>
+      <p>Swipe on mobile or use arrow keys to move tiles. Equal tiles merge. Reach 2048 to win!</p>
+      <button id="start-btn" class="btn">Start Game</button>
     </div>
   </div>
   <div id="modal-win" class="modal">
     <div class="modal-content">
       <h2>You Win!</h2>
       <p>CutIt.sbs ✦ your vibe. your code</p>
-      <button class="btn" id="win-play">Play Again</button>
-      <button class="btn" id="win-home">Home</button>
+      <button id="win-play" class="btn">Play Again</button>
+      <button id="win-home" class="btn">Home</button>
     </div>
   </div>
   <div id="modal-lose" class="modal">
     <div class="modal-content">
       <h2>Game Over</h2>
-      <button class="btn" id="lose-play">Play Again</button>
-      <button class="btn" id="lose-home">Home</button>
+      <button id="lose-play" class="btn">Play Again</button>
+      <button id="lose-home" class="btn">Home</button>
     </div>
   </div>
 
+  <!-- WATERMARK -->
   <div id="watermark">CutIt.sbs ✦ your vibe. your code</div>
 
   <script>
   (function(){
     const SIZE = 4, WIN_VALUE = 2048, GAP = 10;
-    let grid = [], score = 0, best = +localStorage.getItem('bestScore') || 0;
-    const gc = document.getElementById('grid-container'),
-          scoreEl = document.getElementById('score'),
-          bestEl  = document.getElementById('best');
-    // initialize grid & background cells
-    function initGrid() {
-      gc.innerHTML = '';
-      grid = Array(SIZE).fill().map(()=>Array(SIZE).fill(0));
-      for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++){
-        const cell = document.createElement('div');
-        cell.classList.add('grid-cell');
-        cell.style.width = cell.style.height = '0px'; // set later
-        gc.appendChild(cell);
+    let grid, score, best = parseInt(localStorage.getItem('bestScore')) || 0;
+
+    const gc        = document.getElementById('grid-container'),
+          scoreEl   = document.getElementById('score'),
+          bestEl    = document.getElementById('best'),
+          startModal= document.getElementById('modal-start'),
+          winModal  = document.getElementById('modal-win'),
+          loseModal = document.getElementById('modal-lose');
+
+    // initial render of best
+    bestEl.textContent = best;
+
+    // resize & show start
+    resizeGrid();
+    window.addEventListener('resize', resizeGrid);
+    showModal(startModal);
+
+    // modal button handlers
+    document.getElementById('start-btn').onclick = ()=>{ hideAllModals(); startGame(); };
+    document.getElementById('win-play').onclick = ()=>{ hideAllModals(); startGame(); };
+    document.getElementById('win-home').onclick = ()=>{ hideAllModals(); showModal(startModal); };
+    document.getElementById('lose-play').onclick = ()=>{ hideAllModals(); startGame(); };
+    document.getElementById('lose-home').onclick = ()=>{ hideAllModals(); showModal(startModal); };
+
+    // keyboard
+    window.addEventListener('keydown', e=>{
+      if (e.key.startsWith('Arrow')) {
+        e.preventDefault();
+        handleMove(e.key);
       }
-      spawn(); spawn();
+    });
+
+    // touch
+    let tX, tY;
+    gc.addEventListener('touchstart', e=>{
+      tX = e.touches[0].clientX; tY = e.touches[0].clientY;
+    });
+    gc.addEventListener('touchend', e=>{
+      const dx = e.changedTouches[0].clientX - tX;
+      const dy = e.changedTouches[0].clientY - tY;
+      if (Math.hypot(dx,dy)<30) return;
+      if (Math.abs(dx)>Math.abs(dy)) {
+        handleMove(dx>0?'ArrowRight':'ArrowLeft');
+      } else {
+        handleMove(dy>0?'ArrowDown':'ArrowUp');
+      }
+    });
+
+    // START a new game
+    function startGame(){
+      score = 0; updateScore();
+      grid = Array.from({length:SIZE}, ()=>Array(SIZE).fill(0));
+      addTile(); addTile();
       updateUI();
     }
-    // spawn a tile
-    function spawn() {
+
+    // show / hide
+    function showModal(m){ [startModal, winModal, loseModal].forEach(x=>x.classList.remove('active')); m.classList.add('active'); }
+    function hideAllModals(){ [startModal, winModal, loseModal].forEach(x=>x.classList.remove('active')); }
+
+    // grid resize
+    function resizeGrid(){
+      const s = Math.min(window.innerWidth, window.innerHeight)*0.9;
+      gc.style.width = gc.style.height = s + 'px';
+    }
+
+    // add 2 or 4 to a random empty cell
+    function addTile(){
       const empties = [];
-      grid.forEach((row,r)=>row.forEach((v,c)=>!v && empties.push([r,c])));
-      if(!empties.length) return;
-      const [r,c] = empties[Math.floor(Math.random()*empties.length)];
+      grid.forEach((row,r)=>row.forEach((v,c)=>{ if(!v) empties.push({r,c}); }));
+      if (!empties.length) return;
+      const {r,c} = empties[Math.floor(Math.random()*empties.length)];
       grid[r][c] = Math.random()<0.9?2:4;
     }
-    // move & merge helpers
-    function slide(row){
-      let arr = row.filter(v=>v), changed = false;
-      for(let i=0;i<arr.length-1;i++){
-        if(arr[i]===arr[i+1]){ arr[i]*=2; score+=arr[i]; arr.splice(i+1,1); changed=true; }
-      }
-      while(arr.length< SIZE) arr.push(0);
-      return {newRow: arr, changed: changed || arr.some((v,i)=>v!==row[i])};
-    }
-    function move(dir) {
-      let moved=false;
-      for(let i=0;i<SIZE;i++){
-        let line = dir<2? grid[i].slice() : grid.map(r=>r[i]);
-        if(dir>1) line.reverse();
-        const {newRow, changed} = slide(line);
-        if(changed){
-          moved=true;
-          const final = dir>1 ? newRow.reverse() : newRow;
-          if(dir<2) grid[i]=final; else grid.forEach((r,j)=>r[i]=final[j]);
+
+    // slide+merge helper
+    function slideAndCombine(row){
+      const arr = row.filter(v=>v);
+      for (let i=0;i<arr.length-1;i++){
+        if (arr[i] === arr[i+1]) {
+          arr[i] *= 2;
+          score += arr[i];
+          arr[i+1] = 0;
+          i++;
         }
       }
-      if(moved){ spawn(); updateUI(); checkEnd(); }
+      const merged = arr.filter(v=>v);
+      return merged.concat(Array(row.length-merged.length).fill(0));
     }
-    function canMove() {
-      for(let r=0;r<SIZE;r++) for(let c=0;c<SIZE;c++){
-        if(!grid[r][c]) return true;
-        [[1,0],[0,1]].forEach(([dr,dc])=>{
-          const nr=r+dr, nc=c+dc;
-          if(nr<SIZE && nc<SIZE && grid[nr][nc]===grid[r][c]) throw 'hasMove';
-        });
+
+    // perform one of four moves
+    function move(dir){
+      let moved = false;
+      if (dir==='ArrowLeft'){
+        for (let r=0;r<SIZE;r++){
+          const old = grid[r].slice();
+          const nw  = slideAndCombine(old);
+          grid[r] = nw;
+          if (!moved && nw.some((v,i)=>v!==old[i])) moved = true;
+        }
+      }
+      if (dir==='ArrowRight'){
+        for (let r=0;r<SIZE;r++){
+          const old = grid[r].slice();
+          const rev = old.slice().reverse();
+          const nw  = slideAndCombine(rev).reverse();
+          grid[r] = nw;
+          if (!moved && nw.some((v,i)=>v!==old[i])) moved = true;
+        }
+      }
+      if (dir==='ArrowUp'){
+        for (let c=0;c<SIZE;c++){
+          const col = grid.map(r=>r[c]);
+          const nw  = slideAndCombine(col);
+          for (let r=0;r<SIZE;r++){
+            if (grid[r][c] !== nw[r]) moved = true;
+            grid[r][c] = nw[r];
+          }
+        }
+      }
+      if (dir==='ArrowDown'){
+        for (let c=0;c<SIZE;c++){
+          const col = grid.map(r=>r[c]).reverse();
+          const nw  = slideAndCombine(col).reverse();
+          for (let r=0;r<SIZE;r++){
+            if (grid[r][c] !== nw[r]) moved = true;
+            grid[r][c] = nw[r];
+          }
+        }
+      }
+      return moved;
+    }
+
+    // trigger a move & check end
+    function handleMove(key){
+      if ( startModal.classList.contains('active')
+        || winModal.classList.contains('active')
+        || loseModal.classList.contains('active')) return;
+
+      const didMove = move(key);
+      if (!didMove) return;
+
+      addTile();
+      updateUI();
+
+      if (checkWin())   showModal(winModal);
+      else if (!canMove()) showModal(loseModal);
+    }
+
+    // win if any tile ≥ 2048
+    function checkWin(){
+      return grid.flat().some(v=>v>=WIN_VALUE);
+    }
+
+    // any empty or mergeable neighbour?
+    function canMove(){
+      for (let r=0;r<SIZE;r++){
+        for (let c=0;c<SIZE;c++){
+          if (!grid[r][c]) return true;
+          if (c<SIZE-1 && grid[r][c]===grid[r][c+1]) return true;
+          if (r<SIZE-1 && grid[r][c]===grid[r+1][c]) return true;
+        }
       }
       return false;
     }
-    function checkEnd(){
-      if(grid.flat().includes(WIN_VALUE)){
-        showModal('win');
-      } else {
-        try{ canMove(); } catch(e){ return; }
-        showModal('lose');
+
+    // update score & best
+    function updateScore(){
+      scoreEl.textContent = score;
+      if (score>best){
+        best = score;
+        localStorage.setItem('bestScore', best);
+        bestEl.textContent = best;
       }
     }
-    // render UI
+
+    // draw grid + tiles
     function updateUI(){
-      scoreEl.textContent = score;
-      if(score>best){ best=score; localStorage.setItem('bestScore',best); }
-      bestEl.textContent = best;
+      gc.innerHTML = '';
       const W = gc.clientWidth;
       const cellSize = (W - GAP*(SIZE+1))/SIZE;
-      // style grid cells
-      Array.from(gc.children).forEach((cell,i)=>{
-        const r = Math.floor(i/SIZE), c = i%SIZE;
-        const x = GAP + c*(cellSize+GAP), y = GAP + r*(cellSize+GAP);
-        Object.assign(cell.style,{width:cell.style.height=cellSize+'px', transform:`translate(${x}px,${y}px)`});
-      });
-      // remove old tiles
-      document.querySelectorAll('.tile').forEach(t=>t.remove());
-      // draw new tiles
-      grid.forEach((row,r)=>row.forEach((v,c)=>{
-        if(!v) return;
-        const tile = document.createElement('div');
-        tile.classList.add('tile','new');
-        tile.textContent = v;
-        const bg = 255 - Math.min(240, Math.log2(v)*15);
-        tile.style.background = `rgb(${bg},${bg},${bg})`;
-        tile.style.color = bg<100?'#fff':'#000';
-        const x = GAP + c*(cellSize+GAP), y = GAP + r*(cellSize+GAP);
-        Object.assign(tile.style,{width:cellSize+'px', height:cellSize+'px', transform:`translate(${x}px,${y}px)`});
-        gc.appendChild(tile);
-        // remove 'new' marker after animation
-        tile.addEventListener('animationend',()=>tile.classList.remove('new'));
-      }));
-    }
 
-    // swipe detection
-    let sx, sy;
-    gc.addEventListener('touchstart', e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; });
-    gc.addEventListener('touchend', e=>{
-      const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
-      if(Math.hypot(dx,dy)<30) return;
-      if(Math.abs(dx)>Math.abs(dy)) move(dx>0?2:0); else move(dy>0?3:1);
-    });
-    // keyboard
-    window.addEventListener('keydown', e=>{
-      if(['ArrowLeft','ArrowUp','ArrowRight','ArrowDown'].includes(e.key)){
-        e.preventDefault();
-        move({ArrowLeft:0,ArrowUp:1,ArrowRight:2,ArrowDown:3}[e.key]);
+      // background cells
+      for (let r=0;r<SIZE;r++){
+        for (let c=0;c<SIZE;c++){
+          const cell = document.createElement('div');
+          cell.className = 'grid-cell';
+          cell.style.width  = cell.style.height = cellSize + 'px';
+          cell.style.left   = (GAP + c*(cellSize+GAP)) + 'px';
+          cell.style.top    = (GAP + r*(cellSize+GAP)) + 'px';
+          gc.appendChild(cell);
+        }
       }
-    });
-    window.addEventListener('resize', updateUI);
 
-    // modals
-    const modals = { start: document.getElementById('modal-start'),
-                     win: document.getElementById('modal-win'),
-                     lose: document.getElementById('modal-lose') };
-    function showModal(name){
-      Object.values(modals).forEach(m=>m.classList.remove('active'));
-      modals[name].classList.add('active');
+      // number tiles
+      grid.forEach((row,r)=>{
+        row.forEach((v,c)=>{
+          if (!v) return;
+          const tile = document.createElement('div');
+          tile.className = 'tile new';
+          tile.textContent = v;
+
+          // dynamic greyscale
+          const bg = 255 - Math.min(240, Math.log2(v)*15);
+          tile.style.background = `rgb(${bg},${bg},${bg})`;
+          tile.style.color      = bg<100?'#fff':'#000';
+
+          tile.style.width  = tile.style.height = cellSize + 'px';
+          tile.style.left   = (GAP + c*(cellSize+GAP)) + 'px';
+          tile.style.top    = (GAP + r*(cellSize+GAP)) + 'px';
+          gc.appendChild(tile);
+
+          tile.addEventListener('animationend', ()=> tile.classList.remove('new'));
+        });
+      });
+
+      updateScore();
     }
-    function hideModals(){ Object.values(modals).forEach(m=>m.classList.remove('active')); }
-
-    document.getElementById('start-btn').onclick = ()=>{
-      hideModals(); score=0; initGrid();
-    };
-    document.getElementById('win-play').onclick = ()=>{ hideModals(); score=0; initGrid(); };
-    document.getElementById('win-home').onclick = ()=> showModal('start');
-    document.getElementById('lose-play').onclick = ()=>{ hideModals(); score=0; initGrid(); };
-    document.getElementById('lose-home').onclick = ()=> showModal('start');
-
-    // kick off
-    bestEl.textContent = best;
   })();
   </script>
 </body>
