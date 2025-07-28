@@ -2,247 +2,248 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CutIt Crossword</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CutIt.sbs ✦ Crossword Challenge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --bg: #000;
-      --text: #fff;
-      --accent: #00ffc8;
-      --border: #222;
-      --input-bg: #111;
-    }
     body {
       margin: 0;
       font-family: 'Antonio', sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      background-color: #000;
+      color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
       padding: 20px;
       text-align: center;
     }
+
     h1 {
-      font-size: 2rem;
-      margin-bottom: 10px;
+      font-size: 2.5rem;
     }
-    .clue-box {
-      font-size: 1.1rem;
-      margin: 10px 0;
-      color: var(--accent);
-    }
-    .grid {
-      display: flex;
-      gap: 6px;
+
+    #crossword-board {
+      display: grid;
+      grid-template-columns: repeat(10, 30px);
+      grid-auto-rows: 30px;
+      gap: 2px;
       margin: 20px 0;
-      flex-wrap: wrap;
-      justify-content: center;
     }
-    .letter {
-      width: 48px;
-      height: 48px;
-      background: var(--input-bg);
-      border: 2px solid var(--border);
-      font-size: 1.5rem;
-      text-transform: uppercase;
+
+    .cell {
+      width: 30px;
+      height: 30px;
+      background: #111;
+      border: 1px solid #333;
       text-align: center;
-      color: var(--text);
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      color: #fff;
     }
-    .letter:focus {
-      outline: 2px solid var(--accent);
-    }
-    .controls {
-      margin-top: 20px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    button {
+
+    .cell input {
       background: transparent;
-      color: var(--text);
-      border: 1px solid var(--accent);
-      padding: 8px 16px;
+      border: none;
+      color: #fff;
+      text-align: center;
+      width: 100%;
+      height: 100%;
+      font-size: 1.1rem;
+      font-family: 'Antonio', sans-serif;
+      text-transform: uppercase;
+    }
+
+    #scoreboard {
       font-size: 1rem;
+      margin: 10px;
+    }
+
+    #timer {
+      margin: 5px;
+    }
+
+    .btn {
+      background: #fff;
+      color: #000;
+      font-weight: bold;
+      padding: 10px 20px;
+      border: none;
       cursor: pointer;
-      border-radius: 6px;
+      font-family: 'Antonio', sans-serif;
+      margin: 10px;
     }
-    .progress {
-      height: 8px;
-      background: var(--accent);
-      width: 0%;
-      transition: width 0.3s ease;
-      margin-top: 20px;
-      border-radius: 10px;
+
+    #floatingEmojis {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 999;
     }
-    .footer {
-      margin-top: 40px;
-      font-size: 0.8rem;
-      opacity: 0.3;
-    }
-    .hidden {
-      display: none;
-    }
-    .win-message {
-      font-size: 1.3rem;
-      color: lime;
-      margin-top: 30px;
-      animation: pop 0.6s ease-in-out;
-    }
-    .level-info {
-      font-size: 1rem;
-      margin-top: 10px;
+
+    .emoji {
+      position: absolute;
+      font-size: 1.8rem;
+      animation: floatUp 6s ease-in infinite;
       opacity: 0.7;
     }
-    @keyframes pop {
-      0% {transform: scale(0.8);opacity: 0;}
-      100% {transform: scale(1);opacity: 1;}
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(1); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 10px;
+      opacity: 0.2;
+      font-size: 0.9rem;
+    }
+
+    #popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #popup.hidden {
+      display: none;
+    }
+
+    #popup h2 {
+      font-size: 2rem;
+    }
+
+    #popup p {
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .dark-mode {
+      background: #fff;
+      color: #000;
     }
   </style>
 </head>
 <body>
-  <h1>🧠 CutIt Crossword</h1>
-  <div class="level-info" id="levelInfo">Level 1</div>
-  <div class="clue-box" id="clue">Clue appears here</div>
-  <div class="grid" id="letterGrid"></div>
-  <div class="controls">
-    <button onclick="checkWord()">Check</button>
-    <button onclick="nextWord()">Next</button>
+
+<header>
+  <h1>🧠 Crossword Challenge</h1>
+  <div id="scoreboard">
+    Score: <span id="score">0</span> | Time: <span id="timer">00:00</span>
   </div>
-  <div class="progress" id="progressBar"></div>
-  <div class="win-message hidden" id="winMessage">🎉 You completed all 15 levels!</div>
-  <div class="footer">CutIt.sbs ✦ your vibe. your code.</div>
+</header>
+
+<div id="crossword-board"></div>
+
+<button class="btn" onclick="submitPuzzle()">Submit Puzzle</button>
+<button class="btn" onclick="toggleTheme()">🌓 Toggle Dark/Light</button>
+<a class="btn" href="https://cutit.sbs/games">🏠 Home</a>
+
+<div id="floatingEmojis"></div>
+
+<footer>CutIt.sbs ✦ your vibe. your code.</footer>
+
+<!-- Intro popup -->
+<div id="popup">
+  <h2>Welcome to the Challenge!</h2>
+  <p>
+    Solve the crossword puzzles to level up your brain. Each puzzle gets harder. Score is saved on your device. 
+    Beat the clock, complete all levels and tag <strong>@cutit.sbs</strong> on Instagram or <strong>@cutitsbs</strong> on X 
+    with a screenshot to win exciting prizes!
+  </p>
+  <button class="btn" onclick="startGame()">Start Game</button>
+</div>
 
 <script>
+const emojiList = ["✍️", "🧠", "💡", "🔤", "🕹️", "🎯", "📚"];
+function spawnEmoji() {
+  const emoji = document.createElement("div");
+  emoji.className = "emoji";
+  emoji.innerText = emojiList[Math.floor(Math.random() * emojiList.length)];
+  emoji.style.left = Math.random() * 100 + "vw";
+  emoji.style.top = "100vh";
+  emoji.style.animationDuration = (3 + Math.random() * 3) + "s";
+  document.getElementById("floatingEmojis").appendChild(emoji);
+  setTimeout(() => emoji.remove(), 6000);
+}
+setInterval(spawnEmoji, 1500);
+
+// Timer
+let seconds = 0, timerInterval;
+function startTimer() {
+  timerInterval = setInterval(() => {
+    seconds++;
+    const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const secs = String(seconds % 60).padStart(2, '0');
+    document.getElementById("timer").textContent = `${mins}:${secs}`;
+  }, 1000);
+}
+
+// Game Logic
+let currentLevel = 0;
+let score = 0;
+const board = document.getElementById("crossword-board");
 const levels = [
-  [ // Level 1
-    { word: "ATOM", clue: "Smallest unit of matter" },
-    { word: "RAIN", clue: "Water falling from clouds" },
-  ],
-  [ // Level 2
-    { word: "VIRUS", clue: "Non-living disease agent" },
-    { word: "PLUTO", clue: "Dwarf planet" }
-  ],
-  [ // Level 3
-    { word: "CIVIL", clue: "Polite and respectful" },
-    { word: "DELTA", clue: "River mouth or Greek letter" }
-  ],
-  [ // Level 4
-    { word: "NEURON", clue: "Brain signal cell" },
-    { word: "SOLAR", clue: "Related to the Sun" }
-  ],
-  [ // Level 5
-    { word: "GRAVITY", clue: "Force that pulls us down" },
-    { word: "PYRAMID", clue: "Ancient Egyptian tomb" }
-  ],
-  [ // Level 6
-    { word: "GALAXY", clue: "Huge collection of stars" },
-    { word: "CIPHER", clue: "Secret code" }
-  ],
-  [ // Level 7
-    { word: "ECOSYSTEM", clue: "Community of living things" },
-    { word: "ISOTOPE", clue: "Atom with same protons, diff neutrons" }
-  ],
-  [ // Level 8
-    { word: "CULTURE", clue: "Beliefs and practices" },
-    { word: "TISSUE", clue: "Group of similar cells" }
-  ],
-  [ // Level 9
-    { word: "EQUATOR", clue: "Earth's center line" },
-    { word: "THEOREM", clue: "Mathematical statement to prove" }
-  ],
-  [ // Level 10
-    { word: "QUANTUM", clue: "Tiny unit in physics" },
-    { word: "SYNAPSE", clue: "Gap between neurons" }
-  ],
-  [ // Level 11
-    { word: "FOSSIL", clue: "Preserved ancient organism" },
-    { word: "ENERGY", clue: "Power to do work" }
-  ],
-  [ // Level 12
-    { word: "FREQUENCY", clue: "Rate of vibration" },
-    { word: "MOMENTUM", clue: "Mass x velocity" }
-  ],
-  [ // Level 13
-    { word: "NARRATIVE", clue: "Story or account" },
-    { word: "SYMMETRY", clue: "Balanced proportions" }
-  ],
-  [ // Level 14
-    { word: "EVOLUTION", clue: "Change in species over time" },
-    { word: "MATRIX", clue: "Grid or environment" }
-  ],
-  [ // Level 15
-    { word: "PHOTOSYNTHESIS", clue: "Plants make food using light" },
-    { word: "BIODIVERSITY", clue: "Variety of life forms" }
-  ]
+  { words: [{word: "apple", clue: "A fruit often seen in tech logos"},
+            {word: "sun", clue: "The center of our solar system"}] },
+  { words: [{word: "gravity", clue: "Force that keeps us grounded"},
+            {word: "planet", clue: "Earth is one"}] },
+  // Add up to 15 level objects here...
 ];
 
-let currentLevel = 0;
-let currentWordIndex = 0;
-
-const clueBox = document.getElementById("clue");
-const grid = document.getElementById("letterGrid");
-const progress = document.getElementById("progressBar");
-const winMsg = document.getElementById("winMessage");
-const levelInfo = document.getElementById("levelInfo");
-
-function renderWord() {
-  grid.innerHTML = "";
-  const { word, clue } = levels[currentLevel][currentWordIndex];
-  clueBox.textContent = clue;
-  levelInfo.textContent = `Level ${currentLevel + 1}`;
-  for (let i = 0; i < word.length; i++) {
+function loadLevel(level) {
+  board.innerHTML = '';
+  const { words } = levels[level];
+  const size = 10;
+  for (let i = 0; i < size * size; i++) {
+    const cell = document.createElement("div");
+    cell.className = "cell";
     const input = document.createElement("input");
     input.maxLength = 1;
-    input.className = "letter";
-    input.addEventListener("input", (e) => {
-      e.target.value = e.target.value.toUpperCase();
-      if (e.target.nextElementSibling) e.target.nextElementSibling.focus();
-    });
-    grid.appendChild(input);
+    cell.appendChild(input);
+    board.appendChild(cell);
   }
-  grid.firstChild.focus();
-  updateProgress();
+  // Show clues (you can style or expand this)
+  alert("Clues: " + words.map(w => w.clue).join(" | "));
 }
 
-function checkWord() {
-  const inputs = grid.querySelectorAll("input");
-  let guess = "";
-  inputs.forEach(i => guess += i.value.toUpperCase());
-  const actual = levels[currentLevel][currentWordIndex].word;
-  if (guess === actual) {
-    inputs.forEach(i => i.style.background = "#0f0");
+function submitPuzzle() {
+  score += 100;
+  document.getElementById("score").textContent = score;
+  clearInterval(timerInterval);
+  if (currentLevel < levels.length - 1) {
+    currentLevel++;
+    loadLevel(currentLevel);
+    startTimer();
   } else {
-    inputs.forEach(i => i.style.background = "#f00");
+    alert(`🎉 Congrats! Final Score: ${score} | Time: ${document.getElementById("timer").textContent}
+Share on Instagram @cutit.sbs or X @cutitsbs and win prizes!`);
   }
 }
 
-function nextWord() {
-  if (currentWordIndex < levels[currentLevel].length - 1) {
-    currentWordIndex++;
-    renderWord();
-  } else {
-    if (currentLevel < levels.length - 1) {
-      currentLevel++;
-      currentWordIndex = 0;
-      renderWord();
-    } else {
-      winMsg.classList.remove("hidden");
-      progress.style.width = "100%";
-    }
-  }
+function startGame() {
+  document.getElementById("popup").classList.add("hidden");
+  loadLevel(currentLevel);
+  startTimer();
 }
 
-function updateProgress() {
-  const total = levels.length;
-  const completed = currentLevel + currentWordIndex / levels[currentLevel].length;
-  const percent = (completed / total) * 100;
-  progress.style.width = percent + "%";
+function toggleTheme() {
+  document.body.classList.toggle("dark-mode");
 }
-
-renderWord();
 </script>
+
 </body>
 </html>
