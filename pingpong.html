@@ -1,3 +1,4 @@
+<!-- FULL HTML FILE: Ping Pong w/ Touch Support -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,11 +7,7 @@
   <title>Ping Pong | CutIt.sbs</title>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Antonio', sans-serif;
       background: #000;
@@ -22,7 +19,6 @@
     }
     header, footer {
       background: #111;
-      color: #fff;
       text-align: center;
       padding: 12px;
     }
@@ -36,15 +32,15 @@
     }
     canvas {
       flex: 1;
-      background: black;
       display: block;
+      background: #000;
+      touch-action: none;
     }
     #leaderboardBox {
       position: absolute;
       top: 20px;
       right: 20px;
       background: #111;
-      color: #fff;
       padding: 10px;
       font-size: 0.9em;
       border: 1px solid #fff;
@@ -71,36 +67,35 @@
 </head>
 <body>
   <header>🏓 CutIt.sbs Ping Pong</header>
-
   <button id="modeToggle">Switch to 1v1</button>
   <div id="leaderboardBox">
     <strong>🏆 Leaderboard</strong><br/>
     <ol id="leaderboardList"></ol>
   </div>
-
   <canvas id="gameCanvas"></canvas>
-
   <footer>Made with ❤️ by CutIt.sbs ✦ your vibe. your code.</footer>
 
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - 100;
 
-    let mode = "vsAI"; // or "1v1"
-
+    let mode = "vsAI";
+    let keys = {};
     const paddleWidth = 10, paddleHeight = 100;
-    let playerY = canvas.height / 2 - paddleHeight / 2;
-    let player2Y = canvas.height / 2 - paddleHeight / 2;
+    let playerY = 200, player2Y = 200;
     const ballSize = 10;
-    let ballX = canvas.width / 2, ballY = canvas.height / 2;
-    let ballSpeedX = 6, ballSpeedY = 4;
+    let ballX = 300, ballY = 200;
+    let ballSpeedX = 5, ballSpeedY = 4;
     const paddleSpeed = 8;
-    let playerScore = 0;
-    let player2Score = 0;
-
+    let playerScore = 0, player2Score = 0;
     const leaderboard = JSON.parse(localStorage.getItem("cutit_leaderboard") || "[]");
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight - document.querySelector('header').offsetHeight - document.querySelector('footer').offsetHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
     function drawRect(x, y, w, h, color = "#fff") {
       ctx.fillStyle = color;
@@ -113,17 +108,23 @@
       ctx.fillText(text, x, y);
     }
 
-    function drawCircle(x, y, r) {
-      ctx.fillStyle = "#fff";
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
     function drawNet() {
       for (let i = 0; i < canvas.height; i += 30) {
         drawRect(canvas.width / 2 - 1, i, 2, 20, "#555");
       }
+    }
+
+    function draw() {
+      drawRect(0, 0, canvas.width, canvas.height, "#000");
+      drawNet();
+      drawText(playerScore, canvas.width / 4, 50);
+      drawText(player2Score, 3 * canvas.width / 4, 50);
+      drawRect(20, playerY, paddleWidth, paddleHeight);
+      drawRect(canvas.width - 30, player2Y, paddleWidth, paddleHeight);
+      ctx.beginPath();
+      ctx.arc(ballX, ballY, ballSize, 0, Math.PI * 2);
+      ctx.fillStyle = "#fff";
+      ctx.fill();
     }
 
     function resetBall() {
@@ -134,51 +135,49 @@
     }
 
     function update() {
+      if (mode === "1v1") {
+        if (keys["w"]) playerY -= paddleSpeed;
+        if (keys["s"]) playerY += paddleSpeed;
+        if (keys["ArrowUp"]) player2Y -= paddleSpeed;
+        if (keys["ArrowDown"]) player2Y += paddleSpeed;
+      } else {
+        if (keys["w"]) playerY -= paddleSpeed;
+        if (keys["s"]) playerY += paddleSpeed;
+
+        let center = player2Y + paddleHeight / 2;
+        if (center < ballY - 35) player2Y += paddleSpeed;
+        else if (center > ballY + 35) player2Y -= paddleSpeed;
+      }
+
+      // Clamp paddles
+      playerY = Math.max(0, Math.min(canvas.height - paddleHeight, playerY));
+      player2Y = Math.max(0, Math.min(canvas.height - paddleHeight, player2Y));
+
       ballX += ballSpeedX;
       ballY += ballSpeedY;
 
       if (ballY <= 0 || ballY >= canvas.height) ballSpeedY *= -1;
 
-      // Player 1 collision
+      // Paddle collisions
       if (ballX < 30 && ballY > playerY && ballY < playerY + paddleHeight) {
         ballSpeedX *= -1;
-        let deltaY = ballY - (playerY + paddleHeight / 2);
-        ballSpeedY = deltaY * 0.3;
+        ballSpeedY += (ballY - (playerY + paddleHeight / 2)) * 0.3;
       }
 
-      // Player 2 / AI collision
       if (ballX > canvas.width - 40 && ballY > player2Y && ballY < player2Y + paddleHeight) {
         ballSpeedX *= -1;
-        let deltaY = ballY - (player2Y + paddleHeight / 2);
-        ballSpeedY = deltaY * 0.3;
+        ballSpeedY += (ballY - (player2Y + paddleHeight / 2)) * 0.3;
       }
 
-      // Score
       if (ballX < 0) {
         player2Score++;
         resetBall();
       }
+
       if (ballX > canvas.width) {
         playerScore++;
         resetBall();
       }
-
-      // AI Movement
-      if (mode === "vsAI") {
-        let center = player2Y + paddleHeight / 2;
-        if (center < ballY - 35) player2Y += paddleSpeed;
-        else if (center > ballY + 35) player2Y -= paddleSpeed;
-      }
-    }
-
-    function draw() {
-      drawRect(0, 0, canvas.width, canvas.height, "#000");
-      drawNet();
-      drawText(playerScore, canvas.width / 4, 50);
-      drawText(player2Score, (3 * canvas.width) / 4, 50);
-      drawRect(20, playerY, paddleWidth, paddleHeight);
-      drawRect(canvas.width - 30, player2Y, paddleWidth, paddleHeight);
-      drawCircle(ballX, ballY, ballSize);
     }
 
     function loop() {
@@ -187,35 +186,8 @@
       requestAnimationFrame(loop);
     }
 
-    window.addEventListener("keydown", (e) => {
-      if (mode === "1v1") {
-        if (e.key === "w") playerY -= paddleSpeed;
-        if (e.key === "s") playerY += paddleSpeed;
-        if (e.key === "ArrowUp") player2Y -= paddleSpeed;
-        if (e.key === "ArrowDown") player2Y += paddleSpeed;
-      }
-    });
-
-    window.addEventListener("mousemove", (e) => {
-      if (mode === "vsAI") {
-        let rect = canvas.getBoundingClientRect();
-        playerY = e.clientY - rect.top - paddleHeight / 2;
-      }
-    });
-
-    document.getElementById("modeToggle").onclick = () => {
-      mode = mode === "vsAI" ? "1v1" : "vsAI";
-      document.getElementById("modeToggle").textContent = mode === "1v1" ? "Switch to vs AI" : "Switch to 1v1";
-    };
-
-    // 💾 Save high score
-    function saveScore(name, score) {
-      leaderboard.push({ name, score });
-      leaderboard.sort((a, b) => b.score - a.score);
-      leaderboard.splice(5);
-      localStorage.setItem("cutit_leaderboard", JSON.stringify(leaderboard));
-      showLeaderboard();
-    }
+    window.addEventListener("keydown", e => keys[e.key] = true);
+    window.addEventListener("keyup", e => keys[e.key] = false);
 
     function showLeaderboard() {
       const list = document.getElementById("leaderboardList");
@@ -225,6 +197,14 @@
         li.textContent = `${entry.name}: ${entry.score}`;
         list.appendChild(li);
       });
+    }
+
+    function saveScore(name, score) {
+      leaderboard.push({ name, score });
+      leaderboard.sort((a, b) => b.score - a.score);
+      leaderboard.splice(5);
+      localStorage.setItem("cutit_leaderboard", JSON.stringify(leaderboard));
+      showLeaderboard();
     }
 
     function checkHighScore() {
@@ -237,14 +217,30 @@
       }
     }
 
-    window.addEventListener("beforeunload", () => {
-      checkHighScore();
-    });
+    window.addEventListener("beforeunload", () => checkHighScore());
 
-    window.addEventListener("resize", () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight - 100;
-    });
+    document.getElementById("modeToggle").onclick = () => {
+      mode = mode === "vsAI" ? "1v1" : "vsAI";
+      document.getElementById("modeToggle").textContent = mode === "1v1" ? "Switch to vs AI" : "Switch to 1v1";
+    };
+
+    // 🎮 TOUCH SUPPORT BELOW:
+    canvas.addEventListener("touchmove", function(e) {
+      e.preventDefault();
+      for (const touch of e.touches) {
+        const y = touch.clientY - canvas.getBoundingClientRect().top;
+        const x = touch.clientX;
+        if (mode === "vsAI") {
+          playerY = y - paddleHeight / 2;
+        } else {
+          if (x < canvas.width / 2) {
+            playerY = y - paddleHeight / 2;
+          } else {
+            player2Y = y - paddleHeight / 2;
+          }
+        }
+      }
+    }, { passive: false });
 
     showLeaderboard();
     loop();
