@@ -3,277 +3,266 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ping Pong | CutIt.sbs</title>
+  <title>CutIt Pong 🎮</title>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #000;
+      --fg: #fff;
+      --accent: #00ffcc;
+    }
+
     body {
       margin: 0;
-      background: #000;
-      color: white;
       font-family: 'Antonio', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
       height: 100vh;
       overflow: hidden;
     }
 
     header, footer {
       text-align: center;
-      padding: 10px;
-      background: #111;
-      font-size: 20px;
-      letter-spacing: 1px;
+      padding: 1rem;
+      font-size: 1.3rem;
+      color: var(--accent);
     }
 
     canvas {
-      flex: 1;
       background: #111;
-      display: none;
-      margin: auto;
-      border-top: 2px solid #fff;
-      border-bottom: 2px solid #fff;
+      display: block;
+      margin: 1rem auto;
+      border: 2px solid var(--accent);
     }
 
-    #scoreboard {
-      position: absolute;
-      top: 60px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 18px;
-      display: none;
-    }
-
-    #highScoreBadge {
-      position: absolute;
-      top: 100px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 24px;
-      background: white;
-      color: black;
-      padding: 10px 20px;
-      border-radius: 10px;
-      display: none;
-      animation: pop 0.8s ease;
-    }
-
-    #menu, #gameOverScreen {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    #menu {
       text-align: center;
     }
 
-    #menu button, #gameOverScreen button {
-      font-family: 'Antonio', sans-serif;
-      font-size: 22px;
-      background: white;
-      color: black;
-      padding: 10px 30px;
+    #menu input {
+      padding: 0.5rem;
+      margin: 0.3rem;
       border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 20px;
+      font-size: 1rem;
+      border-radius: 5px;
+      font-family: 'Antonio';
     }
 
-    @keyframes pop {
-      0% { transform: scale(0) translateX(-50%); }
-      50% { transform: scale(1.2) translateX(-50%); }
-      100% { transform: scale(1) translateX(-50%); }
+    #menu button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background: var(--accent);
+      border: none;
+      border-radius: 4px;
+      font-family: 'Antonio';
+      margin: 1rem;
+    }
+
+    #scoreboard {
+      font-size: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    #highScore {
+      font-size: 1.1rem;
+      color: gold;
+      animation: flicker 1s infinite alternate;
+    }
+
+    @keyframes flicker {
+      from { opacity: 1; }
+      to { opacity: 0.5; }
+    }
+
+    @media (max-width: 600px) {
+      canvas {
+        width: 90vw;
+        height: 50vh;
+      }
     }
   </style>
 </head>
 <body>
-
-  <header>🏓 CutIt.sbs Ping Pong Challenge</header>
+  <header>
+    CutIt.sbs 🏓 Pong Challenge
+  </header>
 
   <div id="menu">
-    <h1>Ready to Rally?</h1>
+    <input id="player1Name" placeholder="Player 1 Name" />
+    <input id="player2Name" placeholder="Player 2 Name or leave blank for AI" />
     <button onclick="startGame()">Start Game</button>
   </div>
 
-  <canvas id="gameCanvas" width="800" height="500"></canvas>
-  <div id="scoreboard">Player 1: 0 | Player 2: 0</div>
-  <div id="highScoreBadge">🏆 New High Score!</div>
+  <canvas id="pong" width="700" height="400"></canvas>
 
-  <div id="gameOverScreen" style="display: none;">
-    <h2 id="winnerText"></h2>
-    <p id="finalScore"></p>
-    <button onclick="restartGame()">Play Again</button>
+  <div id="scoreboard">
+    <span id="player1Label">P1</span>: <span id="p1Score">0</span> | 
+    <span id="player2Label">P2</span>: <span id="p2Score">0</span>
   </div>
+  <div id="highScore"></div>
 
-  <footer>Made with 🖤 by CutIt.sbs</footer>
+  <footer>
+    Made with ❤️ by CutIt.sbs | <a href="/" style="color: var(--accent); text-decoration: none;">Back to Home</a>
+  </footer>
 
   <script>
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
+    const canvas = document.getElementById('pong');
+    const ctx = canvas.getContext('2d');
+    const p1Label = document.getElementById('player1Label');
+    const p2Label = document.getElementById('player2Label');
+    const p1ScoreEl = document.getElementById('p1Score');
+    const p2ScoreEl = document.getElementById('p2Score');
+    const highScoreEl = document.getElementById('highScore');
+    let player1 = '', player2 = '', isAI = false;
 
-    const menu = document.getElementById("menu");
-    const scoreboard = document.getElementById("scoreboard");
-    const highScoreBadge = document.getElementById("highScoreBadge");
-    const gameOverScreen = document.getElementById("gameOverScreen");
-    const winnerText = document.getElementById("winnerText");
-    const finalScore = document.getElementById("finalScore");
+    const paddleWidth = 10, paddleHeight = 80;
+    let paddle1Y = canvas.height / 2 - paddleHeight / 2;
+    let paddle2Y = canvas.height / 2 - paddleHeight / 2;
+    let ballX = canvas.width / 2, ballY = canvas.height / 2;
+    let ballSpeedX = 4, ballSpeedY = 3;
+    let p1Score = 0, p2Score = 0;
+    const paddleSpeed = 6;
+    let upPressed = false, downPressed = false;
+    let wPressed = false, sPressed = false;
+    let touchY1 = null, touchY2 = null;
+    let playing = false;
 
-    let paddleWidth = 10, paddleHeight = 80;
-    let keys = {};
-    let highScore = localStorage.getItem("pingHighScore") || 0;
-    let highName = localStorage.getItem("pingHighName") || "???";
-    let gameRunning = false;
-
-    let p1, p2, ball;
-
-    document.addEventListener("keydown", e => keys[e.key] = true);
-    document.addEventListener("keyup", e => keys[e.key] = false);
-
-    // Touch support
-    canvas.addEventListener("touchmove", function (e) {
-      const rect = canvas.getBoundingClientRect();
-      for (let touch of e.touches) {
-        if (touch.clientX < canvas.width / 2) {
-          p1.y = touch.clientY - rect.top - paddleHeight / 2;
-        } else {
-          p2.y = touch.clientY - rect.top - paddleHeight / 2;
-        }
-      }
-    });
-
-    function startGame() {
-      menu.style.display = "none";
-      canvas.style.display = "block";
-      scoreboard.style.display = "block";
-      gameOverScreen.style.display = "none";
-
-      p1 = { x: 10, y: canvas.height / 2 - paddleHeight / 2, score: 0 };
-      p2 = { x: canvas.width - paddleWidth - 10, y: canvas.height / 2 - paddleHeight / 2, score: 0 };
-
-      ball = {
-        x: canvas.width / 2,
-        y: canvas.height / 2,
-        radius: 8,
-        speed: 3,
-        dx: 3,
-        dy: 3
-      };
-
-      gameRunning = true;
-      requestAnimationFrame(gameLoop);
-    }
-
-    function restartGame() {
-      startGame();
-    }
-
-    function resetBall() {
-      ball.x = canvas.width / 2;
-      ball.y = canvas.height / 2;
-      ball.dx = -ball.dx;
-      ball.speed = 3;
-    }
-
-    function checkHighScore(score) {
-      if (score > highScore) {
-        const name = prompt("🎉 New High Score! Enter initials:") || "???";
-        localStorage.setItem("pingHighScore", score);
-        localStorage.setItem("pingHighName", name);
-        highScore = score;
-        highName = name;
-        showHighScoreBadge();
-      }
-    }
-
-    function showHighScoreBadge() {
-      highScoreBadge.style.display = "block";
-      setTimeout(() => {
-        highScoreBadge.style.display = "none";
-      }, 2000);
-    }
-
-    function updateScoreboard() {
-      scoreboard.textContent = `Player 1: ${p1.score} | Player 2: ${p2.score}`;
-    }
-
-    function drawRect(x, y, w, h, color = "#fff") {
+    function drawRect(x, y, w, h, color) {
       ctx.fillStyle = color;
       ctx.fillRect(x, y, w, h);
     }
 
-    function drawBall(x, y, r) {
+    function drawBall(x, y) {
       ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fillStyle = "#fff";
+      ctx.arc(x, y, 8, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
       ctx.fill();
       ctx.closePath();
     }
 
-    function update() {
-      if (!gameRunning) return;
-
-      if (keys["w"]) p1.y -= 5;
-      if (keys["s"]) p1.y += 5;
-      if (keys["ArrowUp"]) p2.y -= 5;
-      if (keys["ArrowDown"]) p2.y += 5;
-
-      p1.y = Math.max(0, Math.min(canvas.height - paddleHeight, p1.y));
-      p2.y = Math.max(0, Math.min(canvas.height - paddleHeight, p2.y));
-
-      ball.x += ball.dx;
-      ball.y += ball.dy;
-
-      if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) {
-        ball.dy = -ball.dy;
-      }
-
-      if (ball.x - ball.radius < p1.x + paddleWidth && ball.y > p1.y && ball.y < p1.y + paddleHeight) {
-        ball.dx = Math.abs(ball.dx);
-        ball.speed += 0.2;
-      }
-
-      if (ball.x + ball.radius > p2.x && ball.y > p2.y && ball.y < p2.y + paddleHeight) {
-        ball.dx = -Math.abs(ball.dx);
-        ball.speed += 0.2;
-      }
-
-      if (ball.x < 0) {
-        p2.score++;
-        checkHighScore(p2.score);
-        resetBall();
-      }
-      if (ball.x > canvas.width) {
-        p1.score++;
-        checkHighScore(p1.score);
-        resetBall();
-      }
-
-      if (p1.score >= 5 || p2.score >= 5) {
-        endGame();
-      }
-
-      updateScoreboard();
-    }
-
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawRect(p1.x, p1.y, paddleWidth, paddleHeight);
-      drawRect(p2.x, p2.y, paddleWidth, paddleHeight);
-      drawBall(ball.x, ball.y, ball.radius);
+      drawRect(0, paddle1Y, paddleWidth, paddleHeight, '#fff');
+      drawRect(canvas.width - paddleWidth, paddle2Y, paddleWidth, paddleHeight, '#fff');
+      drawBall(ballX, ballY);
     }
 
-    function endGame() {
-      gameRunning = false;
-      canvas.style.display = "none";
-      scoreboard.style.display = "none";
-      gameOverScreen.style.display = "block";
-      winnerText.textContent = p1.score > p2.score ? "🏆 Player 1 Wins!" : "🏆 Player 2 Wins!";
-      finalScore.textContent = `High Score: ${highScore} by ${highName}`;
-    }
+    function update() {
+      ballX += ballSpeedX;
+      ballY += ballSpeedY;
 
-    function gameLoop() {
-      update();
+      // Bounce on top/bottom
+      if (ballY <= 0 || ballY >= canvas.height) ballSpeedY = -ballSpeedY;
+
+      // Paddle collision
+      if (ballX <= paddleWidth) {
+        if (ballY > paddle1Y && ballY < paddle1Y + paddleHeight) {
+          ballSpeedX = -ballSpeedX;
+        } else {
+          p2Score++; reset(); 
+        }
+      }
+
+      if (ballX >= canvas.width - paddleWidth) {
+        if (ballY > paddle2Y && ballY < paddle2Y + paddleHeight) {
+          ballSpeedX = -ballSpeedX;
+        } else {
+          p1Score++; reset(); 
+        }
+      }
+
+      // Move AI paddle
+      if (isAI) {
+        paddle2Y += (ballY - paddle2Y - paddleHeight / 2) * 0.1;
+      }
+
+      // Player 1
+      if (wPressed) paddle1Y -= paddleSpeed;
+      if (sPressed) paddle1Y += paddleSpeed;
+
+      // Player 2 (if 1v1)
+      if (!isAI) {
+        if (upPressed) paddle2Y -= paddleSpeed;
+        if (downPressed) paddle2Y += paddleSpeed;
+      }
+
+      // Clamp paddles
+      paddle1Y = Math.max(0, Math.min(canvas.height - paddleHeight, paddle1Y));
+      paddle2Y = Math.max(0, Math.min(canvas.height - paddleHeight, paddle2Y));
+
+      p1ScoreEl.textContent = p1Score;
+      p2ScoreEl.textContent = p2Score;
+
       draw();
-      if (gameRunning) requestAnimationFrame(gameLoop);
+      requestAnimationFrame(update);
     }
+
+    function reset() {
+      ballX = canvas.width / 2;
+      ballY = canvas.height / 2;
+      ballSpeedX = (Math.random() > 0.5 ? 4 : -4);
+      ballSpeedY = (Math.random() > 0.5 ? 3 : -3);
+      checkHighScore();
+    }
+
+    function startGame() {
+      player1 = document.getElementById('player1Name').value || 'Player 1';
+      player2 = document.getElementById('player2Name').value || 'AI';
+      isAI = player2.toLowerCase() === 'ai';
+
+      p1Label.textContent = player1;
+      p2Label.textContent = isAI ? 'AI' : player2;
+
+      document.getElementById('menu').style.display = 'none';
+      playing = true;
+      update();
+    }
+
+    function checkHighScore() {
+      const currentHigh = localStorage.getItem('pongHigh') || 0;
+      const highHolder = localStorage.getItem('pongHighName') || '';
+
+      const current = Math.max(p1Score, p2Score);
+      if (current > currentHigh) {
+        highScoreEl.textContent = `🎉 New High Score by ${current === p1Score ? player1 : player2}! (${current})`;
+        localStorage.setItem('pongHigh', current);
+        localStorage.setItem('pongHighName', current === p1Score ? player1 : player2);
+      } else {
+        highScoreEl.textContent = `🏆 High Score: ${highHolder} (${currentHigh})`;
+      }
+    }
+
+    // Controls
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowUp') upPressed = true;
+      if (e.key === 'ArrowDown') downPressed = true;
+      if (e.key === 'w') wPressed = true;
+      if (e.key === 's') sPressed = true;
+    });
+
+    document.addEventListener('keyup', e => {
+      if (e.key === 'ArrowUp') upPressed = false;
+      if (e.key === 'ArrowDown') downPressed = false;
+      if (e.key === 'w') wPressed = false;
+      if (e.key === 's') sPressed = false;
+    });
+
+    // Touch support
+    canvas.addEventListener('touchmove', e => {
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      const y = touch.clientY - rect.top;
+
+      if (touch.clientX < rect.width / 2) {
+        paddle1Y = y - paddleHeight / 2;
+      } else {
+        if (!isAI) paddle2Y = y - paddleHeight / 2;
+      }
+    });
   </script>
 </body>
 </html>
