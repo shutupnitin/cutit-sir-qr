@@ -1,176 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CutIt Ping Pong</title>
+  <meta charset="UTF-8">
+  <title>Unbeatable Pong</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Antonio&display=swap');
-    html, body {
-      margin: 0; padding: 0;
-      font-family: 'Antonio', sans-serif;
-      background: #000; overflow: hidden;
-    }
-    canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: #000;
-      touch-action: none;
-    }
-    #popup, #gameOver {
-      position: fixed;
-      width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.85);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      color: #fff; z-index: 100;
-      text-align: center;
-    }
-    button {
-      font-size: 18px; padding: 12px 20px;
-      background: #fff; color: #000;
-      border: none; margin: 10px;
-      border-radius: 5px; cursor: pointer;
-    }
-    .watermark {
-      position: fixed; bottom: 8px; width: 100%;
-      text-align: center; font-size: 12px;
-      color: rgba(255,255,255,0.3);
-      pointer-events: none;
-      z-index: 1;
-    }
+    body { margin: 0; background: #222; }
+    canvas { display: block; margin: auto; background: #eee; }
   </style>
 </head>
 <body>
-  <div id="popup">
-    <h2>CutIt.sbs ✦ your vibe. your code.</h2>
-    <p>Select Game Mode:</p>
-    <button onclick="startGame('AI')">1 vs Computer</button>
-    <button onclick="startGame('2P')">1 vs 1</button>
-  </div>
-  <div id="gameOver" style="display:none">
-    <h2>Game Over</h2>
-    <p id="scoreDisplay"></p>
-    <button onclick="window.location.href='https://cutit.sbs/games'">Home</button>
-    <button onclick="restart()">Play Again</button>
-  </div>
-  <canvas id="gameCanvas" tabindex="1"></canvas>
-  <div class="watermark">CutIt.sbs ✦ your vibe. your code.</div>
-
+  <canvas id="pongCanvas" width="800" height="400"></canvas>
   <script>
-    const canvas = document.getElementById("gameCanvas");
+    const canvas = document.getElementById("pongCanvas");
     const ctx = canvas.getContext("2d");
-    canvas.focus();
-    canvas.addEventListener("click", () => canvas.focus());
 
-    let mode = "AI", score = 0;
-    let highScore = localStorage.getItem("cutitHighScore") || 0;
-    let player1, player2, ball;
-    let keys = {};
-    let draggingPaddle = null;
+    const player1 = { x: 20, y: canvas.height / 2 - 40, w: 10, h: 80, score: 0 };
+    const player2 = { x: canvas.width - 30, y: canvas.height / 2 - 40, w: 10, h: 80, score: 0 };
+    const ball = { x: canvas.width / 2, y: canvas.height / 2, r: 10, dx: 4, dy: 3 };
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
+    let draggingPaddle = false;
+    let mode = "AI";
 
-    function startGame(selectedMode) {
-      mode = selectedMode;
-      document.getElementById("popup").style.display = "none";
-      init();
-    }
-
-    function restart() {
-      document.getElementById("gameOver").style.display = "none";
-      score = 0;
-      init();
-    }
-
-    function init() {
-      ball = { x: canvas.width / 2, y: canvas.height / 2, dx: 5, dy: 5, size: 8 };
-      player1 = { x: 30, y: canvas.height / 2 - 50, w: 12, h: 100 };
-      player2 = { x: canvas.width - 42, y: canvas.height / 2 - 50, w: 12, h: 100 };
-      requestAnimationFrame(gameLoop);
-    }
-
-    window.addEventListener("keydown", e => keys[e.key] = true);
-    window.addEventListener("keyup", e => keys[e.key] = false);
-
-    canvas.addEventListener("touchstart", e => {
-      const y = e.touches[0].clientY;
-      const x = e.touches[0].clientX;
-      if (x < canvas.width / 2) draggingPaddle = player1;
-      else draggingPaddle = player2;
-      draggingPaddle.y = y - draggingPaddle.h / 2;
+    canvas.addEventListener("mousedown", e => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseY = e.clientY - rect.top;
+      if (
+        mouseY > player1.y &&
+        mouseY < player1.y + player1.h
+      ) draggingPaddle = true;
     });
 
-    canvas.addEventListener("touchmove", e => {
+    canvas.addEventListener("mousemove", e => {
       if (draggingPaddle) {
-        const y = e.touches[0].clientY;
-        draggingPaddle.y = y - draggingPaddle.h / 2;
+        const rect = canvas.getBoundingClientRect();
+        player1.y = e.clientY - rect.top - player1.h / 2;
+        player1.y = Math.max(0, Math.min(canvas.height - player1.h, player1.y));
       }
     });
 
-    canvas.addEventListener("touchend", () => {
-      draggingPaddle = null;
+    canvas.addEventListener("mouseup", () => {
+      draggingPaddle = false;
     });
+
+    function drawRect(p) {
+      ctx.fillStyle = "#444";
+      ctx.fillRect(p.x, p.y, p.w, p.h);
+    }
+
+    function drawBall(b) {
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fillStyle = "#000";
+      ctx.fill();
+    }
+
+    function resetBall() {
+      ball.x = canvas.width / 2;
+      ball.y = canvas.height / 2;
+      ball.dx = -ball.dx;
+      ball.dy = (Math.random() * 4) - 2;
+    }
 
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(player1.x, player1.y, player1.w, player1.h);
-      ctx.fillRect(player2.x, player2.y, player2.w, player2.h);
+      drawRect(player1);
+      drawRect(player2);
+      drawBall(ball);
 
-      ctx.beginPath();
-      ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
-      ctx.fill();
-
-      if (keys["w"] && player1.y > 0) player1.y -= 6;
-      if (keys["s"] && player1.y < canvas.height - player1.h) player1.y += 6;
-
-      if (mode === "2P") {
-        if (keys["ArrowUp"] && player2.y > 0) player2.y -= 6;
-        if (keys["ArrowDown"] && player2.y < canvas.height - player2.h) player2.y += 6;
-      } else if (!draggingPaddle) {
-        // ✨ Smart AI logic
-        const targetY = ball.y - player2.h / 2;
-        const speed = Math.min(8, Math.abs(targetY - player2.y) * 0.2);
-        player2.y += targetY > player2.y ? speed : -speed;
-        player2.y = Math.max(0, Math.min(canvas.height - player2.h, player2.y));
+      // Unbeatable AI paddle
+      if (mode === "AI" && !draggingPaddle) {
+        const predictedY = ball.y + ball.dy * ((player2.x - ball.x) / ball.dx);
+        const targetY = Math.min(canvas.height - player2.h, Math.max(0, predictedY - player2.h / 2));
+        player2.y = targetY;
       }
 
+      // Move ball
       ball.x += ball.dx;
       ball.y += ball.dy;
 
-      if (ball.y < 0 || ball.y > canvas.height) ball.dy *= -1;
-      if (collide(ball, player1) || collide(ball, player2)) {
-        ball.dx *= -1;
-        score++;
+      // Wall collision
+      if (ball.y - ball.r < 0 || ball.y + ball.r > canvas.height) {
+        ball.dy *= -1;
       }
 
-      if (ball.x < 0 || ball.x > canvas.width) {
-        document.getElementById("gameOver").style.display = "flex";
-        document.getElementById("scoreDisplay").innerText = `Score: ${score}`;
-        if (score > highScore) {
-          highScore = score;
-          localStorage.setItem("cutitHighScore", highScore);
-        }
-        return;
+      // Paddle collision
+      function checkPaddle(p) {
+        return (
+          ball.x + ball.r > p.x &&
+          ball.x - ball.r < p.x + p.w &&
+          ball.y > p.y &&
+          ball.y < p.y + p.h
+        );
+      }
+
+      if (checkPaddle(player1) || checkPaddle(player2)) {
+        ball.dx *= -1;
+      }
+
+      // Score
+      if (ball.x - ball.r < 0) {
+        player2.score++;
+        resetBall();
+      } else if (ball.x + ball.r > canvas.width) {
+        player1.score++;
+        resetBall();
       }
 
       requestAnimationFrame(gameLoop);
     }
 
-    function collide(ball, paddle) {
-      return ball.x < paddle.x + paddle.w &&
-             ball.x > paddle.x &&
-             ball.y < paddle.y + paddle.h &&
-             ball.y > paddle.y;
-    }
+    gameLoop();
   </script>
 </body>
 </html>
