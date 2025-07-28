@@ -8,15 +8,15 @@
     @import url('https://fonts.googleapis.com/css2?family=Antonio&display=swap');
     html, body {
       margin: 0; padding: 0;
-      background: #000;
       font-family: 'Antonio', sans-serif;
-      overflow: hidden;
+      background: #000; overflow: hidden;
     }
     canvas {
-      position: absolute;
+      position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
       background: #000;
+      touch-action: none;
     }
     #popup, #gameOver {
       position: fixed;
@@ -26,7 +26,6 @@
       align-items: center; justify-content: center;
       color: #fff; z-index: 100;
       text-align: center;
-      padding: 0 20px;
     }
     button {
       font-size: 18px; padding: 12px 20px;
@@ -56,16 +55,20 @@
     <button onclick="window.location.href='https://cutit.sbs/games'">Home</button>
     <button onclick="restart()">Play Again</button>
   </div>
-  <canvas id="gameCanvas"></canvas>
+  <canvas id="gameCanvas" tabindex="1"></canvas>
   <div class="watermark">CutIt.sbs ✦ your vibe. your code.</div>
 
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
+    canvas.focus();
+    canvas.addEventListener("click", () => canvas.focus());
+
     let mode = "AI", score = 0;
     let highScore = localStorage.getItem("cutitHighScore") || 0;
     let player1, player2, ball;
     let keys = {};
+    let draggingPaddle = null;
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
@@ -96,6 +99,25 @@
     window.addEventListener("keydown", e => keys[e.key] = true);
     window.addEventListener("keyup", e => keys[e.key] = false);
 
+    canvas.addEventListener("touchstart", e => {
+      const y = e.touches[0].clientY;
+      const x = e.touches[0].clientX;
+      if (x < canvas.width / 2) draggingPaddle = player1;
+      else draggingPaddle = player2;
+      draggingPaddle.y = y - draggingPaddle.h / 2;
+    });
+
+    canvas.addEventListener("touchmove", e => {
+      if (draggingPaddle) {
+        const y = e.touches[0].clientY;
+        draggingPaddle.y = y - draggingPaddle.h / 2;
+      }
+    });
+
+    canvas.addEventListener("touchend", () => {
+      draggingPaddle = null;
+    });
+
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -114,8 +136,10 @@
         if (keys["ArrowUp"] && player2.y > 0) player2.y -= 6;
         if (keys["ArrowDown"] && player2.y < canvas.height - player2.h) player2.y += 6;
       } else {
-        if (player2.y + player2.h / 2 < ball.y) player2.y += 4;
-        else player2.y -= 4;
+        if (!draggingPaddle) {
+          if (player2.y + player2.h / 2 < ball.y) player2.y += 4;
+          else player2.y -= 4;
+        }
       }
 
       ball.x += ball.dx;
