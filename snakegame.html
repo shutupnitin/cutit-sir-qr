@@ -3,191 +3,223 @@
 <head>
   <meta charset="UTF-8">
   <title>🐍 Snake – CutIt.sbs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@500&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Antonio', sans-serif; }
     body {
-      margin: 0;
       background: black;
       color: white;
-      font-family: 'Antonio', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
       overflow: hidden;
     }
-    #gameCanvas {
-      display: block;
-      margin: 40px auto 10px;
+    canvas {
       background: #111;
-      border: 3px solid #0ff;
+      margin-top: 60px;
+      border: 3px solid #fff;
+      image-rendering: pixelated;
     }
-    #scoreBox {
-      text-align: center;
+    #score {
       font-size: 24px;
-      margin-bottom: 10px;
+      margin-top: 20px;
     }
-    #overlay, #gameOverBox {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.9);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      z-index: 1000;
-    }
-    #overlay button, #gameOverBox button {
-      margin: 10px;
-      padding: 12px 24px;
-      background: #0ff;
-      border: none;
-      color: black;
-      font-size: 18px;
-      font-family: 'Antonio', sans-serif;
-      cursor: pointer;
-    }
-    #watermark {
-      position: fixed;
-      bottom: 10px;
-      width: 100%;
+    .popup, .startPopup {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: #111;
+      color: #fff;
+      border: 2px solid #fff;
+      padding: 20px;
       text-align: center;
-      opacity: 0.1;
-      font-size: 14px;
+      display: none;
+      z-index: 999;
+    }
+    .popup button, .startPopup button {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      font-size: 16px;
+      cursor: pointer;
     }
     .emoji {
       position: absolute;
       font-size: 24px;
-      animation: floatUp 4s ease-in-out forwards;
       pointer-events: none;
+      animation: float 1s ease-out forwards;
     }
-    @keyframes floatUp {
+    @keyframes float {
       0% { transform: translateY(0); opacity: 1; }
-      100% { transform: translateY(-200px); opacity: 0; }
+      100% { transform: translateY(-50px); opacity: 0; }
+    }
+    .watermark {
+      position: fixed;
+      bottom: 5px;
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.2);
     }
   </style>
 </head>
 <body>
+  <div id="score">Score: 0</div>
+  <canvas id="game" width="400" height="400"></canvas>
+  <div class="popup" id="gameOverPopup">
+    <h2>Game Over</h2>
+    <p id="finalScoreText"></p>
+    <p>📸 Click a pic & tag us to win!</p>
+    <p>Instagram: <strong>@cutit.sbs</strong> | X: <strong>@cutitsbs</strong></p>
+    <button onclick="startGame()">Play Again</button>
+    <button onclick="location.href='https://cutit.sbs/games'">Home</button>
+  </div>
+  <div class="startPopup" id="startPopup">
+    <h2>🐍 Snake</h2>
+    <p>Grow or die trying. Nostalgia, but neon.</p>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+  <div class="watermark">CutIt.sbs ✦ your vibe. your code.</div>
 
-<div id="overlay">
-  <h1>🐍 SNAKE</h1>
-  <p>Grow or die trying. Nostalgia, but neon.</p>
-  <button onclick="startGame()">PLAY</button>
-</div>
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const box = 20;
+    let score = 0;
+    let snake = [];
+    let direction = "RIGHT";
+    let food = {};
+    let gameInterval;
+    let level = 1;
+    let speed = 200; // ms
+    const popup = document.getElementById("gameOverPopup");
+    const startPopup = document.getElementById("startPopup");
 
-<canvas id="gameCanvas" width="600" height="600"></canvas>
-<div id="scoreBox">Score: <span id="score">0</span></div>
-
-<div id="gameOverBox" style="display:none;">
-  <h2>Game Over</h2>
-  <p>Score: <span id="finalScore">0</span></p>
-  <p>Post your score on IG @cutit.sbs or X @cutitsbs to win surprises ✨</p>
-  <button onclick="location.reload()">Play Again</button>
-  <button onclick="window.location.href='https://cutit.sbs/games'">Home</button>
-</div>
-
-<div id="watermark">CutIt.sbs ✦ your vibe. your code.</div>
-
-<script>
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-  const box = 20;
-  const canvasSize = 600;
-  let direction = 'RIGHT';
-  let score = 0;
-  let snake = [{x: 9 * box, y: 10 * box}];
-  let food = {x: Math.floor(Math.random()*30)*box, y: Math.floor(Math.random()*30)*box};
-
-  document.addEventListener("keydown", dir);
-
-  function dir(e) {
-    if (e.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
-    else if (e.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
-    else if (e.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
-    else if (e.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
-  }
-
-  // Touchscreen controls
-  let startX, startY;
-  document.addEventListener("touchstart", e => {
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-  });
-  document.addEventListener("touchmove", e => {
-    if (!startX || !startY) return;
-    let diffX = e.touches[0].clientX - startX;
-    let diffY = e.touches[0].clientY - startY;
-    if (Math.abs(diffX) > Math.abs(diffY)) {
-      if (diffX > 0 && direction !== "LEFT") direction = "RIGHT";
-      else if (diffX < 0 && direction !== "RIGHT") direction = "LEFT";
-    } else {
-      if (diffY > 0 && direction !== "UP") direction = "DOWN";
-      else if (diffY < 0 && direction !== "DOWN") direction = "UP";
-    }
-    startX = null; startY = null;
-  });
-
-  function draw() {
-    ctx.fillStyle = "#111";
-    ctx.fillRect(0, 0, canvasSize, canvasSize);
-
-    for (let i = 0; i < snake.length; i++) {
-      ctx.fillStyle = (i === 0) ? "#0ff" : "white";
-      ctx.fillRect(snake[i].x, snake[i].y, box, box);
+    function init() {
+      snake = [{ x: 9 * box, y: 10 * box }];
+      direction = "RIGHT";
+      score = 0;
+      level = 1;
+      speed = 200;
+      generateFood();
+      clearInterval(gameInterval);
+      gameInterval = setInterval(draw, speed);
+      updateScore();
     }
 
-    ctx.fillStyle = "#f00";
-    ctx.fillRect(food.x, food.y, box, box);
+    function draw() {
+      ctx.fillStyle = "#111";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    let headX = snake[0].x;
-    let headY = snake[0].y;
+      for (let i = 0; i < snake.length; i++) {
+        ctx.fillStyle = i === 0 ? "#0f0" : "#0ff";
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+      }
 
-    if (direction === "LEFT") headX -= box;
-    if (direction === "RIGHT") headX += box;
-    if (direction === "UP") headY -= box;
-    if (direction === "DOWN") headY += box;
+      ctx.fillStyle = "#f00";
+      ctx.fillRect(food.x, food.y, box, box);
 
-    if (
-      headX < 0 || headX >= canvasSize || headY < 0 || headY >= canvasSize ||
-      snake.some(segment => segment.x === headX && segment.y === headY)
-    ) {
-      clearInterval(game);
-      document.getElementById('finalScore').textContent = score;
-      document.getElementById('gameOverBox').style.display = 'flex';
-      return;
+      let headX = snake[0].x;
+      let headY = snake[0].y;
+
+      if (direction === "LEFT") headX -= box;
+      if (direction === "UP") headY -= box;
+      if (direction === "RIGHT") headX += box;
+      if (direction === "DOWN") headY += box;
+
+      if (
+        headX < 0 || headX >= canvas.width ||
+        headY < 0 || headY >= canvas.height ||
+        collision({ x: headX, y: headY }, snake)
+      ) {
+        clearInterval(gameInterval);
+        document.getElementById("finalScoreText").textContent = `Score: ${score}`;
+        popup.style.display = "block";
+        return;
+      }
+
+      let newHead = { x: headX, y: headY };
+      if (headX === food.x && headY === food.y) {
+        score++;
+        level = Math.floor(score / 5) + 1;
+        speed = Math.max(60, 200 - (level * 10));
+        clearInterval(gameInterval);
+        gameInterval = setInterval(draw, speed);
+        generateFood();
+        showEmoji();
+      } else {
+        snake.pop();
+      }
+      snake.unshift(newHead);
+      updateScore();
     }
 
-    let newHead = {x: headX, y: headY};
-
-    if (headX === food.x && headY === food.y) {
-      score++;
-      document.getElementById('score').textContent = score;
+    function generateFood() {
       food = {
-        x: Math.floor(Math.random()*30)*box,
-        y: Math.floor(Math.random()*30)*box
+        x: Math.floor(Math.random() * (canvas.width / box)) * box,
+        y: Math.floor(Math.random() * (canvas.height / box)) * box
       };
-      dropEmoji();
-    } else {
-      snake.pop();
     }
 
-    snake.unshift(newHead);
-  }
+    function collision(head, array) {
+      return array.some(segment => head.x === segment.x && head.y === segment.y);
+    }
 
-  function dropEmoji() {
-    const emoji = document.createElement('div');
-    emoji.className = 'emoji';
-    emoji.style.left = (snake[0].x + box / 2) + "px";
-    emoji.style.top = (snake[0].y + box / 2) + "px";
-    emoji.textContent = ["🐍","💥","🍏","🌀","🌟"][Math.floor(Math.random()*5)];
-    document.body.appendChild(emoji);
-    setTimeout(() => emoji.remove(), 4000);
-  }
+    function updateScore() {
+      document.getElementById("score").textContent = `Score: ${score} | Level: ${level}`;
+    }
 
-  let game;
-  function startGame() {
-    document.getElementById('overlay').style.display = 'none';
-    game = setInterval(draw, 150);
-  }
-</script>
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+      if (e.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+      if (e.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+      if (e.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+    });
 
+    function showEmoji() {
+      const emoji = document.createElement("div");
+      emoji.classList.add("emoji");
+      emoji.textContent = "✨";
+      emoji.style.left = food.x + "px";
+      emoji.style.top = food.y + "px";
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 1000);
+    }
+
+    // Touch controls
+    let touchStartX = 0, touchStartY = 0;
+    canvas.addEventListener("touchstart", e => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    });
+    canvas.addEventListener("touchmove", e => {
+      const dx = e.touches[0].clientX - touchStartX;
+      const dy = e.touches[0].clientY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0 && direction !== "RIGHT") direction = "LEFT";
+        if (dx > 0 && direction !== "LEFT") direction = "RIGHT";
+      } else {
+        if (dy < 0 && direction !== "DOWN") direction = "UP";
+        if (dy > 0 && direction !== "UP") direction = "DOWN";
+      }
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    });
+
+    function startGame() {
+      popup.style.display = "none";
+      startPopup.style.display = "none";
+      init();
+    }
+
+    window.onload = () => {
+      startPopup.style.display = "block";
+    }
+  </script>
 </body>
 </html>
