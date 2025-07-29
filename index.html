@@ -2,18 +2,36 @@
 <html lang="en">
 <head>
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-70PVFGLP9G');
-</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-70PVFGLP9G');
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CutIt.sbs ✦ QR Generator</title>
+  <meta name="description" content="Generate private, watermark-free QR codes instantly. CutIt.sbs is your fast, stylish QR creator for links, WiFi, text, and more." />
+  <meta name="keywords" content="QR code generator, free QR, CutIt.sbs, watermark-free QR, stylish QR, QR creator, custom QR code" />
+  <meta name="author" content="CutIt.sbs" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="CutIt.sbs ✦ Your vibe. Your QR." />
+  <meta property="og:description" content="Create watermark-free QR codes that pop. No bloat. Just fast, free, sleek QR generation." />
+  <meta property="og:image" content="https://cutit.sbs/preview.png" />
+  <meta property="og:url" content="https://cutit.sbs" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "CutIt.sbs",
+    "url": "https://cutit.sbs",
+    "description": "Generate private, watermark-free QR codes instantly with CutIt.sbs — no clutter, just vibes."
+  }
+  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
     body { background: #fdfdff; color: #111; text-align: center; padding: 2rem; transition: background 0.3s, color 0.3s; }
@@ -79,10 +97,25 @@
     #chatForm button {
       padding: 0.5rem 1rem; border: none; background: #000; color: #fff; cursor: pointer;
     }
+
+    #gameBtn {
+      position: fixed;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #000;
+      color: #fff;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 10000;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
-  <header>
+<header>
     <div class="logo">CutIt.sbs</div>
     <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
   </header>
@@ -221,5 +254,8 @@
       box.scrollTop = box.scrollHeight;
     }
   </script>
+
+<a id="gameBtn" href="https://cutit.sbs/games">🎮 Play Games</a>
+
 </body>
 </html>
