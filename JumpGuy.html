@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jump Guy ✦ CutIt.sbs</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
+    body {
+      margin: 0;
+      font-family: 'Antonio', sans-serif;
+      background-color: #000;
+      color: #fff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    canvas {
+      background: #111;
+      border: 2px solid #fff;
+      margin-top: 60px;
+    }
+    #scoreBoard, #timer {
+      position: absolute;
+      top: 20px;
+      font-size: 20px;
+    }
+    #scoreBoard { left: 20px; }
+    #timer { right: 20px; }
+    .popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #000;
+      color: #fff;
+      border: 2px solid #fff;
+      padding: 30px;
+      text-align: center;
+      display: none;
+      z-index: 10;
+      max-width: 90%;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 10px 5px 0;
+      background: #fff;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      font-family: 'Antonio';
+    }
+    .emoji {
+      position: absolute;
+      font-size: 24px;
+      pointer-events: none;
+      animation: floatUp 1.5s ease-out forwards;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-100px); }
+    }
+    footer {
+      position: fixed;
+      bottom: 10px;
+      font-size: 12px;
+      opacity: 0.3;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0 0;
+    }
+    li {
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="scoreBoard">Score: 0</div>
+  <div id="timer">Time: 0s</div>
+  <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+  <!-- Game Over Popup -->
+  <div id="popup" class="popup">
+    <h2>Game Over!</h2>
+    <p id="finalScore"></p>
+    <p>📸 Screenshot and tag <strong>@cutit.sbs</strong> to win prizes!</p>
+    <div id="leaderboard"></div>
+    <button class="btn" onclick="location.reload()">Play Again</button>
+    <button class="btn" onclick="window.location.href='https://cutit.sbs/games'">Home</button>
+  </div>
+
+  <!-- Milestone Pop-up -->
+  <div id="milestonePopup" class="popup">
+    <h2>🎉 Milestone!</h2>
+    <p id="milestoneText"></p>
+  </div>
+
+  <footer>CutIt.sbs ✦ your vibe. your code.</footer>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const popup = document.getElementById('popup');
+    const milestonePopup = document.getElementById('milestonePopup');
+    const milestoneText = document.getElementById('milestoneText');
+    const scoreBoard = document.getElementById('scoreBoard');
+    const finalScore = document.getElementById('finalScore');
+    const timerDisplay = document.getElementById('timer');
+    const leaderboardDiv = document.getElementById('leaderboard');
+
+    let player = { x: 50, y: 360, width: 20, height: 20, vy: 0, jumping: false };
+    let gravity = 1;
+    let obstacles = [];
+    let score = 0;
+    let gameSpeed = 2;
+    let gameOver = false;
+    let startTime = Date.now();
+    let milestones = [5, 10, 25, 50, 100];
+    let shownMilestones = [];
+
+    function createObstacle() {
+      let height = 20 + Math.random() * 30;
+      obstacles.push({ x: 400, y: 400 - height, width: 20, height: height });
+    }
+
+    function drawPlayer() {
+      ctx.fillStyle = '#0ff';
+      ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
+
+    function drawObstacles() {
+      ctx.fillStyle = '#f0f';
+      obstacles.forEach(obs => ctx.fillRect(obs.x, obs.y, obs.width, obs.height));
+    }
+
+    function updateObstacles() {
+      obstacles.forEach(obs => obs.x -= gameSpeed);
+      if (obstacles.length === 0 || obstacles[obstacles.length - 1].x < 250) createObstacle();
+      if (obstacles[0].x + obstacles[0].width < 0) {
+        obstacles.shift();
+        score++;
+        showEmoji();
+        gameSpeed += 0.1;
+        checkMilestone(score);
+      }
+    }
+
+    function checkMilestone(score) {
+      if (milestones.includes(score) && !shownMilestones.includes(score)) {
+        shownMilestones.push(score);
+        milestoneText.innerText = `You reached ${score} points! 🔥`;
+        milestonePopup.style.display = 'block';
+        setTimeout(() => milestonePopup.style.display = 'none', 2000);
+      }
+    }
+
+    function showEmoji() {
+      const emoji = document.createElement('div');
+      emoji.className = 'emoji';
+      emoji.innerText = ['🔥', '⚡', '🎉', '💥'][Math.floor(Math.random() * 4)];
+      emoji.style.left = Math.random() * window.innerWidth + 'px';
+      emoji.style.top = canvas.offsetTop + 'px';
+      document.body.appendChild(emoji);
+      setTimeout(() => document.body.removeChild(emoji), 1500);
+    }
+
+    function detectCollision() {
+      return obstacles.some(obs =>
+        player.x < obs.x + obs.width &&
+        player.x + player.width > obs.x &&
+        player.y < obs.y + obs.height &&
+        player.y + player.height > obs.y
+      );
+    }
+
+    function updateTimer() {
+      const now = Date.now();
+      const seconds = Math.floor((now - startTime) / 1000);
+      timerDisplay.innerText = `Time: ${seconds}s`;
+    }
+
+    function jump() {
+      if (!player.jumping) {
+        player.vy = -15;
+        player.jumping = true;
+      }
+    }
+
+    function endGame() {
+      gameOver = true;
+      const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+      finalScore.innerHTML = `Final Score: ${score}<br>Time: ${timeTaken}s`;
+      saveScore(score);
+      showLeaderboard();
+      popup.style.display = 'block';
+    }
+
+    function saveScore(newScore) {
+      let scores = JSON.parse(localStorage.getItem("jumpGuyScores") || "[]");
+      scores.push({ score: newScore, time: new Date().toLocaleString() });
+      scores.sort((a, b) => b.score - a.score);
+      scores = scores.slice(0, 5);
+      localStorage.setItem("jumpGuyScores", JSON.stringify(scores));
+    }
+
+    function showLeaderboard() {
+      let scores = JSON.parse(localStorage.getItem("jumpGuyScores") || "[]");
+      let html = "<h3>🏆 Top Scores</h3><ul>";
+      scores.forEach(s => html += `<li>${s.score} pts - ${s.time}</li>`);
+      html += "</ul>";
+      leaderboardDiv.innerHTML = html;
+    }
+
+    function gameLoop() {
+      if (gameOver) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Player physics
+      player.vy += gravity;
+      player.y += player.vy;
+
+      if (player.y >= 360) {
+        player.y = 360;
+        player.vy = 0;
+        player.jumping = false;
+      }
+
+      updateObstacles();
+      drawObstacles();
+      drawPlayer();
+      updateTimer();
+
+      if (detectCollision()) {
+        endGame();
+        return;
+      }
+
+      scoreBoard.innerText = `Score: ${score}`;
+      requestAnimationFrame(gameLoop);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') jump();
+    });
+    document.addEventListener('touchstart', jump);
+    document.addEventListener('click', jump);
+
+    gameLoop();
+  </script>
+</body>
+</html>
