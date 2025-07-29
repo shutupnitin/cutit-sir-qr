@@ -1,234 +1,227 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🧠 Memory Match | CutIt.sbs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🧠 Memory Match</title>
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Antonio', sans-serif;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap');
 
     body {
       margin: 0;
-      padding: 0;
+      font-family: 'Antonio', sans-serif;
       background: #000;
       color: #fff;
+      overflow-x: hidden;
+    }
+
+    .game-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: start;
-      height: 100vh;
-      overflow: hidden;
+      justify-content: center;
+      padding: 20px;
     }
 
-    h1 {
-      font-size: 2.5rem;
-      margin: 20px 0 10px;
-      text-align: center;
+    .scoreboard {
+      margin-bottom: 10px;
+      font-size: 1.2em;
     }
 
-    .game-board {
+    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
       gap: 10px;
-      max-width: 600px;
-      margin: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
     }
 
     .card {
-      width: 100%;
-      aspect-ratio: 1/1;
-      font-size: 2rem;
+      background: #111;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      font-size: 2em;
+      width: 60px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #111;
-      border: 2px solid #fff;
-      border-radius: 10px;
       cursor: pointer;
-      transition: 0.3s;
+      transition: transform 0.3s;
     }
 
-    .card.revealed {
-      background-color: #222;
+    .card.flipped {
+      background: #fff;
+      color: #000;
+      transform: scale(1.1);
     }
 
-    .popup, .start-screen {
+    .popup {
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.95);
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
       display: flex;
-      align-items: center;
       justify-content: center;
-      z-index: 10;
+      align-items: center;
       flex-direction: column;
-      padding: 30px;
-      text-align: center;
+      z-index: 100;
     }
 
-    .popup h2, .start-screen h2 {
-      margin-bottom: 10px;
+    .popup h2 {
+      margin-bottom: 20px;
     }
 
-    .popup button, .start-screen button {
+    .popup button {
       padding: 10px 20px;
-      font-size: 1.2rem;
-      margin-top: 20px;
+      margin: 10px;
       background: #fff;
       color: #000;
+      font-size: 1em;
       border: none;
+      border-radius: 5px;
       cursor: pointer;
-      border-radius: 6px;
-    }
-
-    .stats {
-      display: flex;
-      gap: 30px;
-      font-size: 1rem;
     }
 
     .watermark {
       position: fixed;
-      bottom: 5px;
-      font-size: 0.8rem;
-      opacity: 0.4;
-      color: #fff;
+      bottom: 10px;
+      opacity: 0.2;
+      font-size: 0.8em;
+      text-align: center;
+      width: 100%;
     }
 
-    .emoji-float {
+    .floating-emoji {
       position: absolute;
-      font-size: 2rem;
-      animation: floatUp 1s ease-out forwards;
+      font-size: 2em;
+      animation: floatUp 1.5s ease-out forwards;
     }
 
     @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-60px); }
-    }
-
-    @media (max-width: 600px) {
-      .game-board {
-        grid-template-columns: repeat(4, 1fr);
-      }
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-100px); }
     }
   </style>
 </head>
 <body>
-  <div class="start-screen">
-    <h2>🧠 Memory Match</h2>
-    <p>Test your Gen Z brain. Match emojis under pressure. Ready?</p>
-    <button onclick="startGame()">Start Game</button>
+
+<div class="popup" id="startPopup">
+  <h2>🧠 Memory Match</h2>
+  <p>Test your Gen Z brain. Match emojis under pressure.</p>
+  <p>Select Difficulty</p>
+  <button onclick="startGame('easy')">Easy (4x4)</button>
+  <button onclick="startGame('medium')">Medium (6x6)</button>
+  <button onclick="startGame('hard')">Hard (8x8)</button>
+</div>
+
+<div class="game-container" id="gameContainer" style="display:none;">
+  <div class="scoreboard">
+    <span id="score">Score: 0</span> |
+    <span id="timer">Time: 0s</span>
   </div>
+  <div class="grid" id="grid"></div>
+</div>
 
-  <h1>Memory Match</h1>
-  <div class="stats">
-    <div>⏱ Time: <span id="timer">0</span>s</div>
-    <div>⭐ Score: <span id="score">0</span></div>
-  </div>
-  <div class="game-board" id="gameBoard"></div>
+<div class="popup" id="endPopup" style="display:none;">
+  <h2>🎉 You did it!</h2>
+  <p id="finalScoreText"></p>
+  <p>📸 Take a screenshot and tag <b>@cutit.sbs</b> on Instagram or X to win exciting prizes!</p>
+  <a href="https://cutit.sbs/games" style="color:#0ff;">🏠 Go Home</a>
+  <button onclick="location.reload()">Play Again</button>
+</div>
 
-  <div class="popup" id="gameOver" style="display:none">
-    <h2>🎉 You Win!</h2>
-    <p>Total Time: <span id="finalTime"></span> seconds</p>
-    <p>Total Score: <span id="finalScore"></span></p>
-    <p>📸 Post a screenshot & tag <br><b>@cutit.sbs</b> on Instagram or <b>@cutitsbs</b> on X to win prizes!</p>
-    <a href="https://cutit.sbs/games"><button>🏠 Home</button></a>
-    <button onclick="startGame()">🔁 Play Again</button>
-  </div>
+<div class="watermark">CutIt.sbs ✦ your vibe. your code.</div>
 
-  <div class="watermark">CutIt.sbs ✦ your vibe. your code.</div>
+<script>
+  const emojiSet = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🦄','🐝','🐙','🐠','🦋','🌈','⚡','🔥','🎉','💎','🌟','🎈','🍕','🍟','🍔','🍩','🍉','🍓','🎮','📱','💻','🎧','📷','📚','✏️','💡','🔑','🚀','🏆','🧠'];
 
-  <script>
-    const emojis = ['🐍','💥','🎉','🍕','🚀','🧠','🌈','🔥','🍀','🎧','📱','🦄'];
-    let timer, seconds = 0, score = 0;
-    let flipped = [];
-    let matched = [];
+  let grid = document.getElementById('grid');
+  let startPopup = document.getElementById('startPopup');
+  let endPopup = document.getElementById('endPopup');
+  let scoreEl = document.getElementById('score');
+  let timerEl = document.getElementById('timer');
+  let finalScoreText = document.getElementById('finalScoreText');
 
-    function startGame() {
-      document.querySelector(".start-screen").style.display = "none";
-      document.getElementById("gameOver").style.display = "none";
-      const gameBoard = document.getElementById("gameBoard");
-      const allEmojis = [...emojis.slice(0, 6), ...emojis.slice(0, 6)];
-      allEmojis.sort(() => 0.5 - Math.random());
-      gameBoard.innerHTML = '';
-      score = 0;
-      seconds = 0;
-      matched = [];
+  let timer = 0;
+  let score = 0;
+  let interval;
+  let flipped = [];
+  let matched = 0;
 
-      updateStats();
-      clearInterval(timer);
-      timer = setInterval(() => {
-        seconds++;
-        document.getElementById("timer").textContent = seconds;
-      }, 1000);
+  function startGame(difficulty) {
+    startPopup.style.display = 'none';
+    document.getElementById('gameContainer').style.display = 'flex';
 
-      allEmojis.forEach((emoji, index) => {
-        const card = document.createElement("div");
-        card.classList.add("card");
-        card.dataset.index = index;
-        card.dataset.emoji = emoji;
-        card.onclick = () => flipCard(card);
-        gameBoard.appendChild(card);
-      });
-    }
+    let pairs;
+    if (difficulty === 'easy') pairs = 8;
+    else if (difficulty === 'medium') pairs = 18;
+    else pairs = 32;
 
-    function flipCard(card) {
-      if (card.classList.contains("revealed") || flipped.length >= 2) return;
-      card.classList.add("revealed");
-      card.textContent = card.dataset.emoji;
-      flipped.push(card);
+    let emojis = [...emojiSet].sort(() => 0.5 - Math.random()).slice(0, pairs);
+    let cards = [...emojis, ...emojis].sort(() => 0.5 - Math.random());
 
-      if (flipped.length === 2) {
-        if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
-          matched.push(...flipped);
-          score += 10;
-          updateStats();
-          emojiFloat(card.dataset.emoji);
+    const gridSize = Math.sqrt(cards.length);
+    grid.style.gridTemplateColumns = `repeat(${gridSize}, 60px)`;
 
+    cards.forEach(emoji => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerText = '';
+      card.dataset.emoji = emoji;
+      card.onclick = () => flipCard(card);
+      grid.appendChild(card);
+    });
+
+    interval = setInterval(() => {
+      timer++;
+      timerEl.innerText = 'Time: ' + timer + 's';
+    }, 1000);
+  }
+
+  function flipCard(card) {
+    if (flipped.length >= 2 || card.classList.contains('flipped')) return;
+    card.innerText = card.dataset.emoji;
+    card.classList.add('flipped');
+    flipped.push(card);
+
+    if (flipped.length === 2) {
+      if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
+        score += 10;
+        scoreEl.innerText = 'Score: ' + score;
+        showFloatingEmoji(card.dataset.emoji);
+        flipped = [];
+        matched += 2;
+        if (matched === grid.children.length) endGame();
+      } else {
+        setTimeout(() => {
+          flipped.forEach(c => {
+            c.innerText = '';
+            c.classList.remove('flipped');
+          });
           flipped = [];
-
-          if (matched.length === emojis.slice(0, 6).length * 2) {
-            clearInterval(timer);
-            document.getElementById("finalTime").textContent = seconds;
-            document.getElementById("finalScore").textContent = score;
-            document.getElementById("gameOver").style.display = "flex";
-          }
-        } else {
-          setTimeout(() => {
-            flipped.forEach(c => {
-              c.classList.remove("revealed");
-              c.textContent = '';
-            });
-            flipped = [];
-          }, 800);
-        }
+        }, 800);
       }
     }
+  }
 
-    function emojiFloat(emoji) {
-      const float = document.createElement("div");
-      float.classList.add("emoji-float");
-      float.style.left = Math.random() * 90 + "%";
-      float.style.top = "70%";
-      float.textContent = emoji;
-      document.body.appendChild(float);
-      setTimeout(() => float.remove(), 1000);
-    }
+  function endGame() {
+    clearInterval(interval);
+    endPopup.style.display = 'flex';
+    finalScoreText.innerText = `Your Score: ${score} | Time: ${timer}s`;
+  }
 
-    function updateStats() {
-      document.getElementById("score").textContent = score;
-    }
+  function showFloatingEmoji(emoji) {
+    const float = document.createElement('div');
+    float.className = 'floating-emoji';
+    float.innerText = emoji;
+    float.style.left = Math.random() * 90 + '%';
+    float.style.top = '80%';
+    document.body.appendChild(float);
+    setTimeout(() => float.remove(), 1500);
+  }
+</script>
 
-    window.onload = () => {
-      document.getElementById("gameOver").style.display = "none";
-    };
-  </script>
 </body>
 </html>
