@@ -135,22 +135,136 @@
 
   <script>
     const questions = [
-      { word: "axiom", clue: "Self-evident truth in mathematics" },
-      { word: "sonnet", clue: "14-line poetic form" },
-      { word: "enzyme", clue: "Biological catalyst" },
-      { word: "nebula", clue: "Interstellar cloud of gas" },
-      { word: "harvest", clue: "Gathering crops" },
-      { word: "gravity", clue: "Force pulling things to Earth" },
-      { word: "quantum", clue: "Smallest unit of energy" },
-      { word: "myth", clue: "Traditional story" },
-      { word: "orbit", clue: "Path around a star or planet" },
-      { word: "syntax", clue: "Rules in programming or language" },
-      { word: "oxygen", clue: "Element essential for breathing" },
-      { word: "author", clue: "Book writer" },
-      { word: "galaxy", clue: "Cluster of stars" },
-      { word: "puzzle", clue: "Brain teaser" },
-      { word: "ballet", clue: "Classical dance form" }
-    ];
+    /* Level 1 (Basic) */ 
+    {"word": "axiom", "clue": "Self-evident truth in mathematics"},
+    {"word": "sonnet", "clue": "14-line poetic form"},
+    {"word": "enzyme", "clue": "Biological catalyst"},
+    {"word": "zenith", "clue": "Highest celestial point"},
+    {"word": "quark", "clue": "Elementary particle in physics"},
+    {"word": "trochee", "clue": "Metrical foot in poetry (stressed-unstressed)"},
+    {"word": "lemma", "clue": "Auxiliary theorem in mathematics"},
+
+    /* Level 2 */ 
+    {"word": "hegira", "clue": "Muhammad's pivotal migration from Mecca"},
+    {"word": "chthonic", "clue": "Relating to underworld deities"},
+    {"word": "anomie", "clue": "Societal normlessness (Durkheim concept)"},
+    {"word": "exegesis", "clue": "Critical textual interpretation"},
+    {"word": "synecdoche", "clue": "Figure of speech using part for whole"},
+    {"word": "noumenon", "clue": "Kantian thing-in-itself"},
+    {"word": "ecliptic", "clue": "Sun's apparent celestial path"},
+
+    /* Level 3 */ 
+    {"word": "pleroma", "clue": "Gnostic concept of divine fullness"},
+    {"word": "apophatic", "clue": "Theology defining God by negation"},
+    {"word": "isostasy", "clue": "Geological equilibrium of crust"},
+    {"word": "anagnorisis", "clue": "Critical recognition in tragedy"},
+    {"word": "haecceity", "clue": "Essence making something 'this particular thing'"},
+    {"word": "morphogen", "clue": "Biological development signaling molecule"},
+    {"word": "pareidolia", "clue": "Perceiving patterns in randomness"},
+
+    /* Level 4 */ 
+    {"word": "zeugma", "clue": "Rhetorical device using one verb for multiple clauses"},
+    {"word": "hypocorism", "clue": "Pet name or diminutive form (e.g., 'doggy')"},
+    {"word": "prolepsis", "clue": "Anticipatory argumentative device"},
+    {"word": "peripeteia", "clue": "Sudden reversal in drama"},
+    {"word": "sphexish", "clue": "Robotically instinctive behavior"},
+    {"word": "anacoluthon", "clue": "Mid-sentence grammatical shift for effect"},
+    {"word": "defenestration", "clue": "Act of throwing out a window"},
+
+    /* Level 5 */ 
+    {"word": "heliotrope", "clue": "Sun-tracking astronomical instrument"},
+    {"word": "antinomian", "clue": "Rejecting moral law as unnecessary for salvation"},
+    {"word": "chiaroscuro", "clue": "Artistic light-dark contrast technique"},
+    {"word": "eschatology", "clue": "Study of end times in theology"},
+    {"word": "gematria", "clue": "Kabbalistic numerical text interpretation"},
+    {"word": "bathos", "clue": "Anticlimactic descent from serious to trivial"},
+    {"word": "solenodon", "clue": "Venomous mammalian relic species"},
+
+    /* Level 6 */ 
+    {"word": "tachyon", "clue": "Hypothetical faster-than-light particle"},
+    {"word": "scansion", "clue": "Analysis of poetic meter"},
+    {"word": "threnody", "clue": "Lamenting poetic composition"},
+    {"word": "quincunx", "clue": "Geometric arrangement of five points"},
+    {"word": "epeiric", "clue": "Relating to inland seas covering continents"},
+    {"word": "autochthonous", "clue": "Indigenous or formed in situ"},
+    {"word": "demimonde", "clue": "Marginalized social group (originally courtesans)"},
+
+    /* Level 7 */ 
+    {"word": "eisegesis", "clue": "Interpretation imposing external ideas onto text"},
+    {"word": "anfractuous", "clue": "Winding or circuitous"},
+    {"word": "omphalos", "clue": "Religious stone symbolizing world's navel"},
+    {"word": "prosopopoeia", "clue": "Rhetorical device of personifying abstractions"},
+    {"word": "tergiversate", "clue": "To equivocate or abandon a cause"},
+    {"word": "noosphere", "clue": "Vernadsky's realm of human thought"},
+    {"word": "chiliasm", "clue": "Millenarian belief in 1,000-year earthly paradise"},
+
+    /* Level 8 */ 
+    {"word": "apophasis", "clue": "Rhetorical device of mentioning by denying"},
+    {"word": "bathykolpian", "clue": "Having deep bosoms (archaic poetic)"},
+    {"word": "hamartia", "clue": "Tragic flaw in Aristotelian drama"},
+    {"word": "hylozoism", "clue": "Philosophical doctrine attributing life to matter"},
+    {"word": "molybdosis", "clue": "Pathological lead poisoning"},
+    {"word": "opsimath", "clue": "One who learns late in life"},
+    {"word": "sphragistics", "clue": "Study of seals and signets"},
+
+    /* Level 9 */ 
+    {"word": "cryptomnesia", "clue": "Unrecognized memory masquerading as original thought"},
+    {"word": "dysphuism", "clue": "Deliberate use of obscure diction"},
+    {"word": "hecatoncheir", "clue": "Hundred-handed giant in Greek mythology"},
+    {"word": "metempsychosis", "clue": "Transmigration of souls"},
+    {"word": "paregmenon", "clue": "Rhetorical device using derivatives of same root"},
+    {"word": "ultracrepidarian", "clue": "One who opines beyond their expertise"},
+    {"word": "xenoglossy", "clue": "Speaking unlearned languages"},
+
+    /* Level 10 */ 
+    {"word": "anacampserote", "clue": "Mythical object restoring lost love"},
+    {"word": "borborygmus", "clue": "Medical term for stomach rumbling"},
+    {"word": "catachresis", "clue": "Rhetorical misuse of words (e.g., 'blind mouth')"},
+    {"word": "hippocrepiform", "clue": "Horseshoe-shaped"},
+    {"word": "mumpsimus", "clue": "Persistent adherence to incorrect tradition"},
+    {"word": "quodlibet", "clue": "Scholarly debate on philosophical questions"},
+    {"word": "sciolism", "clue": "Pretentious superficial knowledge"},
+
+    /* Level 11 */ 
+    {"word": "apocatastasis", "clue": "Restoration to original state (Origen's theology)"},
+    {"word": "dasyphyllous", "clue": "Having thick or hairy leaves"},
+    {"word": "eschatocol", "clue": "Final section of ancient documents"},
+    {"word": "gnotobiosis", "clue": "Raising organisms in germ-free conditions"},
+    {"word": "hypocorisma", "clue": "Linguistic phenomenon of pet name formation"},
+    {"word": "prosopagnosia", "clue": "Neurological inability to recognize faces"},
+
+    /* Level 12 */ 
+    {"word": "cacozelia", "clue": "Rhetorical vice of affected diction"},
+    {"word": "epiclesis", "clue": "Invocation in Eucharistic prayers"},
+    {"word": "heautontimorumenos", "clue": "Self-tormenting person (Terence title)"},
+    {"word": "myrmecochory", "clue": "Seed dispersal by ants"},
+    {"word": "phariseeism", "clue": "Hypocritical religious observance"},
+    {"word": "tristich", "clue": "Three-line poetic unit"},
+
+    /* Level 13 */ 
+    {"word": "bathysiderodromophobia", "clue": "Fear of subways"},
+    {"word": "dendrochronology", "clue": "Tree-ring dating method"},
+    {"word": "hierophany", "clue": "Manifestation of the sacred (Eliade)"},
+    {"word": "oneiromancy", "clue": "Divination through dreams"},
+    {"word": "penumbra", "clue": "Partial shadow in astronomy/law"},
+    {"word": "thaumaturgy", "clue": "Working of miracles or magic"},
+
+    /* Level 14 */ 
+    {"word": "anacusic", "clue": "Profoundly deaf (medical term)"},
+    {"word": "eellogofusciouhipoppokunurious", "clue": "Extremely good (nonce word)"},
+    {"word": "floccinaucinihilipilification", "clue": "Act of deeming something worthless"},
+    {"word": "iridocyclitis", "clue": "Ocular inflammation condition"},
+    {"word": "pneumonoultramicroscopicsilicovolcanoconiosis", "clue": "Lung disease from volcanic dust"},
+    {"word": "xanthocyanopsy", "clue": "Form of color blindness"},
+
+    /* Level 15 (Hardest) */ 
+    {"word": "antidisestablishmentarianism", "clue": "Opposition to church-state separation"},
+    {"word": "cyclohexylsulfamate", "clue": "Chemical name for artificial sweetener"},
+    {"word": "hepaticocholangiojejunostomy", "clue": "Surgical bile duct procedure"},
+    {"word": "hippopotomonstrosesquipedaliophobia", "clue": "Fear of long words"},
+    {"word": "parastratiosphecomyia", "clue": "Genus of soldier fly"},
+    {"word": "spectrophotofluorometrically", "clue": "Via light emission/absorption analysis"}
+  ];
 
     let score = 0, level = 1, questionIndex = 0, timer, timeLeft = 60;
 
