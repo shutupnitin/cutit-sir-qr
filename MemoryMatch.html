@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🧠 Memory Match | CutIt.sbs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Antonio', sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin: 20px 0 10px;
+      text-align: center;
+    }
+
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+      gap: 10px;
+      max-width: 600px;
+      margin: 20px;
+    }
+
+    .card {
+      width: 100%;
+      aspect-ratio: 1/1;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #111;
+      border: 2px solid #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .card.revealed {
+      background-color: #222;
+    }
+
+    .popup, .start-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      flex-direction: column;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .popup h2, .start-screen h2 {
+      margin-bottom: 10px;
+    }
+
+    .popup button, .start-screen button {
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      background: #fff;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 30px;
+      font-size: 1rem;
+    }
+
+    .watermark {
+      position: fixed;
+      bottom: 5px;
+      font-size: 0.8rem;
+      opacity: 0.4;
+      color: #fff;
+    }
+
+    .emoji-float {
+      position: absolute;
+      font-size: 2rem;
+      animation: floatUp 1s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-60px); }
+    }
+
+    @media (max-width: 600px) {
+      .game-board {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="start-screen">
+    <h2>🧠 Memory Match</h2>
+    <p>Test your Gen Z brain. Match emojis under pressure. Ready?</p>
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <h1>Memory Match</h1>
+  <div class="stats">
+    <div>⏱ Time: <span id="timer">0</span>s</div>
+    <div>⭐ Score: <span id="score">0</span></div>
+  </div>
+  <div class="game-board" id="gameBoard"></div>
+
+  <div class="popup" id="gameOver" style="display:none">
+    <h2>🎉 You Win!</h2>
+    <p>Total Time: <span id="finalTime"></span> seconds</p>
+    <p>Total Score: <span id="finalScore"></span></p>
+    <p>📸 Post a screenshot & tag <br><b>@cutit.sbs</b> on Instagram or <b>@cutitsbs</b> on X to win prizes!</p>
+    <a href="https://cutit.sbs/games"><button>🏠 Home</button></a>
+    <button onclick="startGame()">🔁 Play Again</button>
+  </div>
+
+  <div class="watermark">CutIt.sbs ✦ your vibe. your code.</div>
+
+  <script>
+    const emojis = ['🐍','💥','🎉','🍕','🚀','🧠','🌈','🔥','🍀','🎧','📱','🦄'];
+    let timer, seconds = 0, score = 0;
+    let flipped = [];
+    let matched = [];
+
+    function startGame() {
+      document.querySelector(".start-screen").style.display = "none";
+      document.getElementById("gameOver").style.display = "none";
+      const gameBoard = document.getElementById("gameBoard");
+      const allEmojis = [...emojis.slice(0, 6), ...emojis.slice(0, 6)];
+      allEmojis.sort(() => 0.5 - Math.random());
+      gameBoard.innerHTML = '';
+      score = 0;
+      seconds = 0;
+      matched = [];
+
+      updateStats();
+      clearInterval(timer);
+      timer = setInterval(() => {
+        seconds++;
+        document.getElementById("timer").textContent = seconds;
+      }, 1000);
+
+      allEmojis.forEach((emoji, index) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.dataset.index = index;
+        card.dataset.emoji = emoji;
+        card.onclick = () => flipCard(card);
+        gameBoard.appendChild(card);
+      });
+    }
+
+    function flipCard(card) {
+      if (card.classList.contains("revealed") || flipped.length >= 2) return;
+      card.classList.add("revealed");
+      card.textContent = card.dataset.emoji;
+      flipped.push(card);
+
+      if (flipped.length === 2) {
+        if (flipped[0].dataset.emoji === flipped[1].dataset.emoji) {
+          matched.push(...flipped);
+          score += 10;
+          updateStats();
+          emojiFloat(card.dataset.emoji);
+
+          flipped = [];
+
+          if (matched.length === emojis.slice(0, 6).length * 2) {
+            clearInterval(timer);
+            document.getElementById("finalTime").textContent = seconds;
+            document.getElementById("finalScore").textContent = score;
+            document.getElementById("gameOver").style.display = "flex";
+          }
+        } else {
+          setTimeout(() => {
+            flipped.forEach(c => {
+              c.classList.remove("revealed");
+              c.textContent = '';
+            });
+            flipped = [];
+          }, 800);
+        }
+      }
+    }
+
+    function emojiFloat(emoji) {
+      const float = document.createElement("div");
+      float.classList.add("emoji-float");
+      float.style.left = Math.random() * 90 + "%";
+      float.style.top = "70%";
+      float.textContent = emoji;
+      document.body.appendChild(float);
+      setTimeout(() => float.remove(), 1000);
+    }
+
+    function updateStats() {
+      document.getElementById("score").textContent = score;
+    }
+
+    window.onload = () => {
+      document.getElementById("gameOver").style.display = "none";
+    };
+  </script>
+</body>
+</html>
