@@ -1,1 +1,0 @@
-curl -L https://srv.adstxtmanager.com/19390/https://cutit.sbs > ads.txt
