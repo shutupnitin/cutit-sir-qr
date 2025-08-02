@@ -145,25 +145,37 @@
     <div class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</div>
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
-<!-- Advertisement Section -->
-<div style="margin-top: 30px; text-align: center; position: relative;">
-  <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">
-    Advertisement
-    <span onclick="toggleAdInfo()" style="cursor: pointer;" aria-label="Ad Info">ℹ️</span>
-  </div>
-
-  <!-- Ad Info Popup -->
-  <div id="adInfoBox" style="display: none; background: #111; color: #fff; padding: 10px; border-radius: 6px; font-size: 12px; max-width: 300px; margin: 0 auto; margin-bottom: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.4);">
-    This ad is served by a third-party. CutIt.sbs is not responsible for its content. Ad revenue helps us keep this service free.
-  </div>
-
-  <!-- Moneytag Banner Ad Code -->
-      <script>(function(d,z,s){s.src='https://'+d+'/401/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('gizokraijaw.net',9660585,document.createElement('script'))</script>
-
+    
   <div class="team-message">
     From all of us at CutIt.sbs — built with love, creativity, and chaos 🤪. Whether it’s music, memes, or memories — your code is your voice. Let it echo 🎤✨
   </div>
+<!-- 🧠 Ad Notice Block -->
+<div id="ad-notice" style="text-align:center; margin-top:30px; font-size:14px; color:#999;">
+  <strong>Advertisement</strong>
+  <span id="ad-info" style="margin-left:8px; cursor:pointer; color:#666;" title="Click for info">ℹ️</span>
+</div>
 
+<div id="ad-popup" style="display:none; text-align:center; margin-top:10px; color:#aaa; font-size:13px; max-width:90%; margin-left:auto; margin-right:auto;">
+  This ad is served by a third-party. We are not responsible for its content. Ad revenue helps keep CutIt.sbs free.
+</div>
+
+<!-- 💸 Ad Script -->
+<script>
+  (function(d,z,s){
+    s.src='https://'+d+'/401/'+z;
+    try {
+      (document.body||document.documentElement).appendChild(s);
+    } catch(e){}
+  })('gizokraijaw.net', 9660585, document.createElement('script'));
+</script>
+
+<!-- ℹ️ Info Button Script -->
+<script>
+  document.getElementById("ad-info").addEventListener("click", function(){
+    const popup = document.getElementById("ad-popup");
+    popup.style.display = popup.style.display === "none" ? "block" : "none";
+  });
+</script>
   <footer>
     <div class="footer-links">
       <a href="terms.html">Terms</a> | <a href="privacy.html">Privacy</a> | <a href="contact.html">Contact Us</a>
