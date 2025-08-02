@@ -158,5 +158,23 @@
       document.body.classList.toggle('dark-mode');
     }
   </script>
+  <!-- Your website/app content -->
+
+  <div id="admob-banner"></div>
+
+  <script src="cordova.js"></script>
+  <script>
+    document.addEventListener('deviceready', function () {
+      if (AdMob) {
+        AdMob.createBanner({
+          adId: 'ca-app-pub-7479266047074322/6124831669',
+          adSize: 'SMART_BANNER',
+          position: AdMob.AD_POSITION.BOTTOM_CENTER,
+          isTesting: false, // set to true while testing
+          autoShow: true
+        });
+      }
+    }, false);
+  </script>
 </body>
 </html>
