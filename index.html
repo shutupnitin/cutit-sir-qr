@@ -145,6 +145,22 @@
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
 
+  <!-- 🧠 HilltopAds Banner Below QR Generator -->
+  <div id="cutit-hilltop-banner" style="width: 100%; max-width: 728px; margin: 30px auto; text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 0 12px rgba(0, 0, 0, 0.1); background: #f8f8f8;">
+    <script>
+      (function(rkw){
+          var d = document,
+              s = d.createElement('script'),
+              l = d.scripts[d.scripts.length - 1];
+          s.settings = rkw || {};
+          s.src = "//pleasant-gear.com/bGXQVes.dGGslx0qYlWFcQ/xefmB9GucZ/USlakzPFT_YV1TNPT/gF4vOCD/MEtANMjLUJ1eOSDwgd4lNaAB";
+          s.async = true;
+          s.referrerPolicy = 'no-referrer-when-downgrade';
+          l.parentNode.insertBefore(s, l);
+      })({})
+    </script>
+  </div>
+
   <div class="team-message">
     From all of us at CutIt.sbs — built with love, creativity, and chaos 🤪. Whether it’s music, memes, or memories — your code is your voice. Let it echo 🎤✨
   </div>
@@ -155,7 +171,7 @@
     </div>
     <p>✨ Created with rebellious love by CutIt.sbs – where QR meets pop culture. ✨</p>
   </footer>
-
+  
   <div id="chatBox">
     <div>🧠 Cutie</div>
     <div id="chatMessages"></div>
@@ -223,7 +239,6 @@
       new Razorpay(options).open();
     }
 
-    // ✅ Chatbot with Sarvam AI
     document.getElementById('chatForm').addEventListener('submit', async function (e) {
       e.preventDefault();
       const input = document.getElementById('userInput');
