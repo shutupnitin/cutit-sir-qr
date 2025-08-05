@@ -1,1 +1,2 @@
-/*  /redirect.html  200
+/@:splat    /shortner.html    200
+/:shortID   /redirect.html    200
