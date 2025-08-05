@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CutIt.sbs ✦ Link Shortener</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    /* SAME STYLE AS HOMEPAGE */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
+    body { background: #fdfdff; color: #111; text-align: center; padding: 2rem; transition: background 0.3s, color 0.3s; }
+    .dark-mode { background: #111; color: #fdfdff; }
+    header, footer { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid #ccc; }
+    .logo { font-size: 2rem; }
+    .toggle-btn { padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #999; background: white; cursor: pointer; }
+    input {
+      width: 90%; max-width: 500px; padding: 1rem; font-size: 1.1rem; border: 2px solid #000; border-radius: 8px; margin-top: 1.5rem;
+    }
+    button {
+      padding: 0.7rem 1.4rem; background: #000; color: #fff; border: none; border-radius: 8px; cursor: pointer; margin-top: 1rem;
+    }
+    #resultLink {
+      margin-top: 1.5rem; font-size: 1.1rem; word-break: break-word; color: #0077cc;
+    }
+    .team-message { font-size: 1rem; margin-top: 2rem; max-width: 600px; margin-inline: auto; color: #666; }
+    footer { margin-top: 3rem; font-size: 0.9rem; opacity: 0.7; flex-direction: column; text-align: center; }
+    .footer-links a { margin: 0 0.5rem; color: inherit; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">CutIt.sbs</div>
+    <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+  </header>
+
+  <h1>Shorten your links ✂️</h1>
+  <p>Paste your long link below. Get a short, clean CutIt.sbs URL instantly!</p>
+
+  <input type="text" id="longUrl" placeholder="Enter your long URL here..." />
+  <button onclick="shortenUrl()">Shorten</button>
+
+  <div id="resultLink"></div>
+
+  <div class="team-message">
+    More power coming soon — analytics, custom URLs, and more 💥. Stay tuned!
+  </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="index.html">Home</a> | <a href="terms.html">Terms</a> | <a href="privacy.html">Privacy</a>
+    </div>
+    <p>✨ CutIt.sbs – fast links, no fluff. ✨</p>
+  </footer>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    async function shortenUrl() {
+      const longUrl = document.getElementById('longUrl').value.trim();
+      const result = document.getElementById('resultLink');
+      result.textContent = 'Shortening...';
+
+      try {
+        const res = await fetch(`https://api.shrtco.de/v2/shorten?url=${encodeURIComponent(longUrl)}`);
+        const data = await res.json();
+
+        if (data.ok) {
+          result.innerHTML = `✅ Your short link: <a href="${data.result.full_short_link}" target="_blank">${data.result.full_short_link}</a>`;
+        } else {
+          result.textContent = "⚠️ Failed to shorten. Please check the URL.";
+        }
+      } catch (err) {
+        result.textContent = "❌ Error. Try again later.";
+      }
+    }
+  </script>
+</body>
+</html>
