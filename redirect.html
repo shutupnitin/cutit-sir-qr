@@ -1,59 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Redirecting...</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background: #fefefe;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      animation: blink 1s infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-    .emoji {
-      font-size: 2rem;
-      position: absolute;
-      animation: float 5s infinite linear;
-    }
-    @keyframes float {
-      0% { transform: translateY(0) rotate(0deg); }
-      100% { transform: translateY(-100vh) rotate(360deg); }
-    }
-  </style>
-</head>
-<body>
-  <h1>Redirecting you... ✨</h1>
-
-  <!-- Emojis floating -->
-  <script>
-    const emojis = ["✨", "🚀", "🔗", "✂️", "🔄"];
-    for (let i = 0; i < 15; i++) {
-      const span = document.createElement("span");
-      span.className = "emoji";
-      span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      span.style.left = Math.random() * 100 + "vw";
-      span.style.top = "100vh";
-      span.style.animationDuration = (2 + Math.random() * 4) + "s";
-      document.body.appendChild(span);
-    }
-  </script>
-
-  <!-- Firebase & Redirect Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -62,7 +11,7 @@
       apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
       authDomain: "cutitshortener.firebaseapp.com",
       projectId: "cutitshortener",
-      storageBucket: "cutitshortener.firebasestorage.app",
+      storageBucket: "cutitshortener.appspot.com",
       messagingSenderId: "958863508757",
       appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
     };
@@ -70,9 +19,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const shortID = window.location.pathname.slice(1); // Remove leading /
-    
     async function redirect() {
+      const shortID = window.location.pathname.slice(1); // gets "abc123" from /abc123
+
       try {
         const docRef = doc(db, "shortlinks", shortID);
         const docSnap = await getDoc(docRef);
@@ -81,15 +30,18 @@
           const originalURL = docSnap.data().original;
           window.location.href = originalURL;
         } else {
-          document.querySelector("h1").textContent = "❌ Link not found!";
+          document.body.innerHTML = "<h2>❌ Link not found</h2>";
         }
-      } catch (err) {
-        document.querySelector("h1").textContent = "⚠️ Error connecting to Firebase.";
-        console.error(err);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        document.body.innerHTML = "<h2>⚠️ Error connecting to Firebase.</h2>";
       }
     }
 
     redirect();
   </script>
+</head>
+<body>
+  <h2>Redirecting...</h2>
 </body>
 </html>
