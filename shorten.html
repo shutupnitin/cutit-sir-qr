@@ -218,9 +218,9 @@
   <p>Make URLs clean, quick, and cuter ✂️ — powered by CutIt.sbs</p>
 
   <div class="shorten-box">
-    <input type="text" id="urlInput" placeholder="Paste your long URL here" />
-    <button onclick="pasteFromClipboard()">📋 Paste</button>
-    <button onclick="shortenLink()">Shorten</button>
+    <input id="longUrl" placeholder="Paste your long URL here" />
+<button id="shortenBtn">Shorten</button>
+<div id="resultBox"></div>
   </div>
 
   <div id="result"></div>
@@ -277,5 +277,38 @@
       }
     }
   </script>
+  <script type="module">
+  const db = window.firebaseDB;
+  const { collection, doc, setDoc } = window.firestoreHelpers;
+
+  async function generateShortLink() {
+    const originalURL = document.getElementById("longUrl").value.trim();
+    if (!originalURL) return alert("Please enter a URL!");
+
+    // Generate a random short ID
+    const shortID = Math.random().toString(36).substring(2, 8);
+
+    try {
+      // Save to Firestore
+      await setDoc(doc(collection(db, "shortlinks"), shortID), {
+        original: originalURL,
+        created: new Date().toISOString()
+      });
+
+      const shortURL = `https://cutit.sbs/r/${shortID}`;
+      document.getElementById("resultBox").innerHTML = `
+        <p>✅ Short link created:</p>
+        <a href="${shortURL}" target="_blank">${shortURL}</a>
+        <button onclick="navigator.clipboard.writeText('${shortURL}')">📋 Copy</button>
+      `;
+    } catch (error) {
+      console.error("Error saving link:", error);
+      alert("Something went wrong. Try again.");
+    }
+  }
+
+  // Attach to button
+  document.getElementById("shortenBtn").addEventListener("click", generateShortLink);
+</script>
 </body>
 </html>
