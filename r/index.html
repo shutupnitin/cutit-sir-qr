@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redirecting ✦ CutIt.sbs</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Antonio', sans-serif;
+    }
+
+    .container {
+      text-align: center;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.5; transform: scale(0.98); }
+      50% { opacity: 1; transform: scale(1.03); }
+      100% { opacity: 0.5; transform: scale(0.98); }
+    }
+
+    .emoji {
+      position: absolute;
+      font-size: 2rem;
+      animation: float 10s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Fade-in background effect */
+    .bg {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #fff;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+
+  <div class="container">
+    <h1>Redirecting you shortly...</h1>
+    <p style="margin-top: 1rem; color: #666;">Hang tight! 🚀</p>
+  </div>
+
+  <!-- Floating emojis -->
+  <script>
+    const emojis = ['🎈', '🎉', '🚀', '💥', '✨', '🎯'];
+    for (let i = 0; i < 20; i++) {
+      const el = document.createElement('div');
+      el.className = 'emoji';
+      el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.animationDuration = (5 + Math.random() * 5) + 's';
+      el.style.fontSize = (1.5 + Math.random() * 2) + 'rem';
+      document.body.appendChild(el);
+    }
+
+    // Redirect after delay
+    const params = new URLSearchParams(window.location.search);
+    const url = params.get("url");
+
+    if (url) {
+      setTimeout(() => {
+        window.location.href = url;
+      }, 2500);
+    } else {
+      document.querySelector("h1").innerText = "Oops! No URL found.";
+    }
+  </script>
+</body>
+</html>
