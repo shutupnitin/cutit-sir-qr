@@ -1,100 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Redirecting ✦ CutIt.sbs</title>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module">
+    // Firebase SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
+  authDomain: "cutitshortener.firebaseapp.com",
+  projectId: "cutitshortener",
+  storageBucket: "cutitshortener.firebasestorage.app",
+  messagingSenderId: "958863508757",
+  appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
+};
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Get the short ID from URL
+    const pathParts = window.location.pathname.split('/');
+    const shortId = pathParts[pathParts.length - 1];
+
+    // Look it up in Firestore
+    async function redirectToOriginalUrl() {
+      const docRef = doc(db, "shortUrls", shortId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const url = docSnap.data().url;
+        window.location.href = url;
+      } else {
+        document.body.innerHTML = `
+          <h2>⚠️ Link not found</h2>
+          <p>This short link does not exist or may have expired.</p>
+          <a href="/">Go back to homepage</a>
+        `;
+      }
+    }
+
+    redirectToOriginalUrl();
+  </script>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Antonio', sans-serif;
-    }
-
-    .container {
+    body {
+      font-family: sans-serif;
       text-align: center;
-      z-index: 1;
-    }
-
-    h1 {
-      font-size: 2.2rem;
-      animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.5; transform: scale(0.98); }
-      50% { opacity: 1; transform: scale(1.03); }
-      100% { opacity: 0.5; transform: scale(0.98); }
-    }
-
-    .emoji {
-      position: absolute;
-      font-size: 2rem;
-      animation: float 10s linear infinite;
-      pointer-events: none;
-    }
-
-    @keyframes float {
-      0% {
-        transform: translateY(100vh) rotate(0deg);
-        opacity: 0;
-      }
-      50% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-100vh) rotate(360deg);
-        opacity: 0;
-      }
-    }
-
-    /* Fade-in background effect */
-    .bg {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #fff;
-      z-index: 0;
+      padding: 50px;
     }
   </style>
 </head>
 <body>
-  <div class="bg"></div>
-
-  <div class="container">
-    <h1>Redirecting you shortly...</h1>
-    <p style="margin-top: 1rem; color: #666;">Hang tight! 🚀</p>
-  </div>
-
-  <!-- Floating emojis -->
-  <script>
-    const emojis = ['🎈', '🎉', '🚀', '💥', '✨', '🎯'];
-    for (let i = 0; i < 20; i++) {
-      const el = document.createElement('div');
-      el.className = 'emoji';
-      el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-      el.style.left = Math.random() * 100 + 'vw';
-      el.style.animationDuration = (5 + Math.random() * 5) + 's';
-      el.style.fontSize = (1.5 + Math.random() * 2) + 'rem';
-      document.body.appendChild(el);
-    }
-
-    // Redirect after delay
-    const params = new URLSearchParams(window.location.search);
-    const url = params.get("url");
-
-    if (url) {
-      setTimeout(() => {
-        window.location.href = url;
-      }, 2500);
-    } else {
-      document.querySelector("h1").innerText = "Oops! No URL found.";
-    }
-  </script>
+  <h2>⏳ Redirecting you...</h2>
+  <p>Please wait a moment.</p>
 </body>
 </html>
