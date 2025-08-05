@@ -1,29 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Firebase Scripts -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  const firebaseConfig = {
-  apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
-  authDomain: "cutitshortener.firebaseapp.com",
-  projectId: "cutitshortener",
-  storageBucket: "cutitshortener.firebasestorage.app",
-  messagingSenderId: "958863508757",
-  appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  window.firebaseDB = db;
-  window.firestoreHelpers = { collection, doc, setDoc, getDoc };
-</script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Short Link Generator ✦ CutIt.sbs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shorten URLs ✂️ CutIt.sbs</title>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
   <style>
     * {
@@ -33,220 +13,176 @@
       font-family: 'Antonio', sans-serif;
     }
     body {
-      background: #fdfdff;
+      background: #f9f9f9;
       color: #111;
       text-align: center;
       padding: 2rem;
-      transition: background 0.3s, color 0.3s;
-    }
-    .dark-mode {
-      background: #111;
-      color: #fdfdff;
     }
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #ccc;
+      margin-bottom: 2rem;
     }
     .logo {
       font-size: 2rem;
     }
     .toggle-btn {
       padding: 0.5rem 1rem;
-      border-radius: 6px;
-      border: 1px solid #999;
+      border: 1px solid #aaa;
       background: white;
+      border-radius: 8px;
       cursor: pointer;
     }
+
     h1 {
       font-size: 2.2rem;
-      margin-top: 2.5rem;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
     }
-    p {
-      font-size: 1.1rem;
+
+    .tagline {
       margin-bottom: 2rem;
       color: #666;
+      font-size: 1.1rem;
     }
-    .shorten-box {
+
+    .shortener-box {
+      background: #fff;
+      border: 2px solid #000;
+      padding: 2rem;
+      border-radius: 12px;
+      max-width: 500px;
       margin: auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     }
-    .shorten-box input {
-      width: 60%;
-      min-width: 250px;
+
+    .shortener-box input {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 2px solid #000;
+      margin-bottom: 0.8rem;
+    }
+
+    .shortener-box button {
+      width: 100%;
       padding: 0.8rem;
       font-size: 1rem;
-      border: 2px solid #000;
-      border-radius: 8px;
-    }
-    .shorten-box button {
-      padding: 0.8rem 1.2rem;
-      font-size: 1rem;
-      border: none;
       border-radius: 8px;
       background: #000;
       color: #fff;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: background 0.3s;
+      margin-bottom: 1rem;
     }
-    .shorten-box button:hover {
-      transform: scale(1.05);
+
+    .shortener-box button:hover {
+      background: #222;
     }
-    #result {
-      margin-top: 1.2rem;
+
+    #resultBox {
+      margin-top: 1rem;
       font-size: 1.1rem;
-      color: green;
-      font-weight: bold;
       word-break: break-word;
     }
-    .feature-section {
+
+    .features {
       margin-top: 3rem;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 2rem;
     }
+
     .feature-card {
       background: #fff;
-      border: 2px solid #000;
+      border: 2px dashed #000;
       padding: 1.5rem;
       border-radius: 12px;
       width: 280px;
       text-align: left;
-      transition: transform 0.3s ease;
     }
-    .feature-card:hover {
-      transform: translateY(-5px);
-    }
+
     .feature-card h3 {
+      font-size: 1.3rem;
       margin-bottom: 0.6rem;
-      font-size: 1.4rem;
     }
+
     .feature-card ul {
-      padding-left: 1.2rem;
+      padding-left: 1rem;
     }
-    .feature-card ul li {
-      margin: 0.4rem 0;
+
+    .feature-card li {
+      margin-bottom: 0.4rem;
     }
+
     footer {
       margin-top: 4rem;
       font-size: 0.9rem;
-      opacity: 0.7;
+      opacity: 0.6;
     }
-  
-    .shortener-box {
-      background: #fff;
-      border: 2px solid #000;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      max-width: 600px;
-      margin: auto;
-    }
-    .shortener-box input {
-      display: block;
-      width: 100%;
-      padding: 1rem;
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-      border: 2px solid #000;
-    }
-    .shortener-box button {
-      width: 100%;
-      padding: 0.8rem;
-      background: #000;
-      color: #fff;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .shortener-box button:hover {
-      background: #222;
-    }
-    .tagline {
-      margin-bottom: 1.2rem;
-      color: #555;
-      font-size: 1rem;
-    }
-    .features {
-      display: flex;
-      gap: 1.5rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 3rem;
-    }
-    .feature-box {
-      flex: 1;
-      min-width: 260px;
-      padding: 1.5rem;
-      border: 2px dashed #000;
-      border-radius: 12px;
-      background: #fafafa;
-    }
-    .feature-box h3 {
-      font-size: 1.4rem;
-      margin-bottom: 0.8rem;
-    }
-    .feature-box ul {
-      list-style: none;
-      padding-left: 0;
-    }
-    .feature-box li {
-      margin-bottom: 0.5rem;
-    }
-    </style>
-<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
+  </style>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
+      authDomain: "cutitshortener.firebaseapp.com",
+      projectId: "cutitshortener",
+      storageBucket: "cutitshortener.firebasestorage.app",
+      messagingSenderId: "958863508757",
+      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db;
+    window.firestoreHelpers = { collection, doc, setDoc };
+  </script>
 </head>
+
 <body>
   <header>
-    <div class="logo">CutIt.sbs</div>
+    <div class="logo">✂️ CutIt.sbs</div>
     <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
   </header>
 
-  <h1>Shorten your links, instantly.</h1>
-  <p>Make URLs clean, quick, and cuter ✂️ — powered by CutIt.sbs</p>
+  <h1>Shorten Your Long URLs</h1>
+  <p class="tagline">Create sleek, branded links in seconds</p>
 
-  <div class="shorten-box">
+  <div class="shortener-box">
     <input id="longUrl" placeholder="Paste your long URL here" />
-<button id="shortenBtn">Shorten</button>
-<div id="resultBox"></div>
+    <button onclick="pasteFromClipboard()">📋 Paste from Clipboard</button>
+    <button id="shortenBtn">🚀 Generate Short Link</button>
+    <div id="resultBox"></div>
   </div>
 
-  <div id="result"></div>
-
-  <div class="feature-section">
+  <div class="features">
     <div class="feature-card">
       <h3>🎁 Free Features</h3>
       <ul>
-        <li>Instant link shortening</li>
-        <li>Unlimited usage</li>
-        <li>Secure & fast</li>
-        <li>Works without login</li>
+        <li>Unlimited link shortening</li>
+        <li>No login required</li>
+        <li>Secure & instant</li>
+        <li>100% free forever</li>
       </ul>
     </div>
     <div class="feature-card">
       <h3>💎 Premium Features</h3>
       <ul>
         <li>Custom short links</li>
-        <li>Click tracking & analytics</li>
-        <li>Expiry date for links</li>
-        <li>Dashboard access</li>
+        <li>Analytics & link tracking</li>
+        <li>Link expiration control</li>
+        <li>Dashboard & insights</li>
       </ul>
     </div>
   </div>
 
-  <footer>✨ CutIt.sbs – where long URLs go short & smart ✨</footer>
+  <footer>Created with rebellious love by CutIt.sbs</footer>
 
   <script>
     function toggleDarkMode() {
@@ -255,60 +191,33 @@
 
     async function pasteFromClipboard() {
       const text = await navigator.clipboard.readText();
-      document.getElementById("urlInput").value = text;
+      document.getElementById("longUrl").value = text;
     }
 
-    async function shortenLink() {
-      const url = document.getElementById("urlInput").value.trim();
-      if (!url) return alert("Please enter a valid URL.");
-      
-      const apiUrl = "https://api.shrtco.de/v2/shorten?url=" + encodeURIComponent(url);
+    document.getElementById("shortenBtn").addEventListener("click", async () => {
+      const url = document.getElementById("longUrl").value.trim();
+      if (!url) return alert("Please enter a URL.");
+
+      const shortID = Math.random().toString(36).substring(2, 8);
+      const db = window.db;
+      const { collection, doc, setDoc } = window.firestoreHelpers;
 
       try {
-        const res = await fetch(apiUrl);
-        const data = await res.json();
-        if (data.ok) {
-          document.getElementById("result").innerHTML = `🔗 <a href="${data.result.full_short_link}" target="_blank">${data.result.full_short_link}</a>`;
-        } else {
-          document.getElementById("result").innerText = "❌ Error shortening link.";
-        }
+        await setDoc(doc(collection(db, "shortlinks"), shortID), {
+          original: url,
+          created: new Date().toISOString()
+        });
+
+        const shortURL = `https://cutit.sbs/r/${shortID}`;
+        document.getElementById("resultBox").innerHTML = `
+          ✅ Short Link: <a href="${shortURL}" target="_blank">${shortURL}</a>
+          <br/><button onclick="navigator.clipboard.writeText('${shortURL}')">📋 Copy</button>
+        `;
       } catch (e) {
-        document.getElementById("result").innerText = "⚠️ Network error.";
+        console.error("Error:", e);
+        alert("Something went wrong. Try again.");
       }
-    }
+    });
   </script>
-  <script type="module">
-  const db = window.firebaseDB;
-  const { collection, doc, setDoc } = window.firestoreHelpers;
-
-  async function generateShortLink() {
-    const originalURL = document.getElementById("longUrl").value.trim();
-    if (!originalURL) return alert("Please enter a URL!");
-
-    // Generate a random short ID
-    const shortID = Math.random().toString(36).substring(2, 8);
-
-    try {
-      // Save to Firestore
-      await setDoc(doc(collection(db, "shortlinks"), shortID), {
-        original: originalURL,
-        created: new Date().toISOString()
-      });
-
-      const shortURL = `https://cutit.sbs/r/${shortID}`;
-      document.getElementById("resultBox").innerHTML = `
-        <p>✅ Short link created:</p>
-        <a href="${shortURL}" target="_blank">${shortURL}</a>
-        <button onclick="navigator.clipboard.writeText('${shortURL}')">📋 Copy</button>
-      `;
-    } catch (error) {
-      console.error("Error saving link:", error);
-      alert("Something went wrong. Try again.");
-    }
-  }
-
-  // Attach to button
-  document.getElementById("shortenBtn").addEventListener("click", generateShortLink);
-</script>
 </body>
 </html>
