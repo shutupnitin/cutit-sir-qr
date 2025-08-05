@@ -2,34 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Redirecting ✦ CutIt.sbs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Redirecting...</title>
   <style>
     body {
+      margin: 0;
       font-family: sans-serif;
-      text-align: center;
-      padding: 50px;
+      background: #fefefe;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
     .emoji {
-      font-size: 3rem;
-      animation: float 3s ease-in-out infinite;
+      font-size: 2rem;
+      position: absolute;
+      animation: float 5s infinite linear;
     }
     @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-100vh) rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <div class="emoji">🔗</div>
-  <h1>Redirecting...</h1>
-  <p id="msg">Please wait while we take you to your destination</p>
+  <h1>Redirecting you... ✨</h1>
 
+  <!-- Emojis floating -->
+  <script>
+    const emojis = ["✨", "🚀", "🔗", "✂️", "🔄"];
+    for (let i = 0; i < 15; i++) {
+      const span = document.createElement("span");
+      span.className = "emoji";
+      span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      span.style.left = Math.random() * 100 + "vw";
+      span.style.top = "100vh";
+      span.style.animationDuration = (2 + Math.random() * 4) + "s";
+      document.body.appendChild(span);
+    }
+  </script>
+
+  <!-- Firebase & Redirect Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // ✅ Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
       authDomain: "cutitshortener.firebaseapp.com",
@@ -39,36 +67,29 @@
       appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
     };
 
-    // ✅ Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ✅ Get short ID from URL
-    const shortId = window.location.pathname.replace("/", "").trim();
-
-    async function redirectNow() {
-      if (!shortId || shortId === "index.html") {
-        document.getElementById("msg").textContent = "No short link provided.";
-        return;
-      }
-
+    const shortID = window.location.pathname.slice(1); // Remove leading /
+    
+    async function redirect() {
       try {
-        const ref = doc(db, "shortlinks", shortId);
-        const snap = await getDoc(ref);
+        const docRef = doc(db, "shortlinks", shortID);
+        const docSnap = await getDoc(docRef);
 
-        if (snap.exists()) {
-          const original = snap.data().original;
-          window.location.href = original;
+        if (docSnap.exists()) {
+          const originalURL = docSnap.data().original;
+          window.location.href = originalURL;
         } else {
-          document.getElementById("msg").textContent = "⚠️ Link not found in database.";
+          document.querySelector("h1").textContent = "❌ Link not found!";
         }
       } catch (err) {
-        document.getElementById("msg").textContent = "🚨 Error connecting to Firebase.";
+        document.querySelector("h1").textContent = "⚠️ Error connecting to Firebase.";
         console.error(err);
       }
     }
 
-    redirectNow();
+    redirect();
   </script>
 </body>
 </html>
