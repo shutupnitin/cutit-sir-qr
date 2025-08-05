@@ -208,10 +208,10 @@
           created: new Date().toISOString()
         });
 
-        const shortUrl = `https://cutit.sbs/${id}`;
+        const shortUrl = `https://cutit.sbs/${shortID}`;
         document.getElementById("resultBox").innerHTML = `
-          ✅ Short Link: <a href="${shortURL}" target="_blank">${shortURL}</a>
-          <br/><button onclick="navigator.clipboard.writeText('${shortURL}')">📋 Copy</button>
+          ✅ Short Link: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+          <br/><button onclick="navigator.clipboard.writeText('${shortUrl}')">📋 Copy</button>
         `;
       } catch (e) {
         console.error("Error:", e);
