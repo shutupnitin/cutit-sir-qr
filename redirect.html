@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Redirecting ✦ CutIt.sbs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <h1>Redirecting...</h1>
+  <p id="msg">Please wait</p>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
+      authDomain: "cutitshortener.firebaseapp.com",
+      projectId: "cutitshortener",
+      storageBucket: "cutitshortener.firebasestorage.app",
+      messagingSenderId: "958863508757",
+      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const shortId = window.location.pathname.replace("/", "");
+
+    async function go() {
+      if (!shortId) {
+        document.getElementById("msg").textContent = "No short link provided.";
+        return;
+      }
+
+      const ref = doc(db, "shortlinks", shortId);
+      const snap = await getDoc(ref);
+
+      if (snap.exists()) {
+        const original = snap.data().original;
+        window.location.href = original;
+      } else {
+        document.getElementById("msg").textContent = "⚠️ Link not found.";
+      }
+    }
+
+    go();
+  </script>
+</body>
+</html>
