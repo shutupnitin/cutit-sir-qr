@@ -1,206 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-70PVFGLP9G');
-  </script>
-
-  <!-- Meta Tags -->
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Shorten long URLs instantly with CutIt.sbs — secure, sleek and 100% free. No login needed.">
-  <meta name="robots" content="index, follow">
-  <meta property="og:title" content="CutIt.sbs - Shorten URLs in Seconds">
-  <meta property="og:description" content="Create sleek, branded short links with zero login and zero cost.">
-  <meta property="og:image" content="https://cutit.sbs/logo.png">
-  <meta property="og:url" content="https://cutit.sbs">
-  <meta name="twitter:card" content="summary_large_image">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Shorten URLs ✂️ CutIt.sbs</title>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
-
-  <!-- Firebase -->
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
-
-  <!-- Styles -->
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
     body { background: #f9f9f9; color: #111; text-align: center; padding: 2rem; transition: all 0.3s ease; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-    .logo { font-size: 2rem; }
-    .toggle-btn {
-      padding: 0.5rem 1rem;
-      border: 1px solid #aaa;
-      background: white;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
-    .tagline { margin-bottom: 2rem; color: #666; font-size: 1.1rem; }
-
+    header { font-size: 2rem; margin-bottom: 2rem; }
     .shortener-box {
       background: #fff; border: 2px solid #000;
       padding: 2rem; border-radius: 12px;
       max-width: 500px; margin: auto;
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     }
-    .shortener-box input {
+    .shortener-box input, .shortener-box button {
       width: 100%; padding: 1rem; font-size: 1rem;
       border-radius: 8px; border: 2px solid #000;
       margin-bottom: 0.8rem;
     }
     .shortener-box button {
-      width: 100%; padding: 0.8rem; font-size: 1rem;
-      border-radius: 8px; background: #000; color: #fff;
-      cursor: pointer; transition: background 0.3s;
-      margin-bottom: 1rem;
+      background: #000; color: #fff; cursor: pointer;
     }
     .shortener-box button:hover { background: #222; }
-
-    #resultBox { margin-top: 1rem; font-size: 1.1rem; word-break: break-word; }
-
-    .features {
-      margin-top: 3rem; display: flex;
-      flex-wrap: wrap; justify-content: center; gap: 2rem;
-    }
-    .feature-card {
-      background: #fff; border: 2px dashed #000;
-      padding: 1.5rem; border-radius: 12px;
-      width: 280px; text-align: left;
-      transition: all 0.3s ease;
-    }
-    .feature-card:hover {
-      transform: scale(1.03);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-    .feature-card h3 { font-size: 1.3rem; margin-bottom: 0.6rem; }
-    .feature-card ul { padding-left: 1rem; }
-    .feature-card li { margin-bottom: 0.4rem; }
-
     footer { margin-top: 4rem; font-size: 0.9rem; opacity: 0.6; }
-
-    .dark-mode {
-      background: #111; color: #f9f9f9;
-    }
-    .dark-mode .shortener-box {
-      background: #222; color: #fff; border-color: #fff;
-    }
-    .dark-mode input, .dark-mode button {
-      border-color: #fff;
-    }
-    .dark-mode .feature-card {
-      background: #333; border-color: #fff; color: #eee;
-    }
   </style>
-
-  <!-- Firebase Config -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
-      authDomain: "cutitshortener.firebaseapp.com",
-      projectId: "cutitshortener",
-      storageBucket: "cutitshortener.appspot.com",
-      messagingSenderId: "958863508757",
-      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    window.db = db;
-    window.firestoreHelpers = { collection, doc, setDoc };
-  </script>
 </head>
-
 <body>
-  <header>
-    <div class="logo">CutIt.sbs</div>
-    <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
-  </header>
 
-  <h1>Shorten Your Long URLs</h1>
-  <p class="tagline">Create sleek, branded links in seconds</p>
+<!-- ✅ Sticky Top Banner -->
+<style>
+  #aads-sticky-toggle { display: none; }
+  #aads-sticky-banner {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 50px; background: rgba(0,0,0,0.5);
+    z-index: 99999; text-align: center;
+  }
+  #aads-sticky-toggle:checked ~ #aads-sticky-banner { display: none; }
+  .aads-close-label {
+    position: absolute; top: 8px; right: 12px;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 8px; border-radius: 4px; cursor: pointer;
+    z-index: 100000;
+  }
+  #aads-sticky-banner iframe {
+    border: 0; width: 100%; height: 50px; display: block;
+  }
+</style>
+<input type="checkbox" id="aads-sticky-toggle" hidden />
+<div id="aads-sticky-banner">
+  <label class="aads-close-label" for="aads-sticky-toggle">
+    <svg fill="#ffffff" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
+      <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337"/>
+    </svg>
+  </label>
+  <iframe data-aa="2405889" src="//acceptable.a-ads.com/2405889/?size=Adaptive"></iframe>
+</div>
 
-  <div class="shortener-box">
-    <input id="longUrl" placeholder="Paste your long URL here" />
-    <input id="customAlias" placeholder="(Optional) Custom short link e.g. myname" />
-    <button onclick="pasteFromClipboard()">📋 Paste from Clipboard</button>
-    <button id="shortenBtn">🚀 Generate Short Link</button>
-    <div id="resultBox"></div>
+<header>CutIt.sbs</header>
+<h1>Shorten Your Long URLs</h1>
+<p>Create sleek, fast short links in seconds.</p>
+
+<div class="shortener-box">
+  <input id="longUrl" placeholder="Paste your long URL here" />
+  <button onclick="pasteFromClipboard()">📋 Paste from Clipboard</button>
+  <button onclick="shorten()">🚀 Generate Short Link</button>
+  <div id="resultBox"></div>
+</div>
+
+<!-- 🅰️ Banner Advertisement -->
+<div style="width: 100%; margin: 20px auto; background: rgba(0, 0, 0, 0.5); position: relative; z-index: 99998; text-align: center; padding: 10px 0; border-radius: 8px;">
+  <div style="font-size: 14px; color: #fff;">
+    Advertisement <span id="adInfoIcon" style="cursor: pointer; margin-left: 6px;" title="What is this?">ℹ️</span>
   </div>
+  <iframe data-aa='2405888' src='//acceptable.a-ads.com/2405888/?size=Adaptive' style='border:0; padding:0; width: 70%; max-width: 100%; height:auto; overflow:hidden; display: block; margin: 12px auto;'></iframe>
+</div>
 
-  <div class="features">
-    <div class="feature-card">
-      <h3>🎁 Free Features</h3>
-      <ul>
-        <li>Unlimited link shortening</li>
-        <li>No login required</li>
-        <li>Secure & instant</li>
-        <li>100% free forever</li>
-      </ul>
-    </div>
-    <div class="feature-card">
-      <h3>💬 From the CutIt Team</h3>
-      <p>At CutIt.sbs, we believe link shortening should be fast, private, and free — for everyone, forever. No logins. No paywalls.</p>
-    </div>
+<!-- ⚠️ Popup Disclaimer -->
+<div id="adPopup" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 99999; align-items: center; justify-content: center;">
+  <div style="background: #111; color: #fff; padding: 1.5rem; border-radius: 12px; max-width: 400px; text-align: center; position: relative;">
+    <span id="closeAdPopup" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 1.2rem;">✖</span>
+    <h3 style="margin-bottom: 1rem;">Ad Disclaimer</h3>
+    <p style="font-size: 0.95rem; line-height: 1.5;">
+      These ads are provided by a third-party partner (A-Ads). We are not responsible for their content.
+      Advertising allows us to offer this service for free.
+    </p>
   </div>
+</div>
 
-  <footer>
-    <br />
-    <a href="https://www.cutit.sbs" style="display:block; margin-bottom:10px;">⬅️ Back to Generator</a>
-    Made with ❤️ and a bit of <b>"Wakanda Forever!"</b> by CutIt.sbs
-  </footer>
+<!-- 💬 Heartfelt Message -->
+<div style="margin: 3rem auto; max-width: 600px; font-size: 1.1rem; line-height: 1.6; color: #444;">
+  <p>✨ <strong>Dear user,</strong></p>
+  <p>We created CutIt.sbs with a simple belief — shortening URLs should be easy, accessible, and completely free for everyone. No accounts. No premium traps. Just pure utility.</p>
+  <p>This service will always be free. That’s our promise. ❤️</p>
+  <p>With love,<br><strong>Team CutIt.sbs</strong></p>
+</div>
 
-  <script>
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-    }
+<footer>Made with ❤️ and a bit of "Wakanda Forever!" by CutIt.sbs</footer>
 
-    async function pasteFromClipboard() {
-      const text = await navigator.clipboard.readText();
-      document.getElementById("longUrl").value = text;
-    }
+<script>
+  document.getElementById('adInfoIcon').onclick = function () {
+    document.getElementById('adPopup').style.display = 'flex';
+  };
+  document.getElementById('closeAdPopup').onclick = function () {
+    document.getElementById('adPopup').style.display = 'none';
+  };
 
-    document.getElementById("shortenBtn").addEventListener("click", async () => {
-      let rawUrl = document.getElementById("longUrl").value.trim();
-      if (!/^https?:\/\//i.test(rawUrl)) {
-        rawUrl = 'https://' + rawUrl;
-      }
-      const url = rawUrl;
-      const customAlias = document.getElementById("customAlias").value.trim();
-      if (!url) return alert("Please enter a URL.");
+  async function pasteFromClipboard() {
+    const text = await navigator.clipboard.readText();
+    document.getElementById("longUrl").value = text;
+  }
 
-      const shortID = customAlias || Math.random().toString(36).substring(2, 8);
-      const db = window.db;
-      const { collection, doc, setDoc } = window.firestoreHelpers;
+  function shorten() {
+    const url = document.getElementById("longUrl").value.trim();
+    if (!url) return alert("Please enter a valid URL.");
+    const shortUrl = "https://cutit.sbs/" + Math.random().toString(36).substring(2, 8);
+    document.getElementById("resultBox").innerHTML = `✅ Short Link: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+    <br/><button onclick="navigator.clipboard.writeText('${shortUrl}')">📋 Copy</button>`;
+  }
+</script>
 
-      try {
-        const docRef = doc(collection(db, "shortlinks"), shortID);
-        await setDoc(docRef, {
-          original: url,
-          created: new Date().toISOString(),
-          custom: !!customAlias
-        });
-
-        const shortUrl = `https://cutit.sbs/${shortID}`;
-        document.getElementById("resultBox").innerHTML = `
-          ✅ Short Link: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
-          <br/><button onclick="navigator.clipboard.writeText('${shortUrl}')">📋 Copy</button>
-        `;
-      } catch (e) {
-        console.error("Error:", e);
-        alert("❌ That custom link might already exist.");
-      }
-    });
-  </script>
 </body>
-</html>
