@@ -3,124 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login - CutIt.sbs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet"/>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <title>Login – CutIt.sbs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; font-family: 'Antonio', sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
     body {
-      background: #f0f0f0; display: flex; align-items: center; justify-content: center;
-      height: 100vh; margin: 0; flex-direction: column;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #111;
     }
-    .container {
-      background: white; padding: 2rem; border-radius: 12px;
-      width: 90%; max-width: 400px; box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    .login-box {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
       text-align: center;
     }
+    h1 { font-size: 2rem; margin-bottom: 1rem; }
     input {
-      width: 100%; padding: 0.8rem; margin: 0.5rem 0;
-      border: 2px solid #000; border-radius: 8px;
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid #111;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 1rem;
     }
     button {
-      width: 100%; padding: 0.8rem; margin: 0.5rem 0;
-      background: #111; color: white; border: none; border-radius: 8px;
-      cursor: pointer; font-size: 1rem;
+      padding: 0.8rem 1.5rem;
+      background: #000;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
     }
-    .google-btn {
-      background: #4285F4;
+    button:hover { background: #222; }
+    .dark-mode {
+      background: #111;
+      color: #eee;
     }
-    .google-btn:hover {
-      background: #357ae8;
+    .dark-mode .login-box {
+      background: #222;
+      color: white;
+      border-color: white;
     }
-    .footer {
-      margin-top: 2rem;
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #ddd;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
       font-size: 0.9rem;
-      opacity: 0.6;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>Login to CutIt.sbs</h2>
+<div class="toggle-btn" onclick="toggleDarkMode()">🌙 Toggle Mode</div>
 
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
+<div class="login-box">
+  <h1>Login</h1>
+  <input type="text" id="username" placeholder="Enter your username" />
+  <button onclick="handleLogin()">🔐 Login</button>
+</div>
 
-    <button onclick="login()">🔓 Login</button>
-    <button onclick="signup()">✍️ Sign Up</button>
-    <button class="google-btn" onclick="googleLogin()">🔐 Login with Google</button>
+<script>
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark-mode");
+  }
 
-    <p id="status" style="margin-top: 1rem; color: red;"></p>
-  </div>
+  function handleLogin() {
+    const username = document.getElementById("username").value.trim();
+    if (!username) return alert("Please enter your name or user ID");
 
-  <p class="footer">CutIt.sbs © 2025</p>
+    localStorage.setItem("cutit_userId", username);
+    alert("✅ Logged in successfully");
+    window.location.href = "dashboard.html";
+  }
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      signInWithPopup,
-      GoogleAuthProvider
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  // Auto redirect if already logged in
+  if (localStorage.getItem("cutit_userId")) {
+    window.location.href = "dashboard.html";
+  }
+</script>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
-      authDomain: "cutitshortener.firebaseapp.com",
-      projectId: "cutitshortener",
-      storageBucket: "cutitshortener.appspot.com",
-      messagingSenderId: "958863508757",
-      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-
-    window.login = async function () {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      if (!email || !password) return showStatus("Please enter email and password.");
-
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        localStorage.setItem("cutit_loggedIn", "true");
-        window.location.href = "shorten.html";
-      } catch (e) {
-        showStatus("❌ " + e.message);
-      }
-    };
-
-    window.signup = async function () {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      if (!email || !password) return showStatus("Please enter email and password.");
-
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        localStorage.setItem("cutit_loggedIn", "true");
-        window.location.href = "shorten.html";
-      } catch (e) {
-        showStatus("❌ " + e.message);
-      }
-    };
-
-    window.googleLogin = async function () {
-      try {
-        await signInWithPopup(auth, provider);
-        localStorage.setItem("cutit_loggedIn", "true");
-        window.location.href = "shorten.html";
-      } catch (e) {
-        showStatus("❌ " + e.message);
-      }
-    };
-
-    function showStatus(msg) {
-      document.getElementById("status").textContent = msg;
-    }
-  </script>
 </body>
 </html>
