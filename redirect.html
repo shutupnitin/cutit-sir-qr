@@ -1,128 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-70PVFGLP9G');
-  </script>
-
-  <meta charset="UTF-8" />
-  <title>Redirecting… | CutIt.sbs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap">
-  <style>
-    * {
-      margin: 0; padding: 0;
-      box-sizing: border-box;
-      font-family: 'Antonio', sans-serif;
-    }
-    body {
-      background: #f5f5f5;
-      color: #111;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-    }
-    .box {
-      padding: 2rem;
-      border-radius: 12px;
-      background: #fff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-width: 400px;
-      width: 90%;
-    }
-    h1 {
-      font-size: 1.6rem;
-      margin-bottom: 1rem;
-    }
-    p {
-      color: #555;
-    }
-    .loader {
-      margin-top: 1.5rem;
-      width: 40px;
-      height: 40px;
-      border: 4px solid #ccc;
-      border-top-color: #111;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-<body>
-  <div class="box">
-    <h1>Redirecting you safely…</h1>
-    <p>Please wait while we take you to your destination</p>
-    <div class="loader"></div>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, getDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
-      authDomain: "cutitshortener.firebaseapp.com",
-      projectId: "cutitshortener",
-      storageBucket: "cutitshortener.appspot.com",
-      messagingSenderId: "958863508757",
-      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    async function handleRedirect() {
-      const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+<html>
+  <head><title>Test Redirect</title></head>
+  <body>
+    <h1>This is redirect.html</h1>
+    <p>Path: <span id="path"></span></p>
+    <script>
+      const path = location.pathname.replace(/^\/+|\/+$/g, '');
+      document.getElementById("path").textContent = path;
       console.log("📦 Shortlink path:", path);
-
-      if (!path) {
-        console.warn("⚠️ Empty path detected. Redirecting to 404.");
-        window.location.href = "/404.html";
-        return;
-      }
-
-      try {
-        const ref = doc(collection(db, "shortlinks"), path);
-        const snap = await getDoc(ref);
-
-        if (snap.exists()) {
-          const data = snap.data();
-          console.log("✅ Document found:", data);
-
-          if (data.original && typeof data.original === "string") {
-            console.log("🔗 Redirecting to:", data.original);
-            window.location.href = data.original;
-          } else {
-            console.error("⛔️ No valid 'original' field found in document.");
-            window.location.href = "/404.html";
-          }
-
-        } else {
-          console.warn("❌ Document not found for path:", path);
-          window.location.href = "/404.html";
-        }
-
-      } catch (e) {
-        console.error("🔥 Firestore error during redirect:", e);
-        window.location.href = "/404.html";
-      }
-    }
-
-    handleRedirect();
-  </script>
-</body>
+    </script>
+  </body>
 </html>
