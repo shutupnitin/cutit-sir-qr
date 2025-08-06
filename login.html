@@ -88,7 +88,7 @@
       try {
         await signInWithEmailAndPassword(auth, email, password);
         localStorage.setItem("cutit_loggedIn", "true");
-        window.location.href = "index.html";
+        window.location.href = "shorten.html";
       } catch (e) {
         showStatus("❌ " + e.message);
       }
@@ -102,7 +102,7 @@
       try {
         await createUserWithEmailAndPassword(auth, email, password);
         localStorage.setItem("cutit_loggedIn", "true");
-        window.location.href = "index.html";
+        window.location.href = "shorten.html";
       } catch (e) {
         showStatus("❌ " + e.message);
       }
@@ -112,7 +112,7 @@
       try {
         await signInWithPopup(auth, provider);
         localStorage.setItem("cutit_loggedIn", "true");
-        window.location.href = "index.html";
+        window.location.href = "shorten.html";
       } catch (e) {
         showStatus("❌ " + e.message);
       }
