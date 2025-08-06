@@ -2,61 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard – CutIt.sbs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
+  <title>Premium Dashboard – CutIt.sbs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      font-family: 'Antonio', sans-serif;
-      background: #f5f5f5;
-      color: #111;
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
       padding: 2rem;
-      text-align: center;
+      color: #111;
     }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .link-list {
+      max-width: 600px;
+      margin: auto;
+    }
+    .link-item {
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
     }
     .logout-btn {
-      padding: 0.5rem 1rem;
-      background: #111;
+      background: #000;
       color: white;
+      padding: 0.6rem 1.2rem;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-    }
-    h1 {
-      margin-top: 1rem;
-    }
-    .status {
-      color: green;
-      margin-top: 0.5rem;
-    }
-    .link-card {
-      background: white;
-      border: 2px solid #000;
-      padding: 1rem;
-      border-radius: 8px;
-      margin: 1rem auto;
-      max-width: 500px;
-      text-align: left;
-    }
-    .link-card a {
-      word-break: break-word;
-    }
-    footer {
-      margin-top: 3rem;
-      font-size: 0.8rem;
-      color: #999;
+      float: right;
     }
   </style>
-
   <!-- Firebase Scripts -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      where,
+      getDocs,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
@@ -69,75 +65,63 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
-    const db = getFirestore();
+    const db = getFirestore(app);
 
-    const statusEl = document.getElementById("status");
-    const linksContainer = document.getElementById("links");
+    const linkList = document.getElementById("linkList");
 
-    // Check auth and premium
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
         return;
       }
 
-      document.getElementById("email").innerText = user.email;
+      // Check if user is premium
+      const premiumRef = collection(db, "premium_users");
+      const q = query(premiumRef, where("uid", "==", user.uid));
+      const snapshot = await getDocs(q);
 
-      // Check premium status
-      const premiumQuery = query(collection(db, "premium_users"), where("email", "==", user.email));
-      const premiumSnap = await getDocs(premiumQuery);
-      if (premiumSnap.empty) {
-        alert("⛔ You are not a premium user.");
-        window.location.href = "index.html";
+      if (snapshot.empty) {
+        alert("❌ You are not a premium user. Please upgrade first.");
+        window.location.href = "shorten.html";
         return;
       }
 
-      statusEl.innerText = "✅ Premium Access";
+      // Fetch user links
+      const linksRef = collection(db, "shortlinks");
+      const userLinks = query(linksRef, where("uid", "==", user.uid));
+      const userLinksSnap = await getDocs(userLinks);
 
-      // Fetch links
-      const linksQuery = query(collection(db, "shortlinks"), where("uid", "==", user.uid));
-      const querySnapshot = await getDocs(linksQuery);
-      if (querySnapshot.empty) {
-        linksContainer.innerHTML = "<p>No links found.</p>";
-        return;
-      }
+      const container = document.getElementById("linkList");
+      container.innerHTML = "";
 
-      querySnapshot.forEach((doc) => {
+      userLinksSnap.forEach(doc => {
         const data = doc.data();
-        const shortUrl = `https://cutit.sbs/${doc.id}`;
-        const original = data.original;
-        const clicks = data.clicks || 0;
-
-        const card = document.createElement("div");
-        card.className = "link-card";
-        card.innerHTML = `
-          <strong>Short Link:</strong> <a href="${shortUrl}" target="_blank">${shortUrl}</a><br/>
-          <strong>Original:</strong> <span>${original}</span><br/>
-          <strong>Clicks:</strong> ${clicks}
+        const item = document.createElement("div");
+        item.className = "link-item";
+        item.innerHTML = `
+          <strong>🔗 ${location.origin}/${doc.id}</strong><br>
+          Original: ${data.original}<br>
+          Created: ${new Date(data.created).toLocaleString()}
         `;
-        linksContainer.appendChild(card);
+        container.appendChild(item);
       });
     });
 
-    window.logout = () => {
+    function logout() {
+      const auth = getAuth();
       signOut(auth).then(() => {
-        window.location.href = "index.html";
+        window.location.href = "shorten.html";
       });
-    };
+    }
+
+    window.logout = logout;
   </script>
 </head>
-
 <body>
-  <header>
-    <div>👤 Logged in as <span id="email"></span></div>
-    <button class="logout-btn" onclick="logout()">Logout</button>
-  </header>
-
-  <h1>📊 Your Dashboard</h1>
-  <div class="status" id="status">Checking...</div>
-
-  <section id="links" style="margin-top:2rem;"></section>
-
-  <footer>Dashboard by CutIt.sbs</footer>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+  <h1>🔓 Premium Dashboard</h1>
+  <div id="linkList">
+    Loading your links...
+  </div>
 </body>
 </html>
