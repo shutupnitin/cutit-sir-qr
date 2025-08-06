@@ -173,7 +173,11 @@
     }
 
     document.getElementById("shortenBtn").addEventListener("click", async () => {
-      const url = document.getElementById("longUrl").value.trim();
+      let rawUrl = document.getElementById("longUrl").value.trim();
+if (!/^https?:\/\//i.test(rawUrl)) {
+  rawUrl = 'https://' + rawUrl;
+}
+const url = rawUrl;
       const customAlias = document.getElementById("customAlias").value.trim();
       const isPremium = localStorage.getItem("cutit_isPremium") === "true";
 
