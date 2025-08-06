@@ -311,7 +311,59 @@
       box.scrollTop = box.scrollHeight;
     }
   </script>
+<!-- ✅ Sticky A-Ads with Temporary 2s Close & Disclaimer -->
+<div id="stickyAdContainer" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 99999; text-align: center;">
+  <div style="background: rgba(0,0,0,0.5); padding: 10px 0; border-bottom: 1px solid #333; position: relative;">
+    
+    <!-- ℹ️ Label + Info Icon -->
+    <div style="font-size: 14px; color: #fff;">
+      Advertisement
+      <span id="adInfoIcon" style="cursor: pointer; margin-left: 6px;" title="What is this?">ℹ️</span>
+    </div>
 
+    <!-- ❌ Close Button -->
+    <button id="closeAdBtn" style="position: absolute; top: 8px; right: 12px; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; cursor: pointer; border: none; color: #fff;">
+      ✖
+    </button>
+
+    <!-- 🧲 A-Ads Iframe -->
+    <iframe data-aa="2405889" src="//acceptable.a-ads.com/2405889/?size=Adaptive"
+      style="border:0; padding:0; width: 70%; max-width: 100%; height:auto; overflow:hidden; display: block; margin: 10px auto;">
+    </iframe>
+  </div>
+</div>
+
+<!-- ⚠️ Dark Popup Disclaimer -->
+<div id="adPopup" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.75); z-index: 999999; align-items: center; justify-content: center;">
+  <div style="background: #111; color: #fff; padding: 1.5rem; border-radius: 12px; max-width: 400px; text-align: center; position: relative;">
+    <span id="closeAdPopup" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 1.2rem;">✖</span>
+    <h3 style="margin-bottom: 1rem;">Ad Disclaimer</h3>
+    <p style="font-size: 0.95rem; line-height: 1.5;">
+      These ads are provided by a third-party partner (A-Ads). We are not responsible for their content.
+      Advertising allows us to offer this service for free.
+    </p>
+  </div>
+</div>
+
+<!-- 🔧 Script: Toggle Popup + Hide Ad for 2s -->
+<script>
+  document.getElementById('adInfoIcon').onclick = function () {
+    document.getElementById('adPopup').style.display = 'flex';
+  };
+  document.getElementById('closeAdPopup').onclick = function () {
+    document.getElementById('adPopup').style.display = 'none';
+  };
+
+  // 🔁 Hide ad for 2 seconds
+  document.getElementById('closeAdBtn').onclick = function () {
+    const adContainer = document.getElementById('stickyAdContainer');
+    adContainer.style.display = 'none';
+    setTimeout(() => {
+      adContainer.style.display = 'block';
+    }, 2000); // 2000ms = 2 seconds
+  };
+</script>
 <a id="gameBtn" href="https://cutit.sbs/games">🎮 Play Games</a>
 <script type="text/javascript" src="https://s.skimresources.com/js/289898X1776845.skimlinks.js"></script>
 </body>
