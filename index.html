@@ -160,6 +160,43 @@
     <div class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</div>
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
+  <!-- 🅰️ A-Ads Block with Dark Disclaimer Popup -->
+<div style="width: 100%; margin: 20px auto; background: rgba(0, 0, 0, 0.5); position: relative; z-index: 99998; text-align: center; padding: 10px 0; border-radius: 8px;">
+  <div style="font-size: 14px; color: #fff;">
+    Advertisement 
+    <span id="adInfoIcon" style="cursor: pointer; margin-left: 6px;" title="What is this?">ℹ️</span>
+  </div>
+
+  <!-- 🧲 A-Ads iframe -->
+  <iframe 
+    data-aa='2405888' 
+    src='//acceptable.a-ads.com/2405888/?size=Adaptive'
+    style='border:0; padding:0; width: 70%; max-width: 100%; height:auto; overflow:hidden; display: block; margin: 12px auto;'>
+  </iframe>
+</div>
+
+<!-- ⚠️ Popup Disclaimer -->
+<div id="adPopup" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.75); z-index: 99999; align-items: center; justify-content: center;">
+  <div style="background: #111; color: #fff; padding: 1.5rem; border-radius: 12px; max-width: 400px; text-align: center; position: relative;">
+    <span id="closeAdPopup" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 1.2rem;">✖</span>
+    <h3 style="margin-bottom: 1rem;">Ad Disclaimer</h3>
+    <p style="font-size: 0.95rem; line-height: 1.5;">
+      These ads are provided by a third-party partner (A-Ads). We are not responsible for their content.
+      Advertising allows us to offer this service for free.
+    </p>
+  </div>
+</div>
+
+<!-- 🔧 Script to toggle popup -->
+<script>
+  document.getElementById('adInfoIcon').onclick = function () {
+    document.getElementById('adPopup').style.display = 'flex';
+  };
+  document.getElementById('closeAdPopup').onclick = function () {
+    document.getElementById('adPopup').style.display = 'none';
+  };
+</script>
   <div class="team-message">
   From all of us at CutIt.sbs — built with love, creativity, and chaos 🤪. Whether it’s music, memes, or memories — your code is your voice. Let it echo 🎤✨
 </div>
