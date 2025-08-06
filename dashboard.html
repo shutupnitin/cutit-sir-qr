@@ -1,26 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF‑8"/>
-  <meta name="viewport" content="width=device‑width,initial‑scale=1.0"/>
-  <title>Dashboard – CutIt.sbs</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard | CutIt.sbs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
   <style>
-    body{ font-family:Antonio,sans-serif; background:#f5f5f5; color:#111; padding:2rem; }
-    .container{ max-width:900px;margin:auto; }
-    .dark-mode{ background:#111;color:#eee; }
-    header{ display:flex; justify-content:space-between; margin-bottom:2rem; }
-    .btn{ padding:0.5rem 1rem;border:none;border-radius:8px;cursor:pointer;margin-left:0.5rem; }
-    .btn-primary{ background:#000;color:#fff; }
-    .btn-secondary{ background:#007aff;color:#fff; }
-    .btn-danger{ background:#ff3b30;color:#fff; }
-    .section{ background:#fff;border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-bottom:2rem; }
-    .dark-mode .section{ background:#222;color:#eee; }
-    .btn-group{ display:flex;gap:1rem;flex-wrap:wrap; margin-top:1rem; }
-    footer{ text-align:center; opacity:0.6; margin-top:2rem; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f8f9fb;
+      color: #333;
+    }
+    header {
+      background: #111;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      font-size: 1.2rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    }
+    .status {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: #eef;
+      border-left: 4px solid #00aaff;
+      border-radius: 6px;
+    }
+    .links {
+      margin-top: 2rem;
+    }
+    .link-box {
+      background: #f0f0f0;
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      word-break: break-all;
+    }
+    input, button {
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    button {
+      background: #111;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    button:hover {
+      background: #333;
+    }
+    .logout-btn, .support-btn {
+      background: #ff5252;
+      border: none;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+    .top-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+      margin-top: 1rem;
+    }
   </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome to CutIt Dashboard</h1>
+    <div class="top-buttons">
+      <button class="support-btn" onclick="window.location.href='mailto:support@cutit.sbs'">Contact Support</button>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="status" id="status">Checking user...</div>
+
+    <h2>Create New Short Link</h2>
+    <input type="text" id="longUrl" placeholder="Enter long URL (e.g., https://example.com)" />
+    <button onclick="createShortLink()">Shorten</button>
+
+    <div class="links">
+      <h2>Your Short Links</h2>
+      <div id="linksContainer">Loading...</div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
@@ -30,67 +118,79 @@
       messagingSenderId: "958863508757",
       appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
     };
-    const app = initializeApp(firebaseConfig), auth = getAuth(app);
 
-    window.toggleDarkMode = () => document.body.classList.toggle("dark-mode");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    window.logout = async () => {
-      await signOut(auth);
-      localStorage.removeItem("cutit_isPremium");
-      window.location.href = "index.html";
-    };
+    const statusDiv = document.getElementById("status");
+    const linksContainer = document.getElementById("linksContainer");
 
-    onAuthStateChanged(auth, user => {
-      if (!user) return window.location.href = "login.html";
-      document.getElementById("username").textContent = (user.displayName || user.email);
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "/login.html";
+        return;
+      }
+
+      statusDiv.textContent = "Logged in as: " + user.email;
+
+      const premiumDoc = await getDoc(doc(db, "premium_users", user.uid));
+      if (premiumDoc.exists()) {
+        statusDiv.textContent += " ✅ Premium User";
+      } else {
+        statusDiv.textContent += " ⚠️ Free User - Upgrade for more features!";
+      }
+
+      loadUserLinks(user.uid);
     });
+
+    async function loadUserLinks(uid) {
+      linksContainer.innerHTML = "";
+      const q = query(collection(db, "shortlinks"), where("uid", "==", uid));
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        linksContainer.innerHTML = "<p>No links created yet.</p>";
+        return;
+      }
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const linkDiv = document.createElement("div");
+        linkDiv.className = "link-box";
+        linkDiv.innerHTML = `
+          <strong>cutit.sbs/${doc.id}</strong><br>
+          ➤ ${data.original}
+        `;
+        linksContainer.appendChild(linkDiv);
+      });
+    }
+
+    async function createShortLink() {
+      const longUrl = document.getElementById("longUrl").value.trim();
+      const user = auth.currentUser;
+      if (!longUrl || !user) return;
+
+      try {
+        const docRef = await addDoc(collection(db, "shortlinks"), {
+          original: longUrl,
+          uid: user.uid,
+          created: serverTimestamp(),
+          custom: false
+        });
+
+        alert(`Short link created: cutit.sbs/${docRef.id}`);
+        document.getElementById("longUrl").value = "";
+        loadUserLinks(user.uid);
+      } catch (e) {
+        alert("Failed to create short link.");
+        console.error(e);
+      }
+    }
+
+    function logout() {
+      signOut(auth).then(() => window.location.href = "/login.html");
+    }
   </script>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <div>📊 Dashboard</div>
-      <div>
-        <button class="btn" onclick="toggleDarkMode()">🌗 Theme</button>
-        <button class="btn btn-danger" onclick="logout()">Logout</button>
-      </div>
-    </header>
-
-    <h1>Welcome, <span id="username">User</span> 🎉</h1>
-
-    <div class="section">
-      <h2>🔗 Manage Your Links</h2>
-      <ul>
-        <li>Create and edit custom short URLs</li>
-        <li>Set expiration or link limits</li>
-        <li>Enable/disable or delete links</li>
-      </ul>
-      <div class="btn-group">
-        <button class="btn-primary" onclick="alert('Link Manager coming soon')">Open Link Manager</button>
-        <button class="btn-secondary" onclick="alert('Analytics coming soon')">View Analytics</button>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>📈 Analytics & Reports</h2>
-      <ul>
-        <li>Track clicks & sources</li>
-        <li>Export CSV / PDF</li>
-      </ul>
-      <div class="btn-group">
-        <button class="btn-secondary" onclick="alert('Analytics panel coming soon')">Launch Analytics</button>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>📞 Support</h2>
-      <p>Need help or have feedback? Reach out anytime!</p>
-      <div class="btn-group">
-        <button class="btn-secondary" onclick="window.location.href='mailto:support@cutit.sbs?subject=Premium%20Support'">📧 Email Support</button>
-      </div>
-    </div>
-
-    <footer>© 2025 CutIt.sbs</footer>
-  </div>
 </body>
 </html>
