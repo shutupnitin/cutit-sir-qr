@@ -175,7 +175,7 @@
 
   <div class="shortener-box">
     <input id="longUrl" placeholder="Paste your long URL here" />
-    <input id="customAlias" placeholder="(Optional) Custom short link e.g. myname" />
+    <input id="customAlias" placeholder="(Optional) Custom short link e.g. myname" style="margin-bottom: 0.8rem;" />
     <button onclick="pasteFromClipboard()">📋 Paste from Clipboard</button>
     <button id="shortenBtn">🚀 Generate Short Link</button>
     <div id="resultBox"></div>
@@ -227,7 +227,6 @@
       const isPremium = localStorage.getItem("cutit_isPremium") === "true";
 
       if (!url) return alert("Please enter a URL.");
-
       const shortID = customAlias || Math.random().toString(36).substring(2, 8);
 
       if (customAlias && !isPremium) {
@@ -268,6 +267,7 @@
         handler: async function (response) {
           alert("✅ Payment Successful! Premium features unlocked.");
           localStorage.setItem("cutit_isPremium", "true");
+
           const db = window.db;
           const { collection, doc, setDoc } = window.firestoreHelpers;
           try {
