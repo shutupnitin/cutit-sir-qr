@@ -4,47 +4,118 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Shorten URLs ✂️ CutIt.sbs</title>
-  <meta name="description" content="CutIt.sbs - Instantly shorten, customize, and manage your URLs." />
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
+  <meta name="description" content="CutIt.sbs - Instantly shorten, customize, and manage your URLs. Free and powerful URL shortener with premium features like analytics and custom domains." />
+  <meta name="keywords" content="URL shortener, cutit, short link, shorten url, free url shortener, branded links, custom links, analytics, link tracker" />
+  <meta name="author" content="CutIt.sbs" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://cutit.sbs/" />
+  <meta property="og:title" content="CutIt.sbs - Smart URL Shortener" />
+  <meta property="og:description" content="Create sleek, branded links in seconds. Free & Premium URL shortener with analytics, custom links and more." />
+  <meta property="og:url" content="https://cutit.sbs/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://cutit.sbs/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CutIt.sbs - Smart URL Shortener" />
+  <meta name="twitter:description" content="Shorten your links with style. Enjoy powerful premium tools with a one-time ₹199 plan." />
+  <meta name="twitter:image" content="https://cutit.sbs/twitter-image.png" />
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
     body { background: #f9f9f9; color: #111; text-align: center; padding: 2rem; }
     header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
     .logo { font-size: 2rem; }
-    .login-btn, .toggle-btn {
+    .toggle-btn, .login-btn {
       padding: 0.5rem 1rem;
-      background: white;
       border: 1px solid #aaa;
+      background: white;
       border-radius: 8px;
       cursor: pointer;
       margin-left: 0.5rem;
     }
-    #user-info { font-size: 0.9rem; margin-top: 0.5rem; color: green; }
-    .dark-mode { background: #111; color: #f9f9f9; }
-    .dark-mode .shortener-box,
-    .dark-mode .feature-card {
-      background: #222;
-      color: #fff;
+    h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+    .tagline { margin-bottom: 2rem; color: #666; font-size: 1.1rem; }
+    .shortener-box {
+      background: #fff; border: 2px solid #000;
+      padding: 2rem; border-radius: 12px;
+      max-width: 500px; margin: auto;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    .shortener-box input {
+      width: 100%; padding: 1rem; font-size: 1rem;
+      border-radius: 8px; border: 2px solid #000;
+      margin-bottom: 0.8rem;
+    }
+    .shortener-box button {
+      width: 100%; padding: 0.8rem; font-size: 1rem;
+      border-radius: 8px; background: #000; color: #fff;
+      cursor: pointer; transition: background 0.3s;
+      margin-bottom: 1rem;
+    }
+    .shortener-box button:hover { background: #222; }
+    #resultBox { margin-top: 1rem; font-size: 1.1rem; word-break: break-word; }
+    .features {
+      margin-top: 3rem; display: flex;
+      flex-wrap: wrap; justify-content: center; gap: 2rem;
+    }
+    .feature-card {
+      background: #fff; border: 2px dashed #000;
+      padding: 1.5rem; border-radius: 12px;
+      width: 280px; text-align: left;
+    }
+    .feature-card h3 { font-size: 1.3rem; margin-bottom: 0.6rem; }
+    .feature-card ul { padding-left: 1rem; }
+    .feature-card li { margin-bottom: 0.4rem; }
+    footer { margin-top: 4rem; font-size: 0.9rem; opacity: 0.6; }
+    .dark-mode {
+      background: #111; color: #f9f9f9;
+    }
+    .dark-mode .shortener-box {
+      background: #222; color: #fff; border-color: #fff;
+    }
+    .dark-mode input, .dark-mode button {
       border-color: #fff;
     }
+    .dark-mode .feature-card {
+      background: #333; border-color: #fff; color: #eee;
+    }
   </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
+      authDomain: "cutitshortener.firebaseapp.com",
+      projectId: "cutitshortener",
+      storageBucket: "cutitshortener.appspot.com",
+      messagingSenderId: "958863508757",
+      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db;
+    window.firestoreHelpers = { collection, doc, setDoc };
+  </script>
 </head>
+
 <body>
   <header>
     <div class="logo">CutIt.sbs</div>
     <div>
-      <button class="login-btn" id="loginButton">🔐 Login</button>
+      <button class="login-btn" onclick="window.location.href='login.html'">🔐 Login</button>
       <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
     </div>
   </header>
-  <div id="user-info"></div>
-    <h1>Shorten Your Long URLs</h1>
+
+  <h1>Shorten Your Long URLs</h1>
   <p class="tagline">Create sleek, branded links in seconds</p>
 
   <div class="shortener-box">
     <input id="longUrl" placeholder="Paste your long URL here" />
-    <input id="customAlias" placeholder="(Optional) Custom short link e.g. myname" />
+    <input id="customAlias" placeholder="(Optional) Custom short link e.g. myname" style="margin-bottom: 0.8rem;" />
     <button onclick="pasteFromClipboard()">📋 Paste from Clipboard</button>
     <button id="shortenBtn">🚀 Generate Short Link</button>
     <div id="resultBox"></div>
@@ -60,13 +131,13 @@
         <li>100% free forever</li>
       </ul>
     </div>
-
     <div class="feature-card">
       <h3>💎 Premium Features</h3>
       <ul>
         <li>Custom short links</li>
-        <li>Link analytics & tracking</li>
-        <li>Dashboard access</li>
+        <li>Analytics & link tracking</li>
+        <li>Link expiration control</li>
+        <li>Dashboard & insights</li>
       </ul>
       <button onclick="openRazorpay()" style="margin-top:1rem; width:100%; padding:0.8rem; background:#007aff; color:white; border:none; border-radius:8px; font-size:1rem; cursor:pointer;">
         🔓 Unlock Premium – ₹199 Lifetime
@@ -78,56 +149,18 @@
     </div>
   </div>
 
-  <footer style="margin-top:3rem; font-size:0.9rem; opacity:0.7;">
-    Built with ❤️ by CutIt.sbs
-  </footer>
-    <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  <footer>Created with rebellious love by CutIt.sbs</footer>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
-      authDomain: "cutitshortener.firebaseapp.com",
-      projectId: "cutitshortener",
-      storageBucket: "cutitshortener.appspot.com",
-      messagingSenderId: "958863508757",
-      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-
-    window.db = db;
-    window.firestoreHelpers = { collection, doc, setDoc };
-
-    // Show login or logout depending on user
-    onAuthStateChanged(auth, user => {
-      const loginBtn = document.querySelector(".login-btn");
-      if (user) {
-        loginBtn.textContent = "👤 Dashboard";
-        loginBtn.onclick = () => window.location.href = "dashboard.html";
-      } else {
-        loginBtn.textContent = "🔐 Login";
-        loginBtn.onclick = () => window.location.href = "login.html";
-      }
-    });
-
-    // Premium UI unlock
-    if (localStorage.getItem("cutit_isPremium") === "true") {
-      window.addEventListener("DOMContentLoaded", () => {
-        document.querySelectorAll(".premium-only").forEach(el => el.style.display = "block");
-      });
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
     }
 
-    // Clipboard paste
-    window.pasteFromClipboard = async () => {
+    async function pasteFromClipboard() {
       const text = await navigator.clipboard.readText();
       document.getElementById("longUrl").value = text;
-    };
+    }
 
-    // Generate short link
     document.getElementById("shortenBtn").addEventListener("click", async () => {
       const url = document.getElementById("longUrl").value.trim();
       const customAlias = document.getElementById("customAlias").value.trim();
@@ -137,11 +170,13 @@
       const shortID = customAlias || Math.random().toString(36).substring(2, 8);
 
       if (customAlias && !isPremium) {
-        alert("🔒 Custom short links are premium-only. Unlock for ₹199 lifetime.");
+        alert("🔒 Custom short links are available only for premium users.\nPlease unlock premium for ₹199 lifetime.");
         return;
       }
 
+      const db = window.db;
       const { collection, doc, setDoc } = window.firestoreHelpers;
+
       try {
         const docRef = doc(collection(db, "shortlinks"), shortID);
         await setDoc(docRef, {
@@ -156,13 +191,12 @@
           <br/><button onclick="navigator.clipboard.writeText('${shortUrl}')">📋 Copy</button>
         `;
       } catch (e) {
-        alert("❌ This custom link might already exist.");
-        console.error(e);
+        console.error("Error:", e);
+        alert("❌ That custom link might already exist. Try a different one.");
       }
     });
 
-    // Razorpay payment
-    window.openRazorpay = () => {
+    function openRazorpay() {
       const options = {
         key: "rzp_live_AJEAZ1WJHOpOOQ",
         amount: 19900,
@@ -171,9 +205,11 @@
         description: "Lifetime Premium Access",
         image: "https://cutit.sbs/logo.png",
         handler: async function (response) {
-          alert("✅ Payment successful! Premium features unlocked.");
+          alert("✅ Payment Successful! Premium features unlocked.");
           localStorage.setItem("cutit_isPremium", "true");
 
+          const db = window.db;
+          const { collection, doc, setDoc } = window.firestoreHelpers;
           try {
             await setDoc(doc(collection(db, "premium_users"), response.razorpay_payment_id), {
               isPremium: true,
@@ -182,17 +218,22 @@
           } catch (e) {
             console.error("Error saving premium status:", e);
           }
-
           unlockPremiumUI();
         },
         theme: { color: "#000000" }
       };
       const rzp = new Razorpay(options);
       rzp.open();
-    };
+    }
 
-    // UI change after premium
     function unlockPremiumUI() {
-      document.querySelectorAll(".premium-only").forEach(el => el.style.display = "block");
+      const premiumElements = document.querySelectorAll(".premium-only");
+      premiumElements.forEach(el => el.style.display = "block");
+    }
+
+    if (localStorage.getItem("cutit_isPremium") === "true") {
+      window.addEventListener("DOMContentLoaded", unlockPremiumUI);
     }
   </script>
+</body>
+</html>
