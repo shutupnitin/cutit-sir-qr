@@ -215,7 +215,11 @@
     });
 
     async function createLink() {
-      const original = document.getElementById("originalUrl").value;
+      let rawUrl = document.getElementById("originalUrl").value.trim();
+if (!/^https?:\/\//i.test(rawUrl)) {
+  rawUrl = 'https://' + rawUrl;
+}
+const original = rawUrl;
       const custom = document.getElementById("customAlias").value.trim();
       const expiration = document.getElementById("expiration").value;
       if (!original) return alert("Enter a valid URL");
