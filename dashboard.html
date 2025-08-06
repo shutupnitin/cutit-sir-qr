@@ -1,155 +1,154 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard - CutIt.sbs</title>
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <title>Dashboard – CutIt.sbs Premium</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
+    body { background: #f5f5f5; color: #111; padding: 2rem; }
+    .container { max-width: 900px; margin: auto; }
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 2rem;
     }
-    body {
-      background: #f0f2f5;
-      color: #111;
-      padding: 2rem;
-      text-align: center;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-    }
-    .status {
-      margin-top: 1rem;
-      font-size: 1.1rem;
-      padding: 0.8rem;
+    .logo { font-size: 2rem; font-weight: bold; }
+    .actions button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: #000;
+      color: white;
       border-radius: 8px;
-      background: #f1f1f1;
-      margin-bottom: 1rem;
+      cursor: pointer;
+      margin-left: 0.5rem;
     }
-    button {
-      padding: 0.8rem 1.2rem;
+    h1 { font-size: 2rem; margin-bottom: 1rem; }
+    .section {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+    .section h2 {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+    .section ul { padding-left: 1rem; }
+    .section li { margin-bottom: 0.5rem; }
+    .dark-mode {
+      background: #111;
+      color: #f5f5f5;
+    }
+    .dark-mode .section {
+      background: #222;
+      color: #eee;
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0.6;
+      margin-top: 3rem;
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .btn-group button {
+      flex: 1;
+      padding: 0.8rem;
       font-size: 1rem;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      margin: 0.5rem;
     }
-    .premium-btn {
-      background-color: #007bff;
+    .btn-primary {
+      background: #000;
       color: white;
     }
-    .logout-btn {
-      background-color: #dc3545;
+    .btn-secondary {
+      background: #007aff;
       color: white;
     }
-    .premium-status {
-      font-size: 1rem;
-      margin-top: 1rem;
+    .btn-danger {
+      background: #ff3b30;
+      color: white;
     }
   </style>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
-      authDomain: "cutitshortener.firebaseapp.com",
-      projectId: "cutitshortener",
-      storageBucket: "cutitshortener.appspot.com",
-      messagingSenderId: "958863508757",
-      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const statusBox = document.getElementById("statusBox");
-    const planBox = document.getElementById("planBox");
-
-    let currentUser = null;
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        document.getElementById("userEmail").innerText = user.email;
-
-        const docRef = doc(db, "premium_users", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().isPremium) {
-          document.getElementById("planBox").innerText = "💎 You have Premium Access!";
-        } else {
-          document.getElementById("planBox").innerText = "🔓 You are on Free Plan.";
-        }
-      } else {
-        window.location.href = "login.html";
-      }
-    });
-
-    window.buyPremium = () => {
-      if (!currentUser) return alert("Please log in to buy premium.");
-
-      const options = {
-        key: "rzp_live_AJEAZ1WJHOpOOQ",
-        amount: 19900,
-        currency: "INR",
-        name: "CutIt.sbs",
-        description: "Lifetime Premium Access",
-        image: "https://cutit.sbs/logo.png",
-        handler: async function (response) {
-          try {
-            await setDoc(doc(db, "premium_users", currentUser.uid), {
-              isPremium: true,
-              purchasedAt: new Date().toISOString(),
-              paymentId: response.razorpay_payment_id
-            });
-            alert("✅ Premium Unlocked!");
-            document.getElementById("planBox").innerText = "💎 You have Premium Access!";
-          } catch (e) {
-            console.error(e);
-            alert("❌ Failed to save premium status.");
-          }
-        },
-        theme: {
-          color: "#000"
-        }
-      };
-      const rzp = new Razorpay(options);
-      rzp.open();
-    };
-
-    window.logout = () => {
-      signOut(auth).then(() => {
-        window.location.href = "login.html";
-      });
-    };
-  </script>
 </head>
-
 <body>
   <div class="container">
-    <h1>👋 Welcome to Your Dashboard</h1>
-    <div class="status">
-      Signed in as <strong id="userEmail">...</strong>
+    <header>
+      <div class="logo">📊 Dashboard</div>
+      <div class="actions">
+        <button onclick="toggleDarkMode()">🌗 Theme</button>
+        <button onclick="logout()">🚪 Logout</button>
+      </div>
+    </header>
+
+    <h1>Welcome, <span id="username">Premium User</span> 🎉</h1>
+
+    <div class="section">
+      <h2>🔗 Manage Your Links</h2>
+      <ul>
+        <li>Create and edit custom short URLs</li>
+        <li>Set expiration dates and limits</li>
+        <li>Enable/disable links</li>
+        <li>Delete links anytime</li>
+      </ul>
+      <div class="btn-group">
+        <button class="btn-primary" onclick="alert('Coming soon: Link Manager')">Open Link Manager</button>
+        <button class="btn-secondary" onclick="alert('Analytics coming soon')">View Link Analytics</button>
+      </div>
     </div>
-    <div id="planBox" class="premium-status">Checking your plan...</div>
-    <button class="premium-btn" onclick="buyPremium()">Unlock Premium – ₹199</button>
-    <button class="logout-btn" onclick="logout()">Logout</button>
+
+    <div class="section">
+      <h2>📈 Analytics & Insights</h2>
+      <ul>
+        <li>Track number of clicks</li>
+        <li>See traffic sources & devices</li>
+        <li>Export reports (PDF/CSV)</li>
+      </ul>
+      <div class="btn-group">
+        <button class="btn-secondary" onclick="alert('Analytics dashboard coming soon')">Launch Analytics</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📞 Support</h2>
+      <p>If you have any issues or feedback, we’re here to help!</p>
+      <div class="btn-group">
+        <button class="btn-secondary" onclick="window.location.href='mailto:vibe@cutit.sbs?subject=Premium%20Support&body=Hi%20CutIt%20Team,%0A%0AI need help with...'">📧 Email Support</button>
+      </div>
+    </div>
+
+    <div class="footer">
+      © 2025 CutIt.sbs — Premium User Panel
+    </div>
   </div>
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    function logout() {
+      localStorage.removeItem("cutit_userId");
+      location.href = "shorten.html";
+    }
+
+    // Load username from localStorage
+    const userId = localStorage.getItem("cutit_userId");
+    if (userId) {
+      document.getElementById("username").textContent = userId;
+    } else {
+      alert("You are not logged in. Redirecting...");
+      window.location.href = "login.html";
+    }
+  </script>
 </body>
 </html>
