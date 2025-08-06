@@ -311,31 +311,89 @@
       box.scrollTop = box.scrollHeight;
     }
   </script>
-<!-- ✅ Sticky A-Ads with Temporary 2s Close & Disclaimer -->
-<div id="stickyAdContainer" style="position: fixed; top: 0; left: 0; width: 100%; z-index: 99999; text-align: center;">
-  <div style="background: rgba(0,0,0,0.5); padding: 10px 0; border-bottom: 1px solid #333; position: relative;">
-    
-    <!-- ℹ️ Label + Info Icon -->
-    <div style="font-size: 14px; color: #fff;">
-      Advertisement
-      <span id="adInfoIcon" style="cursor: pointer; margin-left: 6px;" title="What is this?">ℹ️</span>
-    </div>
+<!-- ✅ Sticky A-Ads Top Banner (Closable, 50px height) -->
+<style>
+  #aads-sticky-toggle {
+    display: none;
+  }
 
-    <!-- ❌ Close Button -->
-    <button id="closeAdBtn" style="position: absolute; top: 8px; right: 12px; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px; cursor: pointer; border: none; color: #fff;">
-      ✖
-    </button>
+  #aads-sticky-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px; /* Google-style height */
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99999;
+    text-align: center;
+    padding: 0;
+    line-height: 0;
+  }
 
-    <!-- 🧲 A-Ads Iframe -->
-    <iframe data-aa="2405889" src="//acceptable.a-ads.com/2405889/?size=Adaptive"
-      style="border:0; padding:0; width: 70%; max-width: 100%; height:auto; overflow:hidden; display: block; margin: 10px auto;">
-    </iframe>
+  #aads-sticky-toggle:checked ~ #aads-sticky-banner {
+    display: none;
+  }
+
+  .aads-close-label {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 100000;
+  }
+
+  #aads-sticky-banner iframe {
+    border: 0;
+    width: 100%;
+    height: 50px;
+    max-width: 100%;
+    overflow: hidden;
+    display: block;
+    margin: 0 auto;
+  }
+</style>
+
+<!-- ❌ Hidden Checkbox to Toggle Visibility -->
+<input type="checkbox" id="aads-sticky-toggle" hidden />
+
+<!-- 📌 Sticky Banner -->
+<div id="aads-sticky-banner">
+  <!-- ❌ Close Button -->
+  <label class="aads-close-label" for="aads-sticky-toggle">
+    <svg fill="#ffffff" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 490 490">
+      <polygon points="456.851,0 245,212.564 33.149,0 0.708,32.337 212.669,245.004 0.708,457.678 33.149,490 245,277.443 456.851,490 489.292,457.678 277.331,245.004 489.292,32.337"/>
+    </svg>
+  </label>
+
+  <!-- 🧲 A-Ads Iframe -->
+  <iframe 
+    data-aa="2405889" 
+    src="//acceptable.a-ads.com/2405889/?size=Adaptive">
+  </iframe>
+</div>
+<a id="gameBtn" href="https://cutit.sbs/games">🎮 Play Games</a>
+<script type="text/javascript" src="https://s.skimresources.com/js/289898X1776845.skimlinks.js"></script>
+  <!-- 🅰️ A-Ads Block with Dark Disclaimer Popup -->
+<div style="width: 100%; margin: 20px auto; background: rgba(0, 0, 0, 0.5); position: relative; z-index: 99998; text-align: center; padding: 10px 0; border-radius: 8px;">
+  <div style="font-size: 14px; color: #fff;">
+    Advertisement 
+    <span id="adInfoIcon" style="cursor: pointer; margin-left: 6px;" title="What is this?">ℹ️</span>
   </div>
+
+  <!-- 🧲 A-Ads iframe -->
+  <iframe 
+    data-aa='2405888' 
+    src='//acceptable.a-ads.com/2405888/?size=Adaptive'
+    style='border:0; padding:0; width: 70%; max-width: 100%; height:auto; overflow:hidden; display: block; margin: 12px auto;'>
+  </iframe>
 </div>
 
-<!-- ⚠️ Dark Popup Disclaimer -->
+<!-- ⚠️ Popup Disclaimer -->
 <div id="adPopup" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.75); z-index: 999999; align-items: center; justify-content: center;">
+  background: rgba(0,0,0,0.75); z-index: 99999; align-items: center; justify-content: center;">
   <div style="background: #111; color: #fff; padding: 1.5rem; border-radius: 12px; max-width: 400px; text-align: center; position: relative;">
     <span id="closeAdPopup" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 1.2rem;">✖</span>
     <h3 style="margin-bottom: 1rem;">Ad Disclaimer</h3>
@@ -346,7 +404,7 @@
   </div>
 </div>
 
-<!-- 🔧 Script: Toggle Popup + Hide Ad for 2s -->
+<!-- 🔧 Script to toggle popup -->
 <script>
   document.getElementById('adInfoIcon').onclick = function () {
     document.getElementById('adPopup').style.display = 'flex';
@@ -354,17 +412,6 @@
   document.getElementById('closeAdPopup').onclick = function () {
     document.getElementById('adPopup').style.display = 'none';
   };
-
-  // 🔁 Hide ad for 2 seconds
-  document.getElementById('closeAdBtn').onclick = function () {
-    const adContainer = document.getElementById('stickyAdContainer');
-    adContainer.style.display = 'none';
-    setTimeout(() => {
-      adContainer.style.display = 'block';
-    }, 2000); // 2000ms = 2 seconds
-  };
 </script>
-<a id="gameBtn" href="https://cutit.sbs/games">🎮 Play Games</a>
-<script type="text/javascript" src="https://s.skimresources.com/js/289898X1776845.skimlinks.js"></script>
 </body>
 </html>
