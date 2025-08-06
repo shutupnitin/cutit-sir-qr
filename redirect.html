@@ -25,7 +25,7 @@
   <h2>Redirecting...</h2>
   <p id="status"></p>
 
-  <!-- Firebase NON-module SDKs -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <script>
@@ -42,7 +42,7 @@
     const db = firebase.firestore();
 
     async function redirect() {
-      const shortID = window.location.pathname.slice(1); // get /abc123
+      const shortID = window.location.pathname.replace("/", "").trim();
       document.getElementById("status").textContent = `Looking for ID: ${shortID}`;
 
       try {
@@ -53,7 +53,8 @@
           const originalURL = docSnap.data().original;
           window.location.href = originalURL;
         } else {
-          document.getElementById("status").innerHTML = "❌ Link not found";
+          // Redirect to custom 404 page
+          window.location.href = "/404.html";
         }
       } catch (err) {
         console.error(err);
