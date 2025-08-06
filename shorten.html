@@ -166,7 +166,7 @@
 
 <body>
   <header>
-    <div class="logo">✂️ CutIt.sbs</div>
+    <div class="logo">CutIt.sbs</div>
     <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
   </header>
 
@@ -175,6 +175,7 @@
 
   <div class="shortener-box">
     <input id="longUrl" placeholder="Paste your long URL here" />
+<input id="customAlias" placeholder="(Optional) Custom short link e.g. myname" style="margin-bottom: 0.8rem;" />
     <button onclick="pasteFromClipboard()">📋 Paste from Clipboard</button>
     <button id="shortenBtn">🚀 Generate Short Link</button>
     <div id="resultBox"></div>
@@ -220,19 +221,44 @@
       document.getElementById("longUrl").value = text;
     }
 
-    document.getElementById("shortenBtn").addEventListener("click", async () => {
-      const url = document.getElementById("longUrl").value.trim();
-      if (!url) return alert("Please enter a URL.");
+    
+    <script>
+document.getElementById("shortenBtn").addEventListener("click", async () => {
+  const url = document.getElementById("longUrl").value.trim();
+  const customAlias = document.getElementById("customAlias").value.trim();
+  const isPremium = localStorage.getItem("cutit_isPremium") === "true";
 
-      const shortID = Math.random().toString(36).substring(2, 8);
-      const db = window.db;
-      const { collection, doc, setDoc } = window.firestoreHelpers;
+  if (!url) return alert("Please enter a URL.");
 
-      try {
-        await setDoc(doc(collection(db, "shortlinks"), shortID), {
-          original: url,
-          created: new Date().toISOString()
-        });
+  const shortID = customAlias || Math.random().toString(36).substring(2, 8);
+
+  if (customAlias && !isPremium) {
+    alert("🔒 Custom short links are available only for premium users.\nPlease unlock premium for ₹199 lifetime.");
+    return;
+  }
+
+  const db = window.db;
+  const { collection, doc, setDoc } = window.firestoreHelpers;
+
+  try {
+    const docRef = doc(collection(db, "shortlinks"), shortID);
+    await setDoc(docRef, {
+      original: url,
+      created: new Date().toISOString(),
+      custom: !!customAlias
+    });
+
+    const shortUrl = `https://cutit.sbs/${shortID}`;
+    document.getElementById("resultBox").innerHTML = `
+      ✅ Short Link: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+      <br/><button onclick="navigator.clipboard.writeText('${shortUrl}')">📋 Copy</button>
+    `;
+  } catch (e) {
+    console.error("Error:", e);
+    alert("❌ That custom link might already exist. Try a different one.");
+  }
+});
+</script>
 
         const shortUrl = `https://cutit.sbs/${shortID}`;
         document.getElementById("resultBox").innerHTML = `
