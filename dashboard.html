@@ -1,20 +1,18 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-70PVFGLP9G');
-</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-70PVFGLP9G');
+  </script>
   <meta charset="UTF-8" />
   <title>Dashboard | CutIt</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <style>
@@ -34,7 +32,7 @@
       margin: 0;
       background: var(--bg);
       color: var(--fg);
-      font-family: 'Inter', sans-serif;
+      font-family: 'Antonio', sans-serif;
       transition: background 0.3s, color 0.3s;
     }
     header {
@@ -46,8 +44,8 @@
       background: var(--card);
     }
     .logo {
-      font-weight: 600;
-      font-size: 1.4rem;
+      font-weight: 700;
+      font-size: 1.6rem;
     }
     .premium {
       background: gold;
@@ -68,6 +66,7 @@
       background: var(--accent);
       color: white;
       cursor: pointer;
+      font-family: 'Antonio', sans-serif;
     }
     main {
       max-width: 900px;
@@ -76,20 +75,21 @@
     }
     .card {
       background: var(--card);
-      padding: 1rem;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      padding: 1.5rem;
+      border-radius: 14px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
     }
     input, select {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border: 1px solid #ccc;
-      margin-top: 8px;
-      margin-bottom: 12px;
-      border-radius: 6px;
+      margin-top: 10px;
+      margin-bottom: 14px;
+      border-radius: 8px;
       background: var(--bg);
       color: var(--fg);
+      font-family: 'Antonio', sans-serif;
     }
     table {
       width: 100%;
@@ -99,6 +99,7 @@
     th, td {
       padding: 10px;
       text-align: left;
+      font-family: 'Antonio', sans-serif;
     }
     th {
       background: var(--bg);
@@ -110,14 +111,15 @@
       background: #2d2f37;
     }
     .btn-sm {
-      padding: 4px 10px;
+      padding: 6px 12px;
       font-size: 0.8rem;
       margin-right: 4px;
       background: var(--accent);
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
+      font-family: 'Antonio', sans-serif;
     }
     .dark-toggle {
       cursor: pointer;
@@ -318,14 +320,11 @@
       document.documentElement.setAttribute("data-theme", next);
     }
 
-    // Import/Export
     function exportCSV() {
-      // Placeholder: can be added next
       alert("Coming soon: export feature");
     }
 
     function importCSV(event) {
-      // Placeholder: can be added next
       alert("Coming soon: import feature");
     }
   </script>
