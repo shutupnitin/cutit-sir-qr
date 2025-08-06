@@ -1,122 +1,183 @@
-<!-- Complete CutIt.sbs-Style Dashboard: All Features Enabled -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard • CutIt.sbs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <title>Dashboard | CutIt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <style>
     :root {
-      --bg-light: #fff;
-      --bg-dark: #111;
-      --text-light: #111;
-      --text-dark: #fff;
-      --accent: #ffcc00;
-      --gray: #888;
+      --bg: #f9fafb;
+      --fg: #111;
+      --card: #fff;
+      --accent: #6366f1;
+    }
+    [data-theme="dark"] {
+      --bg: #111827;
+      --fg: #f9fafb;
+      --card: #1f2937;
+      --accent: #818cf8;
     }
     body {
       margin: 0;
+      background: var(--bg);
+      color: var(--fg);
       font-family: 'Inter', sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text-light);
-      transition: 0.3s ease;
-    }
-    body.dark {
-      background-color: var(--bg-dark);
-      color: var(--text-dark);
+      transition: background 0.3s, color 0.3s;
     }
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 1rem 2rem;
-      border-bottom: 2px solid #eee;
-      font-family: 'Archivo Black', sans-serif;
+      border-bottom: 1px solid #ddd;
+      background: var(--card);
     }
-    .premium-badge {
+    .logo {
+      font-weight: 600;
+      font-size: 1.4rem;
+    }
+    .premium {
       background: gold;
       padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 14px;
+      border-radius: 6px;
+      font-size: 0.75rem;
       margin-left: 10px;
+      color: black;
     }
-    #links {
-      padding: 2rem;
+    .controls {
+      display: flex;
+      gap: 10px;
     }
-    .link-card {
-      background: #f9f9f9;
+    .controls button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+    }
+    main {
+      max-width: 900px;
+      margin: 2rem auto;
       padding: 1rem;
+    }
+    .card {
+      background: var(--card);
+      padding: 1rem;
+      border-radius: 10px;
       margin-bottom: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
-    body.dark .link-card {
-      background: #222;
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--fg);
     }
-    button {
-      background: black;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background: var(--bg);
+    }
+    tr:nth-child(even) {
+      background: #f3f4f6;
+    }
+    [data-theme="dark"] tr:nth-child(even) {
+      background: #2d2f37;
+    }
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      margin-right: 4px;
+      background: var(--accent);
       color: white;
       border: none;
-      padding: 10px 16px;
-      border-radius: 10px;
-      font-weight: bold;
+      border-radius: 4px;
       cursor: pointer;
-      font-family: 'Inter', sans-serif;
     }
-    input {
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      width: 80%;
-    }
-    #footer {
-      text-align: center;
-      padding: 2rem;
-      font-size: 14px;
-      color: var(--gray);
-    }
-    #darkToggle {
-      background: var(--accent);
-      border-radius: 8px;
+    .dark-toggle {
+      cursor: pointer;
+      font-size: 1.2rem;
     }
   </style>
 </head>
 <body>
   <header>
-    <div>
-      CutIt.sbs Dashboard
-      <span id="premiumStatus"></span>
-    </div>
-    <div>
-      <button id="darkToggle">🌙 Dark Mode</button>
+    <div class="logo">CutIt <span class="premium" id="premiumBadge" style="display:none;">Premium</span></div>
+    <div class="controls">
+      <button onclick="logout()">Logout</button>
+      <div class="dark-toggle" onclick="toggleTheme()">🌓</div>
     </div>
   </header>
 
-  <main id="links">
-    <h2>Your Short Links</h2>
-    <input id="newUrlInput" type="text" placeholder="Paste your long URL..." />
-    <button onclick="createShortLink()">Shorten</button>
+  <main>
+    <div class="card">
+      <h3>Create Short Link</h3>
+      <input type="text" id="originalUrl" placeholder="Original URL">
+      <input type="text" id="customAlias" placeholder="Custom alias (optional)">
+      <input type="datetime-local" id="expiration" placeholder="Expiration (optional)">
+      <button onclick="createLink()">Shorten</button>
+    </div>
 
-    <div id="linkList"></div>
+    <div class="card">
+      <h3>Your Links</h3>
+      <table id="linkTable">
+        <thead>
+          <tr>
+            <th>Alias</th>
+            <th>Original</th>
+            <th>Clicks</th>
+            <th>Expires</th>
+            <th>QR</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
-    <h2>Analytics</h2>
-    <canvas id="analyticsChart" width="400" height="150"></canvas>
+    <div class="card">
+      <h3>Analytics</h3>
+      <canvas id="clickChart" height="120"></canvas>
+    </div>
 
-    <br>
-    <button onclick="exportCSV()">⬇ Export as CSV</button>
-    <input type="file" accept=".csv" onchange="importCSV(event)" />
+    <div class="card">
+      <h3>Bulk Import/Export</h3>
+      <input type="file" onchange="importCSV(event)">
+      <button onclick="exportCSV()">Export CSV</button>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <p>Need help? <a href="mailto:support@cutit.sbs">Contact Support</a></p>
+    </div>
   </main>
-  <div id="footer">
-    ✨ Created with love by CutIt.sbs – where QR meets pop culture. ✨
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth, onAuthStateChanged, signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, collection, query, where,
+      getDocs, addDoc, deleteDoc, updateDoc,
+      doc, onSnapshot, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
       authDomain: "cutitshortener.firebaseapp.com",
@@ -125,145 +186,139 @@
       messagingSenderId: "958863508757",
       appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
     };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
 
-    const linkList = document.getElementById("linkList");
-    const chartCtx = document.getElementById("analyticsChart").getContext("2d");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    let userId;
-    let chart;
+    let userId = null;
 
-    auth.onAuthStateChanged(async (user) => {
-      if (!user) return (window.location.href = "login.html");
-      userId = user.uid;
-      checkPremiumStatus(userId);
-      loadLinks();
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        userId = user.uid;
+        loadLinks();
+        checkPremium(userId);
+      } else {
+        window.location.href = "login.html";
+      }
     });
 
-    async function checkPremiumStatus(uid) {
-      const doc = await db.collection("premium_users").doc(uid).get();
-      const premium = doc.exists && doc.data().isPremium;
-      document.getElementById("premiumStatus").innerHTML = premium ? `<span class="premium-badge">⭐ Premium</span>` : '';
+    async function createLink() {
+      const original = document.getElementById("originalUrl").value;
+      const custom = document.getElementById("customAlias").value.trim();
+      const expiration = document.getElementById("expiration").value;
+      if (!original) return alert("Enter a valid URL");
+
+      const payload = {
+        original,
+        created: serverTimestamp(),
+        userId,
+        clicks: 0,
+        ...(custom && { custom }),
+        ...(expiration && { expiration: new Date(expiration) })
+      };
+
+      await addDoc(collection(db, "shortlinks"), payload);
+      alert("Link created!");
+      document.getElementById("originalUrl").value = "";
+      document.getElementById("customAlias").value = "";
+      document.getElementById("expiration").value = "";
     }
 
     async function loadLinks() {
-      const snapshot = await db.collection("shortlinks").where("userId", "==", userId).get();
-      linkList.innerHTML = "";
-      const analytics = {};
+      const q = query(collection(db, "shortlinks"), where("userId", "==", userId));
+      onSnapshot(q, (snap) => {
+        const table = document.querySelector("#linkTable tbody");
+        table.innerHTML = "";
+        const clicks = [];
 
-      snapshot.forEach((doc) => {
-        const { original, custom, clicks = 0, created, expiresAt } = doc.data();
-        const short = `https://cutit.sbs/${custom}`;
-        const expired = expiresAt && new Date() > new Date(expiresAt);
-        linkList.innerHTML += `
-          <div class="link-card">
-            <b>${short}</b> ${expired ? "<span style='color:red'>(Expired)</span>" : ""}
-            <p>Original: <a href="${original}" target="_blank">${original}</a></p>
-            <p>Clicks: ${clicks}</p>
-            <p>Expires: ${expiresAt ? new Date(expiresAt).toLocaleString() : "Never"}</p>
-            <button onclick="copy('${short}')">Copy</button>
-            <button onclick="deleteLink('${doc.id}')">Delete</button>
-            <button onclick="editLink('${doc.id}', '${custom}')">Edit</button>
-            <div id="qr-${doc.id}"></div>
-          </div>
-        `;
-        QRCode.toCanvas(document.getElementById(`qr-${doc.id}`), short);
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const expires = data.expiration ? new Date(data.expiration.seconds * 1000) : "∞";
+          const now = new Date();
+          const isExpired = expires !== "∞" && expires < now;
 
-        analytics[custom] = clicks;
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${data.custom || docSnap.id}</td>
+            <td><a href="${data.original}" target="_blank">${data.original}</a></td>
+            <td>${data.clicks || 0}</td>
+            <td>${expires === "∞" ? "∞" : expires.toLocaleString()}</td>
+            <td><canvas id="qr-${docSnap.id}" width="50" height="50"></canvas></td>
+            <td>
+              <button class="btn-sm" onclick="copyLink('${data.custom || docSnap.id}')">Copy</button>
+              <button class="btn-sm" onclick="deleteLink('${docSnap.id}')">Delete</button>
+            </td>
+          `;
+          table.appendChild(row);
+
+          if (!isExpired) {
+            QRCode.toCanvas(document.getElementById(`qr-${docSnap.id}`), `https://cutit.sbs/${data.custom || docSnap.id}`);
+          }
+
+          clicks.push({ x: data.custom || docSnap.id, y: data.clicks || 0 });
+        });
+
+        renderChart(clicks);
       });
-
-      updateChart(analytics);
     }
 
-    function createShortLink() {
-      const original = document.getElementById("newUrlInput").value;
-      const custom = Math.random().toString(36).substring(2, 8);
-      const now = new Date();
-      const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
-
-      db.collection("shortlinks").add({
-        original,
-        custom,
-        userId,
-        created: now.toISOString(),
-        clicks: 0,
-        expiresAt: expiresAt.toISOString()
-      }).then(loadLinks);
-    }
-
-    function deleteLink(id) {
-      db.collection("shortlinks").doc(id).delete().then(loadLinks);
-    }
-
-    function editLink(id, oldCustom) {
-      const newCustom = prompt("Enter new alias:", oldCustom);
-      if (!newCustom || newCustom === oldCustom) return;
-      db.collection("shortlinks").doc(id).update({ custom: newCustom }).then(loadLinks);
-    }
-
-    function copy(text) {
-      navigator.clipboard.writeText(text);
-      alert("Copied!");
-    }
-
-    function updateChart(data) {
-      if (chart) chart.destroy();
-      chart = new Chart(chartCtx, {
+    function renderChart(data) {
+      new Chart(document.getElementById("clickChart"), {
         type: "bar",
         data: {
-          labels: Object.keys(data),
+          labels: data.map(d => d.x),
           datasets: [{
-            label: "Clicks per Link",
-            data: Object.values(data),
-            backgroundColor: "#ffcc00"
+            label: "Clicks",
+            data: data.map(d => d.y),
+            backgroundColor: "#6366f1"
           }]
+        },
+        options: {
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
         }
       });
     }
 
+    async function deleteLink(id) {
+      await deleteDoc(doc(db, "shortlinks", id));
+      alert("Deleted");
+    }
+
+    function copyLink(id) {
+      navigator.clipboard.writeText(`https://cutit.sbs/${id}`);
+      alert("Copied!");
+    }
+
+    async function checkPremium(uid) {
+      const q = query(collection(db, "premium_users"), where("userId", "==", uid));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        document.getElementById("premiumBadge").style.display = "inline-block";
+      }
+    }
+
+    function logout() {
+      signOut(auth).then(() => window.location.href = "login.html");
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+    }
+
+    // Import/Export
     function exportCSV() {
-      db.collection("shortlinks").where("userId", "==", userId).get().then(snapshot => {
-        let csv = "Short,Original,Clicks,Expires\n";
-        snapshot.forEach(doc => {
-          const d = doc.data();
-          csv += `https://cutit.sbs/${d.custom},${d.original},${d.clicks},${d.expiresAt || "Never"}\n`;
-        });
-        const blob = new Blob([csv], { type: "text/csv" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "shortlinks.csv";
-        link.click();
-      });
+      // Placeholder: can be added next
+      alert("Coming soon: export feature");
     }
 
     function importCSV(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const lines = e.target.result.split("\n").slice(1);
-        lines.forEach(line => {
-          const [short, original] = line.split(",");
-          if (original) {
-            db.collection("shortlinks").add({
-              original,
-              custom: short.split("/").pop(),
-              userId,
-              created: new Date().toISOString(),
-              clicks: 0
-            });
-          }
-        });
-        setTimeout(loadLinks, 1000);
-      };
-      reader.readAsText(file);
+      // Placeholder: can be added next
+      alert("Coming soon: import feature");
     }
-
-    document.getElementById("darkToggle").onclick = () => {
-      document.body.classList.toggle("dark");
-    };
   </script>
 </body>
 </html>
