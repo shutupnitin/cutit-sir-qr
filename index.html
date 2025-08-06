@@ -118,19 +118,21 @@
       z-index: 10000;
       text-decoration: none;
     }
-    #shortenBtn {
-  position: fixed;
-  bottom: 70px; /* slightly above the "Play Games" button */
-  right: 20px;
+  .center-action-btn {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.8rem 1.5rem;
   background: #000;
   color: #fff;
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
   border-radius: 8px;
-  cursor: pointer;
-  z-index: 10000;
   text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+.center-action-btn:hover {
+  background: #ffcc00;
+  color: #000;
 }
   </style>
 </head>
@@ -160,8 +162,10 @@
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
   <div class="team-message">
-    From all of us at CutIt.sbs — built with love, creativity, and chaos 🤪. Whether it’s music, memes, or memories — your code is your voice. Let it echo 🎤✨
-  </div>
+  From all of us at CutIt.sbs — built with love, creativity, and chaos 🤪. Whether it’s music, memes, or memories — your code is your voice. Let it echo 🎤✨
+</div>
+
+<a href="https://cutit.sbs/shorten" class="center-action-btn">✂️ Get Short Link</a>
   <footer>
     <div class="footer-links">
       <a href="terms.html">Terms</a> | <a href="privacy.html">Privacy</a> | <a href="contact.html">Contact Us</a>
@@ -273,7 +277,6 @@
   </script>
 
 <a id="gameBtn" href="https://cutit.sbs/games">🎮 Play Games</a>
-  <a id="shortenBtn" href="https://cutit.sbs/shorten">✂️ Get Short Link</a>
 <script type="text/javascript" src="https://s.skimresources.com/js/289898X1776845.skimlinks.js"></script>
 </body>
 </html>
