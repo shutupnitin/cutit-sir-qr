@@ -1,154 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard – CutIt.sbs Premium</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
+  <meta charset="UTF‑8"/>
+  <meta name="viewport" content="width=device‑width,initial‑scale=1.0"/>
+  <title>Dashboard – CutIt.sbs</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
-    body { background: #f5f5f5; color: #111; padding: 2rem; }
-    .container { max-width: 900px; margin: auto; }
-    header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 2rem;
-    }
-    .logo { font-size: 2rem; font-weight: bold; }
-    .actions button {
-      padding: 0.5rem 1rem;
-      border: none;
-      background: #000;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-left: 0.5rem;
-    }
-    h1 { font-size: 2rem; margin-bottom: 1rem; }
-    .section {
-      background: #fff;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      margin-bottom: 2rem;
-    }
-    .section h2 {
-      font-size: 1.4rem;
-      margin-bottom: 1rem;
-      color: #333;
-    }
-    .section ul { padding-left: 1rem; }
-    .section li { margin-bottom: 0.5rem; }
-    .dark-mode {
-      background: #111;
-      color: #f5f5f5;
-    }
-    .dark-mode .section {
-      background: #222;
-      color: #eee;
-    }
-    .footer {
-      text-align: center;
-      font-size: 0.9rem;
-      opacity: 0.6;
-      margin-top: 3rem;
-    }
-    .btn-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .btn-group button {
-      flex: 1;
-      padding: 0.8rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .btn-primary {
-      background: #000;
-      color: white;
-    }
-    .btn-secondary {
-      background: #007aff;
-      color: white;
-    }
-    .btn-danger {
-      background: #ff3b30;
-      color: white;
-    }
+    body{ font-family:Antonio,sans-serif; background:#f5f5f5; color:#111; padding:2rem; }
+    .container{ max-width:900px;margin:auto; }
+    .dark-mode{ background:#111;color:#eee; }
+    header{ display:flex; justify-content:space-between; margin-bottom:2rem; }
+    .btn{ padding:0.5rem 1rem;border:none;border-radius:8px;cursor:pointer;margin-left:0.5rem; }
+    .btn-primary{ background:#000;color:#fff; }
+    .btn-secondary{ background:#007aff;color:#fff; }
+    .btn-danger{ background:#ff3b30;color:#fff; }
+    .section{ background:#fff;border-radius:12px;padding:1.5rem;box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-bottom:2rem; }
+    .dark-mode .section{ background:#222;color:#eee; }
+    .btn-group{ display:flex;gap:1rem;flex-wrap:wrap; margin-top:1rem; }
+    footer{ text-align:center; opacity:0.6; margin-top:2rem; }
   </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
+      authDomain: "cutitshortener.firebaseapp.com",
+      projectId: "cutitshortener",
+      storageBucket: "cutitshortener.appspot.com",
+      messagingSenderId: "958863508757",
+      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
+    };
+    const app = initializeApp(firebaseConfig), auth = getAuth(app);
+
+    window.toggleDarkMode = () => document.body.classList.toggle("dark-mode");
+
+    window.logout = async () => {
+      await signOut(auth);
+      localStorage.removeItem("cutit_isPremium");
+      window.location.href = "index.html";
+    };
+
+    onAuthStateChanged(auth, user => {
+      if (!user) return window.location.href = "login.html";
+      document.getElementById("username").textContent = (user.displayName || user.email);
+    });
+  </script>
 </head>
 <body>
   <div class="container">
     <header>
-      <div class="logo">📊 Dashboard</div>
-      <div class="actions">
-        <button onclick="toggleDarkMode()">🌗 Theme</button>
-        <button onclick="logout()">🚪 Logout</button>
+      <div>📊 Dashboard</div>
+      <div>
+        <button class="btn" onclick="toggleDarkMode()">🌗 Theme</button>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
       </div>
     </header>
 
-    <h1>Welcome, <span id="username">Premium User</span> 🎉</h1>
+    <h1>Welcome, <span id="username">User</span> 🎉</h1>
 
     <div class="section">
       <h2>🔗 Manage Your Links</h2>
       <ul>
         <li>Create and edit custom short URLs</li>
-        <li>Set expiration dates and limits</li>
-        <li>Enable/disable links</li>
-        <li>Delete links anytime</li>
+        <li>Set expiration or link limits</li>
+        <li>Enable/disable or delete links</li>
       </ul>
       <div class="btn-group">
-        <button class="btn-primary" onclick="alert('Coming soon: Link Manager')">Open Link Manager</button>
-        <button class="btn-secondary" onclick="alert('Analytics coming soon')">View Link Analytics</button>
+        <button class="btn-primary" onclick="alert('Link Manager coming soon')">Open Link Manager</button>
+        <button class="btn-secondary" onclick="alert('Analytics coming soon')">View Analytics</button>
       </div>
     </div>
 
     <div class="section">
-      <h2>📈 Analytics & Insights</h2>
+      <h2>📈 Analytics & Reports</h2>
       <ul>
-        <li>Track number of clicks</li>
-        <li>See traffic sources & devices</li>
-        <li>Export reports (PDF/CSV)</li>
+        <li>Track clicks & sources</li>
+        <li>Export CSV / PDF</li>
       </ul>
       <div class="btn-group">
-        <button class="btn-secondary" onclick="alert('Analytics dashboard coming soon')">Launch Analytics</button>
+        <button class="btn-secondary" onclick="alert('Analytics panel coming soon')">Launch Analytics</button>
       </div>
     </div>
 
     <div class="section">
       <h2>📞 Support</h2>
-      <p>If you have any issues or feedback, we’re here to help!</p>
+      <p>Need help or have feedback? Reach out anytime!</p>
       <div class="btn-group">
-        <button class="btn-secondary" onclick="window.location.href='mailto:vibe@cutit.sbs?subject=Premium%20Support&body=Hi%20CutIt%20Team,%0A%0AI need help with...'">📧 Email Support</button>
+        <button class="btn-secondary" onclick="window.location.href='mailto:support@cutit.sbs?subject=Premium%20Support'">📧 Email Support</button>
       </div>
     </div>
 
-    <div class="footer">
-      © 2025 CutIt.sbs — Premium User Panel
-    </div>
+    <footer>© 2025 CutIt.sbs</footer>
   </div>
-
-  <script>
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark-mode");
-    }
-
-    function logout() {
-      localStorage.removeItem("cutit_userId");
-      location.href = "shorten.html";
-    }
-
-    // Load username from localStorage
-    const userId = localStorage.getItem("cutit_userId");
-    if (userId) {
-      document.getElementById("username").textContent = userId;
-    } else {
-      alert("You are not logged in. Redirecting...");
-      window.location.href = "login.html";
-    }
-  </script>
 </body>
 </html>
