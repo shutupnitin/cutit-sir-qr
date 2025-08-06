@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Premium Access – CutIt.sbs</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      text-align: center;
+      padding: 2rem;
+    }
+    .box {
+      background: white;
+      max-width: 500px;
+      margin: auto;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    .btn {
+      background-color: #111;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      margin: 1rem 0.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .message {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      color: green;
+      display: none;
+    }
+    .emoji {
+      font-size: 3rem;
+      animation: float 1.5s ease-in-out infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>💎 Unlock Premium</h1>
+    <p>Select your plan:</p>
+    <button class="btn" onclick="payRs2()">Pay ₹2 for Custom Link</button>
+    <button class="btn" onclick="payRs199()">Get Premium ₹199</button>
+
+    <div class="message" id="successMsg">
+      <div class="emoji">🎉</div>
+      <p>Payment successful! Premium access granted.</p>
+    </div>
+  </div>
+
+  <script>
+    const razorpayKey = "rzp_live_AJEAZ1WJHOpOOQ"; // Public Key
+
+    function handlePayment(amount, description) {
+      const options = {
+        key: razorpayKey,
+        amount: amount * 100, // in paise
+        currency: "INR",
+        name: "CutIt.sbs",
+        description: description,
+        handler: function (response) {
+          console.log("Payment successful:", response);
+          document.getElementById("successMsg").style.display = "block";
+        },
+        theme: {
+          color: "#111"
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    }
+
+    function payRs2() {
+      handlePayment(2, "Custom Short Link (₹2)");
+    }
+
+    function payRs199() {
+      handlePayment(199, "Premium Plan – One-time (₹199)");
+    }
+  </script>
+</body>
+</html>
