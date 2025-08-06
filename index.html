@@ -160,6 +160,37 @@
     <div class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</div>
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
+  <!-- Paste this inside <body>, wherever you want the ad to appear -->
+<div style="margin: 2rem auto; text-align: center; position: relative;">
+  <span style="font-size: 0.95rem;">Advertisement
+    <span id="adInfoIcon" style="cursor: pointer; margin-left: 5px; font-weight: bold;" title="Click for info">ℹ️</span>
+  </span>
+  <div id="nativeAdContainer" style="margin-top: 10px;">
+    <script>(function(d,z,s){s.src='https://'+d+'/401/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('gizokraijaw.net',2985338,document.createElement('script'))</script>
+  </div>
+</div>
+
+<!-- Dark Popup -->
+<div id="adPopup" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.75); z-index: 99999; align-items: center; justify-content: center;">
+  <div style="background: #111; color: #fff; padding: 1.5rem; border-radius: 12px; max-width: 400px; text-align: center; position: relative;">
+    <span id="closeAdPopup" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 1.2rem;">✖</span>
+    <h3 style="margin-bottom: 1rem;">Ad Disclaimer</h3>
+    <p style="font-size: 0.95rem; line-height: 1.5;">
+      These ads are shown by a third-party partner. We are not responsible and are able to run our service for free because of these ads.
+    </p>
+  </div>
+</div>
+
+<script>
+  // Toggle popup
+  document.getElementById('adInfoIcon').onclick = () => {
+    document.getElementById('adPopup').style.display = 'flex';
+  };
+  document.getElementById('closeAdPopup').onclick = () => {
+    document.getElementById('adPopup').style.display = 'none';
+  };
+</script>
   <div class="team-message">
   From all of us at CutIt.sbs — built with love, creativity, and chaos 🤪. Whether it’s music, memes, or memories — your code is your voice. Let it echo 🎤✨
 </div>
