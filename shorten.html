@@ -105,7 +105,7 @@
   <header>
     <div class="logo">CutIt.sbs</div>
     <div>
-      <button class="login-btn" onclick="window.location.href='login.html'">🔐 Login</button>
+      <button class="login-btn">🔐 Login</button>
       <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
     </div>
   </header>
@@ -234,6 +234,20 @@
     if (localStorage.getItem("cutit_isPremium") === "true") {
       window.addEventListener("DOMContentLoaded", unlockPremiumUI);
     }
+
+    // 🔐 Handle Login Button State
+    window.addEventListener("DOMContentLoaded", () => {
+      const loginBtn = document.querySelector(".login-btn");
+      const userId = localStorage.getItem("cutit_userId");
+
+      if (userId) {
+        loginBtn.textContent = "👤 " + userId;
+        loginBtn.onclick = () => window.location.href = "dashboard.html";
+      } else {
+        loginBtn.textContent = "🔐 Login";
+        loginBtn.onclick = () => window.location.href = "login.html";
+      }
+    });
   </script>
 </body>
 </html>
