@@ -1,6 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, getDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
+    authDomain: "cutitshortener.firebaseapp.com",
+    projectId: "cutitshortener",
+    storageBucket: "cutitshortener.appspot.com",
+    messagingSenderId: "958863508757",
+    appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function handleRedirect() {
+    const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+    console.log("🌐 Shortlink path from URL:", path);
+
+    if (!path) {
+      console.log("🚫 Empty path, redirecting to 404");
+      window.location.href = "/404.html";
+      return;
+    }
+
+    try {
+      const ref = doc(collection(db, "shortlinks"), path);
+      const snap = await getDoc(ref);
+
+      if (snap.exists()) {
+        const data = snap.data();
+        console.log("✅ Document found:", data);
+
+        if (data.original && typeof data.original === "string") {
+          window.location.href = data.original;
+        } else {
+          console.log("⚠️ No valid 'original' URL in doc, redirecting to 404");
+          window.location.href = "/404.html";
+        }
+
+      } else {
+        console.log("❌ No document found, redirecting to 404");
+        window.location.href = "/404.html";
+      }
+
+    } catch (e) {
+      console.error("🔥 Firestore error:", e);
+      window.location.href = "/404.html";
+    }
+  }
+
+  handleRedirect();
+</script>
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
 <script>
