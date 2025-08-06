@@ -160,17 +160,19 @@
     <div class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</div>
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
-  <!-- Paste this inside <body>, wherever you want the ad to appear -->
+  <!-- 📢 Advertisement Label + ℹ️ Icon -->
 <div style="margin: 2rem auto; text-align: center; position: relative;">
   <span style="font-size: 0.95rem;">Advertisement
     <span id="adInfoIcon" style="cursor: pointer; margin-left: 5px; font-weight: bold;" title="Click for info">ℹ️</span>
   </span>
+
+  <!-- 📈 Ad container using new script -->
   <div id="nativeAdContainer" style="margin-top: 10px;">
-    <script>(function(d,z,s){s.src='https://'+d+'/401/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('gizokraijaw.net',2985338,document.createElement('script'))</script>
+    <script async src="https://js.wpadmngr.com/static/adManager.js" data-admpid="357195"></script>
   </div>
 </div>
 
-<!-- Dark Popup -->
+<!-- 📋 Dark Popup Disclaimer -->
 <div id="adPopup" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.75); z-index: 99999; align-items: center; justify-content: center;">
   <div style="background: #111; color: #fff; padding: 1.5rem; border-radius: 12px; max-width: 400px; text-align: center; position: relative;">
@@ -182,8 +184,8 @@
   </div>
 </div>
 
+<!-- 🧠 Popup Logic -->
 <script>
-  // Toggle popup
   document.getElementById('adInfoIcon').onclick = () => {
     document.getElementById('adPopup').style.display = 'flex';
   };
