@@ -1,98 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF‑8" />
+  <meta name="viewport" content="width=device‑width,initial‑scale=1.0"/>
   <title>Login – CutIt.sbs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
-    body {
-      background: #f5f5f5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      color: #111;
-    }
-    .login-box {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-    }
-    h1 { font-size: 2rem; margin-bottom: 1rem; }
-    input {
-      width: 100%;
-      padding: 1rem;
-      border: 2px solid #111;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-    }
-    button {
-      padding: 0.8rem 1.5rem;
-      background: #000;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    button:hover { background: #222; }
-    .dark-mode {
-      background: #111;
-      color: #eee;
-    }
-    .dark-mode .login-box {
-      background: #222;
-      color: white;
-      border-color: white;
-    }
-    .toggle-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: #ddd;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
+    body{ font-family:Antonio, sans-serif; display:flex;justify-content:center;align-items:center;height:100vh; }
+    .login-box{ text-align:center;padding:2rem;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,0.1); }
+    .toggle-btn{ position:absolute;top:20px;right:20px;cursor:pointer; }
+    .dark-mode{ background:#111;color:#eee; }
+    .dark-mode .login-box{ background:#222;color:white; }
+    button{ background:#4285F4;color:#fff;border:none;border-radius:8px;padding:0.8rem 1.5rem;cursor:pointer; }
   </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
+      authDomain: "cutitshortener.firebaseapp.com",
+      projectId: "cutitshortener",
+      storageBucket: "cutitshortener.appspot.com",
+      messagingSenderId: "958863508757",
+      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
+    };
+    const app = initializeApp(firebaseConfig),
+          auth = getAuth(app),
+          provider = new GoogleAuthProvider();
+
+    window.toggleDarkMode = () => document.body.classList.toggle("dark-mode");
+
+    window.loginWithGoogle = async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch(e){
+        console.error(e);
+        alert("Login failed.");
+      }
+    };
+
+    onAuthStateChanged(auth, user => {
+      if(user) window.location.href = "dashboard.html";
+    });
+  </script>
 </head>
 <body>
-
-<div class="toggle-btn" onclick="toggleDarkMode()">🌙 Toggle Mode</div>
-
-<div class="login-box">
-  <h1>Login</h1>
-  <input type="text" id="username" placeholder="Enter your username" />
-  <button onclick="handleLogin()">🔐 Login</button>
-</div>
-
-<script>
-  function toggleDarkMode() {
-    document.body.classList.toggle("dark-mode");
-  }
-
-  function handleLogin() {
-    const username = document.getElementById("username").value.trim();
-    if (!username) return alert("Please enter your name or user ID");
-
-    localStorage.setItem("cutit_userId", username);
-    alert("✅ Logged in successfully");
-    window.location.href = "dashboard.html";
-  }
-
-  // Auto redirect if already logged in
-  if (localStorage.getItem("cutit_userId")) {
-    window.location.href = "dashboard.html";
-  }
-</script>
-
+  <div class="toggle-btn" onclick="toggleDarkMode()">🌙 Toggle Mode</div>
+  <div class="login-box">
+    <h1>Sign in with Google</h1>
+    <button onclick="loginWithGoogle()">🔐 Sign In</button>
+  </div>
 </body>
 </html>
