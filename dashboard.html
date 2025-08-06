@@ -1,58 +1,70 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Premium Dashboard – CutIt.sbs</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard - CutIt.sbs</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
     body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      padding: 2rem;
+      background: #f0f2f5;
       color: #111;
-    }
-    h1 {
+      padding: 2rem;
       text-align: center;
-      margin-bottom: 1.5rem;
     }
-    .link-list {
+    .container {
       max-width: 600px;
       margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
-    .link-item {
-      background: #fff;
-      border: 1px solid #ddd;
-      padding: 1rem;
+    h1 {
+      font-size: 1.8rem;
       margin-bottom: 1rem;
+    }
+    .status {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      padding: 0.8rem;
       border-radius: 8px;
+      background: #f1f1f1;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 0.5rem;
+    }
+    .premium-btn {
+      background-color: #007bff;
+      color: white;
     }
     .logout-btn {
-      background: #000;
+      background-color: #dc3545;
       color: white;
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      float: right;
+    }
+    .premium-status {
+      font-size: 1rem;
+      margin-top: 1rem;
     }
   </style>
-  <!-- Firebase Scripts -->
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      query,
-      where,
-      getDocs,
-      doc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
@@ -64,64 +76,80 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const linkList = document.getElementById("linkList");
+    const statusBox = document.getElementById("statusBox");
+    const planBox = document.getElementById("planBox");
+
+    let currentUser = null;
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
+      if (user) {
+        currentUser = user;
+        document.getElementById("userEmail").innerText = user.email;
+
+        const docRef = doc(db, "premium_users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().isPremium) {
+          document.getElementById("planBox").innerText = "💎 You have Premium Access!";
+        } else {
+          document.getElementById("planBox").innerText = "🔓 You are on Free Plan.";
+        }
+      } else {
         window.location.href = "login.html";
-        return;
       }
-
-      // Check if user is premium
-      const premiumRef = collection(db, "premium_users");
-      const q = query(premiumRef, where("uid", "==", user.uid));
-      const snapshot = await getDocs(q);
-
-      if (snapshot.empty) {
-        alert("❌ You are not a premium user. Please upgrade first.");
-        window.location.href = "shorten.html";
-        return;
-      }
-
-      // Fetch user links
-      const linksRef = collection(db, "shortlinks");
-      const userLinks = query(linksRef, where("uid", "==", user.uid));
-      const userLinksSnap = await getDocs(userLinks);
-
-      const container = document.getElementById("linkList");
-      container.innerHTML = "";
-
-      userLinksSnap.forEach(doc => {
-        const data = doc.data();
-        const item = document.createElement("div");
-        item.className = "link-item";
-        item.innerHTML = `
-          <strong>🔗 ${location.origin}/${doc.id}</strong><br>
-          Original: ${data.original}<br>
-          Created: ${new Date(data.created).toLocaleString()}
-        `;
-        container.appendChild(item);
-      });
     });
 
-    function logout() {
-      const auth = getAuth();
-      signOut(auth).then(() => {
-        window.location.href = "shorten.html";
-      });
-    }
+    window.buyPremium = () => {
+      if (!currentUser) return alert("Please log in to buy premium.");
 
-    window.logout = logout;
+      const options = {
+        key: "rzp_live_AJEAZ1WJHOpOOQ",
+        amount: 19900,
+        currency: "INR",
+        name: "CutIt.sbs",
+        description: "Lifetime Premium Access",
+        image: "https://cutit.sbs/logo.png",
+        handler: async function (response) {
+          try {
+            await setDoc(doc(db, "premium_users", currentUser.uid), {
+              isPremium: true,
+              purchasedAt: new Date().toISOString(),
+              paymentId: response.razorpay_payment_id
+            });
+            alert("✅ Premium Unlocked!");
+            document.getElementById("planBox").innerText = "💎 You have Premium Access!";
+          } catch (e) {
+            console.error(e);
+            alert("❌ Failed to save premium status.");
+          }
+        },
+        theme: {
+          color: "#000"
+        }
+      };
+      const rzp = new Razorpay(options);
+      rzp.open();
+    };
+
+    window.logout = () => {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      });
+    };
   </script>
 </head>
+
 <body>
-  <button class="logout-btn" onclick="logout()">Logout</button>
-  <h1>🔓 Premium Dashboard</h1>
-  <div id="linkList">
-    Loading your links...
+  <div class="container">
+    <h1>👋 Welcome to Your Dashboard</h1>
+    <div class="status">
+      Signed in as <strong id="userEmail">...</strong>
+    </div>
+    <div id="planBox" class="premium-status">Checking your plan...</div>
+    <button class="premium-btn" onclick="buyPremium()">Unlock Premium – ₹199</button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
   </div>
 </body>
 </html>
