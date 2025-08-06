@@ -2,113 +2,113 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard | CutIt.sbs</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <title>Dashboard • CutIt.sbs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
   <style>
+    * { box-sizing: border-box; }
     body {
-      margin: 0;
       font-family: 'Inter', sans-serif;
-      background: #f8f9fb;
-      color: #333;
+      margin: 0; padding: 2rem;
+      background: #f9f9f9; color: #111;
+      transition: background 0.3s, color 0.3s;
     }
     header {
-      background: #111;
-      color: #fff;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 2rem;
     }
-    header h1 {
-      font-size: 1.2rem;
+    .btn {
+      padding: 0.6rem 1rem;
+      background: black; color: white;
+      border: none; border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer; transition: 0.2s;
     }
-    .container {
-      max-width: 800px;
-      margin: 2rem auto;
-      background: #fff;
-      border-radius: 12px;
-      padding: 2rem;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.05);
-    }
-    .status {
-      margin-bottom: 1rem;
+    .btn:hover { background: #333; }
+    .link-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
       padding: 1rem;
-      background: #eef;
-      border-left: 4px solid #00aaff;
-      border-radius: 6px;
-    }
-    .links {
-      margin-top: 2rem;
-    }
-    .link-box {
-      background: #f0f0f0;
-      padding: 1rem;
-      border-radius: 6px;
       margin-bottom: 1rem;
-      word-break: break-all;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
     }
-    input, button {
-      padding: 0.8rem;
+    .link-card a { font-weight: bold; color: #007aff; word-break: break-word; }
+    .controls { margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .controls button {
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1rem;
+      background: #fff;
+      cursor: pointer;
+    }
+    input[type="text"] {
+      padding: 0.8rem;
       width: 100%;
-      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
-    button {
-      background: #111;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      transition: 0.3s ease;
+    .section {
+      max-width: 700px;
+      margin: auto;
     }
-    button:hover {
-      background: #333;
+    #premiumStatus {
+      padding: 0.5rem 1rem;
+      background: #e0ffe0;
+      color: green;
+      border: 1px solid green;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: inline-block;
     }
-    .logout-btn, .support-btn {
-      background: #ff5252;
-      border: none;
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-left: 1rem;
-    }
-    .top-buttons {
-      display: flex;
-      align-items: center;
-      justify-content: end;
-      margin-top: 1rem;
-    }
+    canvas { max-width: 100%; }
+    .dark { background: #111; color: #eee; }
+    .dark .link-card, .dark input { background: #222; color: #eee; border-color: #444; }
+    .dark .btn { background: #fff; color: #000; }
+    .dark .controls button { background: #444; color: #fff; border-color: #666; }
   </style>
 </head>
 <body>
   <header>
-    <h1>Welcome to CutIt Dashboard</h1>
-    <div class="top-buttons">
-      <button class="support-btn" onclick="window.location.href='mailto:support@cutit.sbs'">Contact Support</button>
-      <button class="logout-btn" onclick="logout()">Logout</button>
+    <h2>✨ Welcome to Your Premium Dashboard</h2>
+    <div>
+      <button onclick="toggleDark()" class="btn">🌓 Toggle Dark</button>
+      <button onclick="logout()" class="btn">🚪 Logout</button>
     </div>
   </header>
 
-  <div class="container">
-    <div class="status" id="status">Checking user...</div>
+  <div class="section">
+    <div id="premiumStatus">🔓 You have Premium Access</div>
 
-    <h2>Create New Short Link</h2>
-    <input type="text" id="longUrl" placeholder="Enter long URL (e.g., https://example.com)" />
-    <button onclick="createShortLink()">Shorten</button>
+    <h3>🔗 Create New Short Link</h3>
+    <input type="text" id="newLongUrl" placeholder="Enter long URL here">
+    <input type="text" id="newCustom" placeholder="(Optional) Custom short path e.g. apple">
+    <button onclick="createLink()" class="btn">✂️ Create Short Link</button>
 
-    <div class="links">
-      <h2>Your Short Links</h2>
-      <div id="linksContainer">Loading...</div>
-    </div>
+    <hr style="margin: 2rem 0;">
+
+    <h3>📊 Your Link Analytics</h3>
+    <canvas id="chartCanvas"></canvas>
+
+    <hr style="margin: 2rem 0;">
+
+    <h3>📁 Your Shortened Links</h3>
+    <div id="linkList">Loading...</div>
+
+    <hr style="margin: 2rem 0;">
+    <button onclick="window.location.href='mailto:support@cutit.sbs'" class="btn">📧 Contact Support</button>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
@@ -123,74 +123,108 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const statusDiv = document.getElementById("status");
-    const linksContainer = document.getElementById("linksContainer");
+    const linkList = document.getElementById("linkList");
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "/login.html";
-        return;
-      }
+    let userEmail = "";
 
-      statusDiv.textContent = "Logged in as: " + user.email;
+    function renderLinks(links) {
+      linkList.innerHTML = "";
+      const labels = [];
+      const clicks = [];
 
-      const premiumDoc = await getDoc(doc(db, "premium_users", user.uid));
-      if (premiumDoc.exists()) {
-        statusDiv.textContent += " ✅ Premium User";
-      } else {
-        statusDiv.textContent += " ⚠️ Free User - Upgrade for more features!";
-      }
+      links.forEach(docSnap => {
+        const data = docSnap.data();
+        const id = docSnap.id;
+        labels.push(id);
+        clicks.push(data.clicks || 0);
 
-      loadUserLinks(user.uid);
-    });
-
-    async function loadUserLinks(uid) {
-      linksContainer.innerHTML = "";
-      const q = query(collection(db, "shortlinks"), where("uid", "==", uid));
-      const snapshot = await getDocs(q);
-
-      if (snapshot.empty) {
-        linksContainer.innerHTML = "<p>No links created yet.</p>";
-        return;
-      }
-
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const linkDiv = document.createElement("div");
-        linkDiv.className = "link-box";
-        linkDiv.innerHTML = `
-          <strong>cutit.sbs/${doc.id}</strong><br>
-          ➤ ${data.original}
+        const div = document.createElement("div");
+        div.className = "link-card";
+        div.innerHTML = `
+          🔗 <a href="https://cutit.sbs/${id}" target="_blank">cutit.sbs/${id}</a><br/>
+          ↪️ ${data.original}<br/>
+          ⏱️ Created: ${new Date(data.created).toLocaleString()}<br/>
+          📈 Clicks: ${data.clicks || 0}
+          <div class="controls">
+            <button onclick="copy('${id}')">📋 Copy</button>
+            <button onclick="del('${id}')">🗑️ Delete</button>
+            <button onclick="qr('${id}')">📸 QR Code</button>
+          </div>
         `;
-        linksContainer.appendChild(linkDiv);
+        linkList.appendChild(div);
+      });
+
+      new Chart(document.getElementById("chartCanvas"), {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{ label: "Clicks", data: clicks, backgroundColor: "#007aff" }]
+        }
       });
     }
 
-    async function createShortLink() {
-      const longUrl = document.getElementById("longUrl").value.trim();
-      const user = auth.currentUser;
-      if (!longUrl || !user) return;
-
-      try {
-        const docRef = await addDoc(collection(db, "shortlinks"), {
-          original: longUrl,
-          uid: user.uid,
-          created: serverTimestamp(),
-          custom: false
-        });
-
-        alert(`Short link created: cutit.sbs/${docRef.id}`);
-        document.getElementById("longUrl").value = "";
-        loadUserLinks(user.uid);
-      } catch (e) {
-        alert("Failed to create short link.");
-        console.error(e);
-      }
+    async function loadLinks(email) {
+      const q = query(collection(db, "shortlinks"), where("email", "==", email));
+      const querySnapshot = await getDocs(q);
+      renderLinks(querySnapshot.docs);
     }
 
-    function logout() {
-      signOut(auth).then(() => window.location.href = "/login.html");
-    }
+    window.copy = async (id) => {
+      const short = `https://cutit.sbs/${id}`;
+      await navigator.clipboard.writeText(short);
+      alert("Copied: " + short);
+    };
+
+    window.del = async (id) => {
+      if (!confirm("Delete this short link?")) return;
+      await deleteDoc(doc(db, "shortlinks", id));
+      location.reload();
+    };
+
+    window.qr = (id) => {
+      const short = `https://cutit.sbs/${id}`;
+      const win = window.open("", "_blank");
+      win.document.write(`<h3>QR for ${short}</h3><div id="qrcode"></div>`);
+      const script = win.document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js";
+      script.onload = () => {
+        win.QRCode.toCanvas(win.document.getElementById("qrcode"), short);
+      };
+      win.document.body.appendChild(script);
+    };
+
+    window.createLink = async () => {
+      const longUrl = document.getElementById("newLongUrl").value.trim();
+      const custom = document.getElementById("newCustom").value.trim();
+      if (!longUrl) return alert("Please enter URL");
+      const id = custom || Math.random().toString(36).substring(2, 8);
+      const ref = doc(db, "shortlinks", id);
+      await setDoc(ref, {
+        original: longUrl,
+        created: new Date().toISOString(),
+        email: userEmail,
+        clicks: 0
+      });
+      alert("Link created!");
+      location.reload();
+    };
+
+    window.logout = () => {
+      signOut(auth).then(() => {
+        localStorage.removeItem("cutit_email");
+        location.href = "login.html";
+      });
+    };
+
+    onAuthStateChanged(auth, user => {
+      if (!user) return location.href = "login.html";
+      userEmail = user.email;
+      loadLinks(user.email);
+    });
+
+    window.toggleDark = () => {
+      document.body.classList.toggle("dark");
+    };
   </script>
 </body>
 </html>
