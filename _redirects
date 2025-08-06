@@ -1,6 +1,6 @@
 /dashboard        /dashboard.html    200
 /login            /login.html        200
-/index            /shorten.html        200
+/shorten            /shorten.html        200
 /                 /shorten.html        200
 
 # Redirect all other paths (short links like /abc123) to redirect.html
