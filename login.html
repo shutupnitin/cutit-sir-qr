@@ -3,10 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CutIt.sbs - Login</title>
+  <title>Login - CutIt.sbs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet"/>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js" type="module"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js" type="module"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: 'Antonio', sans-serif;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .login-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 1.5rem;
+    }
+    input {
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: black;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+    .google-btn {
+      background: #db4437;
+    }
+    .switch {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    .switch a {
+      color: #007aff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box">
+    <h2>🔐 Sign In to CutIt.sbs</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="loginWithEmail()">Login with Email</button>
+    <button class="google-btn" onclick="loginWithGoogle()">Sign in with Google</button>
+    <div class="switch">
+      Don’t have an account? <a href="#" onclick="alert('We auto-register users on login.')">Register</a>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
@@ -19,92 +92,32 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
 
-    window.loginWithGoogle = () => {
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          const user = result.user;
-          localStorage.setItem("cutit_user", JSON.stringify(user));
-          updateLoginUI(user);
-        })
-        .catch((error) => {
-          alert("Google Login Failed");
-          console.error(error);
-        });
-    };
-
-    window.loginWithEmail = () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      signInWithEmailAndPassword(auth, email, password)
-        .then((result) => {
-          const user = result.user;
-          localStorage.setItem("cutit_user", JSON.stringify(user));
-          updateLoginUI(user);
-        })
-        .catch((error) => {
-          alert("Email Login Failed: " + error.message);
-        });
-    };
-
-    window.registerWithEmail = () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((result) => {
-          const user = result.user;
-          localStorage.setItem("cutit_user", JSON.stringify(user));
-          updateLoginUI(user);
-        })
-        .catch((error) => {
-          alert("Registration Failed: " + error.message);
-        });
-    };
-
-    window.logout = () => {
-      signOut(auth).then(() => {
-        localStorage.removeItem("cutit_user");
-        updateLoginUI(null);
-      });
-    };
-
-    function updateLoginUI(user) {
-      const loginBox = document.getElementById("loginBox");
-      const loggedInBox = document.getElementById("loggedInBox");
-      const userInfo = document.getElementById("userInfo");
-
-      if (user) {
-        loginBox.style.display = "none";
-        loggedInBox.style.display = "block";
-        userInfo.innerHTML = `👋 Hello, ${user.displayName || user.email}`;
-      } else {
-        loginBox.style.display = "block";
-        loggedInBox.style.display = "none";
-        userInfo.innerHTML = "";
+    window.loginWithEmail = async function () {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert("✅ Logged in!");
+        localStorage.setItem("cutit_loggedIn", "true");
+        window.location.href = "/index.html";
+      } catch (err) {
+        alert("❌ " + err.message);
       }
-    }
+    };
 
-    onAuthStateChanged(auth, (user) => {
-      updateLoginUI(user);
-    });
+    window.loginWithGoogle = async function () {
+      const provider = new GoogleAuthProvider();
+      try {
+        await signInWithPopup(auth, provider);
+        alert("✅ Logged in with Google!");
+        localStorage.setItem("cutit_loggedIn", "true");
+        window.location.href = "/index.html";
+      } catch (err) {
+        alert("❌ " + err.message);
+      }
+    };
   </script>
-</head>
-<body style="font-family:sans-serif; text-align:center; padding:2rem;">
-  <h1>🔐 CutIt.sbs Login</h1>
 
-  <div id="loginBox">
-    <input id="email" placeholder="Email" type="email" style="padding:0.5rem; margin:0.5rem;"><br>
-    <input id="password" placeholder="Password" type="password" style="padding:0.5rem; margin:0.5rem;"><br>
-    <button onclick="loginWithEmail()" style="padding:0.5rem 1rem; margin:0.5rem;">Login with Email</button>
-    <button onclick="registerWithEmail()" style="padding:0.5rem 1rem; margin:0.5rem;">Register</button><br>
-    <hr style="margin:1rem auto; width:200px;">
-    <button onclick="loginWithGoogle()" style="padding:0.5rem 1rem;">Login with Google</button>
-  </div>
-
-  <div id="loggedInBox" style="display:none;">
-    <p id="userInfo" style="margin-bottom:1rem;"></p>
-    <button onclick="logout()" style="padding:0.5rem 1rem;">Logout</button>
-  </div>
 </body>
 </html>
