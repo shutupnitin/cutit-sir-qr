@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CutIt.sbs - Login</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
+      authDomain: "cutitshortener.firebaseapp.com",
+      projectId: "cutitshortener",
+      storageBucket: "cutitshortener.appspot.com",
+      messagingSenderId: "958863508757",
+      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    window.loginWithGoogle = () => {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+          localStorage.setItem("cutit_user", JSON.stringify(user));
+          updateLoginUI(user);
+        })
+        .catch((error) => {
+          alert("Google Login Failed");
+          console.error(error);
+        });
+    };
+
+    window.loginWithEmail = () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      signInWithEmailAndPassword(auth, email, password)
+        .then((result) => {
+          const user = result.user;
+          localStorage.setItem("cutit_user", JSON.stringify(user));
+          updateLoginUI(user);
+        })
+        .catch((error) => {
+          alert("Email Login Failed: " + error.message);
+        });
+    };
+
+    window.registerWithEmail = () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((result) => {
+          const user = result.user;
+          localStorage.setItem("cutit_user", JSON.stringify(user));
+          updateLoginUI(user);
+        })
+        .catch((error) => {
+          alert("Registration Failed: " + error.message);
+        });
+    };
+
+    window.logout = () => {
+      signOut(auth).then(() => {
+        localStorage.removeItem("cutit_user");
+        updateLoginUI(null);
+      });
+    };
+
+    function updateLoginUI(user) {
+      const loginBox = document.getElementById("loginBox");
+      const loggedInBox = document.getElementById("loggedInBox");
+      const userInfo = document.getElementById("userInfo");
+
+      if (user) {
+        loginBox.style.display = "none";
+        loggedInBox.style.display = "block";
+        userInfo.innerHTML = `👋 Hello, ${user.displayName || user.email}`;
+      } else {
+        loginBox.style.display = "block";
+        loggedInBox.style.display = "none";
+        userInfo.innerHTML = "";
+      }
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      updateLoginUI(user);
+    });
+  </script>
+</head>
+<body style="font-family:sans-serif; text-align:center; padding:2rem;">
+  <h1>🔐 CutIt.sbs Login</h1>
+
+  <div id="loginBox">
+    <input id="email" placeholder="Email" type="email" style="padding:0.5rem; margin:0.5rem;"><br>
+    <input id="password" placeholder="Password" type="password" style="padding:0.5rem; margin:0.5rem;"><br>
+    <button onclick="loginWithEmail()" style="padding:0.5rem 1rem; margin:0.5rem;">Login with Email</button>
+    <button onclick="registerWithEmail()" style="padding:0.5rem 1rem; margin:0.5rem;">Register</button><br>
+    <hr style="margin:1rem auto; width:200px;">
+    <button onclick="loginWithGoogle()" style="padding:0.5rem 1rem;">Login with Google</button>
+  </div>
+
+  <div id="loggedInBox" style="display:none;">
+    <p id="userInfo" style="margin-bottom:1rem;"></p>
+    <button onclick="logout()" style="padding:0.5rem 1rem;">Logout</button>
+  </div>
+</body>
+</html>
