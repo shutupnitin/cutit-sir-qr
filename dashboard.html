@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <title>Dashboard | CutIt</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="CutIt Dashboard - Manage your shortened links, track clicks, and more.">
-  <link rel="icon" href="/favicon.ico" />
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
@@ -14,146 +14,152 @@
     :root {
       --bg: #f9fafb;
       --fg: #111;
-      --card: #fff;
+      --card: #ffffff;
       --accent: #6366f1;
+      --danger: #ef4444;
     }
     [data-theme="dark"] {
       --bg: #111827;
       --fg: #f9fafb;
       --card: #1f2937;
       --accent: #818cf8;
+      --danger: #f87171;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
     body {
-      margin: 0;
-      background: var(--bg);
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
       color: var(--fg);
-      font-family: 'Antonio', sans-serif;
-      transition: background 0.3s, color 0.3s;
+      line-height: 1.6;
+      padding-bottom: 4rem;
     }
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem 2rem;
-      border-bottom: 1px solid #ddd;
       background: var(--card);
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .logo {
+      font-size: 1.5rem;
       font-weight: 700;
-      font-size: 1.6rem;
     }
     .premium {
       background: gold;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      margin-left: 10px;
       color: black;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: 10px;
+      font-size: 0.75rem;
     }
-    .controls {
+    .user-controls {
       display: flex;
-      gap: 10px;
+      gap: 1rem;
       align-items: center;
     }
-    .controls button {
+    .btn {
+      background: var(--accent);
+      color: white;
       padding: 6px 14px;
       border: none;
       border-radius: 6px;
-      background: var(--accent);
-      color: white;
       cursor: pointer;
-      font-family: 'Antonio', sans-serif;
+      font-size: 0.85rem;
+    }
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 0.75rem;
     }
     main {
-      max-width: 900px;
+      max-width: 1200px;
       margin: 2rem auto;
       padding: 1rem;
     }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
     .card {
       background: var(--card);
+      border-radius: 12px;
       padding: 1.5rem;
-      border-radius: 14px;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
     input, select {
       width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
+      padding: 10px;
       margin-top: 10px;
       margin-bottom: 14px;
+      border: 1px solid #ccc;
       border-radius: 8px;
       background: var(--bg);
       color: var(--fg);
-      font-family: 'Antonio', sans-serif;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 1rem;
-      overflow-x: auto;
-      display: block;
+      font-size: 0.9rem;
     }
     th, td {
       padding: 10px;
       text-align: left;
-      font-family: 'Antonio', sans-serif;
     }
     th {
       background: var(--bg);
+      font-weight: 600;
     }
     tr:nth-child(even) {
-      background: #f3f4f6;
+      background-color: #f3f4f6;
     }
     [data-theme="dark"] tr:nth-child(even) {
-      background: #2d2f37;
-    }
-    tr.expired td {
-      color: #999;
-      text-decoration: line-through;
-    }
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      margin-right: 4px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: 'Antonio', sans-serif;
+      background-color: #2d2f37;
     }
     .dark-toggle {
-      cursor: pointer;
       font-size: 1.2rem;
+      cursor: pointer;
     }
-    #userEmail {
-      font-size: 0.9rem;
-      opacity: 0.7;
+    .center {
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <header>
     <div class="logo">CutIt <span class="premium" id="premiumBadge" style="display:none;">Premium</span></div>
-    <div class="controls">
-      <div id="userEmail"></div>
-      <button onclick="logout()">Logout</button>
+    <div class="user-controls">
+      <span id="userEmail" style="font-size:0.9rem;"></span>
       <div class="dark-toggle" onclick="toggleTheme()">🌓</div>
+      <button class="btn" onclick="logout()">Logout</button>
     </div>
   </header>
 
   <main>
-    <div class="card">
-      <h3>Create Short Link</h3>
-      <input type="text" id="originalUrl" placeholder="Original URL">
-      <input type="text" id="customAlias" placeholder="Custom alias (optional)">
-      <input type="datetime-local" id="expiration" placeholder="Expiration (optional)">
-      <button onclick="createLink()">Shorten</button>
+    <div class="grid">
+      <div class="card">
+        <h3>✂️ Create Short Link</h3>
+        <input type="text" id="originalUrl" placeholder="Original URL">
+        <input type="text" id="customAlias" placeholder="Custom Alias (optional)">
+        <input type="datetime-local" id="expiration" placeholder="Expiration (optional)">
+        <button class="btn" onclick="createLink()">Shorten</button>
+      </div>
+
+      <div class="card">
+        <h3>📊 Analytics</h3>
+        <canvas id="clickChart" height="160"></canvas>
+      </div>
     </div>
 
-    <div class="card">
-      <h3>Your Links</h3>
+    <div class="card" style="margin-top:2rem;">
+      <h3>🔗 Your Links</h3>
       <table id="linkTable">
         <thead>
           <tr>
@@ -169,75 +175,50 @@
       </table>
     </div>
 
-    <div class="card">
-      <h3>Analytics</h3>
-      <canvas id="clickChart" height="120"></canvas>
-    </div>
-
-    <div class="card">
-      <h3>Bulk Import/Export</h3>
-      <input type="file" onchange="importCSV(event)" disabled>
-      <button onclick="exportCSV()" disabled>Export CSV (Coming Soon)</button>
-    </div>
-
-    <div class="card" style="text-align:center">
+    <div class="card center" style="margin-top:2rem;">
       <p>Need help? <a href="mailto:vibe@cutit.sbs">Contact Support</a></p>
     </div>
   </main>
 
+  <!-- Firebase + JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth, onAuthStateChanged, signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import {
       getFirestore, collection, query, where,
-      getDocs, addDoc, deleteDoc, updateDoc,
-      doc, onSnapshot, serverTimestamp
+      getDocs, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
+    const app = initializeApp({
       apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
       authDomain: "cutitshortener.firebaseapp.com",
       projectId: "cutitshortener",
       storageBucket: "cutitshortener.appspot.com",
       messagingSenderId: "958863508757",
       appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
-    };
+    });
 
-    const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
     let userId = null;
 
     onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        userId = user.uid;
-        document.getElementById('userEmail').innerText = user.email;
-        loadLinks();
-        checkPremium(userId);
-      } else {
-        window.location.href = "login.html";
-      }
+      if (!user) return location.href = "login.html";
+      userId = user.uid;
+      document.getElementById("userEmail").textContent = user.email;
+      loadLinks();
+      checkPremium(userId);
     });
 
     async function createLink() {
       let rawUrl = document.getElementById("originalUrl").value.trim();
-      if (!/^https?:\/\//i.test(rawUrl)) {
-        rawUrl = 'https://' + rawUrl;
-      }
+      if (!/^https?:\/\//i.test(rawUrl)) rawUrl = 'https://' + rawUrl;
       const original = rawUrl;
       const custom = document.getElementById("customAlias").value.trim();
       const expiration = document.getElementById("expiration").value;
-      if (!original) return alert("Enter a valid URL");
 
-      if (custom) {
-        const customQuery = query(collection(db, "shortlinks"), where("custom", "==", custom));
-        const existing = await getDocs(customQuery);
-        if (!existing.empty) {
-          return alert("Custom alias already taken.");
-        }
-      }
+      if (!original) return alert("Enter a valid URL");
 
       const payload = {
         original,
@@ -269,8 +250,6 @@
           const isExpired = expires !== "∞" && expires < now;
 
           const row = document.createElement("tr");
-          if (isExpired) row.classList.add("expired");
-
           row.innerHTML = `
             <td>${data.custom || docSnap.id}</td>
             <td><a href="${data.original}" target="_blank">${data.original}</a></td>
@@ -278,8 +257,8 @@
             <td>${expires === "∞" ? "∞" : expires.toLocaleString()}</td>
             <td><canvas id="qr-${docSnap.id}" width="50" height="50"></canvas></td>
             <td>
-              <button class="btn-sm" onclick="copyLink('${data.custom || docSnap.id}')">Copy</button>
-              <button class="btn-sm" onclick="deleteLink('${docSnap.id}')">Delete</button>
+              <button class="btn btn-sm" onclick="copyLink('${data.custom || docSnap.id}')">Copy</button>
+              <button class="btn btn-sm" style="background:var(--danger);" onclick="deleteLink('${docSnap.id}')">Delete</button>
             </td>
           `;
           table.appendChild(row);
@@ -332,21 +311,20 @@
     }
 
     function logout() {
-      signOut(auth).then(() => window.location.href = "login.html");
+      signOut(auth).then(() => location.href = "login.html");
     }
 
     function toggleTheme() {
       const current = document.documentElement.getAttribute("data-theme");
       const next = current === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
     }
 
-    function exportCSV() {
-      alert("Coming soon: export feature");
-    }
-
-    function importCSV(event) {
-      alert("Coming soon: import feature");
+    // Load saved theme
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      document.documentElement.setAttribute("data-theme", savedTheme);
     }
   </script>
 </body>
