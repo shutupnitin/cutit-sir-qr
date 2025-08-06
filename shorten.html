@@ -4,6 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Shorten URLs ✂️ CutIt.sbs</title>
+  <meta name="description" content="CutIt.sbs - Instantly shorten, customize, and manage your URLs. Free and powerful URL shortener with premium features like analytics and custom domains." />
+  <meta name="keywords" content="URL shortener, cutit, short link, shorten url, free url shortener, branded links, custom links, analytics, link tracker" />
+  <meta name="author" content="CutIt.sbs" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://cutit.sbs/" />
+  <meta property="og:title" content="CutIt.sbs - Smart URL Shortener" />
+  <meta property="og:description" content="Create sleek, branded links in seconds. Free & Premium URL shortener with analytics, custom links and more." />
+  <meta property="og:url" content="https://cutit.sbs/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://cutit.sbs/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CutIt.sbs - Smart URL Shortener" />
+  <meta name="twitter:description" content="Shorten your links with style. Enjoy powerful premium tools with a one-time ₹199 plan." />
+  <meta name="twitter:image" content="https://cutit.sbs/twitter-image.png" />
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet" />
   <style>
     * {
@@ -129,7 +144,6 @@
     }
   </style>
 
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -184,6 +198,13 @@
         <li>Link expiration control</li>
         <li>Dashboard & insights</li>
       </ul>
+      <button onclick="openRazorpay()" style="margin-top:1rem; width:100%; padding:0.8rem; background:#007aff; color:white; border:none; border-radius:8px; font-size:1rem; cursor:pointer;">
+        🔓 Unlock All – ₹199 Lifetime
+      </button>
+      <div class="premium-only" style="display:none; margin-top:1rem;">
+        <p style="color:green;">🎉 Premium Unlocked!</p>
+        <button style="width:100%; padding:0.6rem; border:none; background:#111; color:white; border-radius:6px;">Go to Dashboard</button>
+      </div>
     </div>
   </div>
 
@@ -223,6 +244,46 @@
         alert("Something went wrong. Try again.");
       }
     });
+
+    function openRazorpay() {
+      const options = {
+        key: "rzp_live_AJEAZ1WJHOpOOQ	", // Replace with your Razorpay Key
+        amount: 19900,
+        currency: "INR",
+        name: "CutIt.sbs",
+        description: "Lifetime Premium Access",
+        image: "https://cutit.sbs/logo.png",
+        handler: async function (response) {
+          alert("✅ Payment Successful! Premium features unlocked.");
+          localStorage.setItem("cutit_isPremium", "true");
+          const db = window.db;
+          const { collection, doc, setDoc } = window.firestoreHelpers;
+          try {
+            await setDoc(doc(collection(db, "premium_users"), response.razorpay_payment_id), {
+              isPremium: true,
+              created: new Date().toISOString()
+            });
+          } catch (e) {
+            console.error("Error saving premium status:", e);
+          }
+          unlockPremiumUI();
+        },
+        theme: {
+          color: "#000000"
+        }
+      };
+      const rzp = new Razorpay(options);
+      rzp.open();
+    }
+
+    function unlockPremiumUI() {
+      const premiumElements = document.querySelectorAll(".premium-only");
+      premiumElements.forEach(el => el.style.display = "block");
+    }
+
+    if (localStorage.getItem("cutit_isPremium") === "true") {
+      window.addEventListener("DOMContentLoaded", unlockPremiumUI);
+    }
   </script>
 </body>
 </html>
