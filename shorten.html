@@ -37,41 +37,6 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Antonio', sans-serif; }
     body { background: #fdfdff; color: #111; padding: 2rem; transition: background 0.3s, color 0.3s; }
-    .dark-mode { background: #111; color: #fdfdff; }
-    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding-bottom: 1rem; }
-    .logo { font-size: 2rem; }
-    .toggle-btn {
-      padding: 0.5rem 1rem; border-radius: 6px; border: 1px solid #999;
-      background: white; cursor: pointer;
-    }
-    .toggle-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  padding: 4px 8px;
-  font-size: 0.8rem;
-  border: 1px solid #888;
-  border-radius: 6px;
-  background: #fff;
-  color: #000;
-  cursor: pointer;
-  z-index: 9999;
-  transition: all 0.3s ease;
-}
-
-.dark-mode .toggle-btn {
-  background: #222;
-  color: #fff;
-  border-color: #fff;
-}
-
-.toggle-btn:hover {
-  background: #eee;
-}
-
-.dark-mode .toggle-btn:hover {
-  background: #333;
-}
       font-size: 2.3rem; margin-bottom: 1.5rem;
       letter-spacing: 0.5px;
     }
@@ -181,7 +146,6 @@
 <body>
 <header>
     <div class="logo">CutIt.sbs</div>
-    <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
   </header>
   <h1>Shorten Your Long URLs</h1>
   <p class="tagline">Create sleek, branded links in seconds</p>
