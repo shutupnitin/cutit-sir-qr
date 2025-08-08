@@ -239,229 +239,410 @@
       new Razorpay(options).open();
     }
 
-    <!-- Antonio Font -->
-<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&display=swap" rel="stylesheet">
-
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-70PVFGLP9G');
-</script>
-
+    <!-- =========== CUTIE INLINE CHAT BLOCK =========== -->
+<!-- Antonio font already loaded in your page; this uses it -->
 <style>
-/* Floating Chat Button */
+/* Cutie styles (black & white, Antonio font inherited) */
+#cutie-wrapper { position: fixed; bottom: 20px; right: 20px; z-index: 99999; font-family: 'Antonio', sans-serif; }
 #cutie-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: black;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 28px;
-  cursor: pointer;
-  animation: spin 4s linear infinite;
-  z-index: 9999;
+  width:56px;height:56px;border-radius:50%;background:#000;color:#fff;border:2px solid #fff;
+  display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;
+  box-shadow:0 8px 24px rgba(0,0,0,0.25); transition: transform .18s ease;
+  animation:cutieSpin 6s linear infinite;
 }
-@keyframes spin {
-  0% {transform: rotate(0deg);}
-  100% {transform: rotate(360deg);}
-}
+#cutie-button:hover{ transform: scale(1.06) rotate(10deg); }
+@keyframes cutieSpin {0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 
 /* Chatbox */
 #cutie-chat {
-  font-family: 'Antonio', sans-serif;
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  width: 320px;
-  max-height: 450px;
-  background: white;
-  color: black;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.3);
-  display: none;
-  flex-direction: column;
-  z-index: 9999;
-  overflow: hidden;
+  width:320px; max-height:64vh; min-height:140px; background:#fff; color:#000; border:2px solid #000;
+  border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.25); overflow:hidden; display:none; flex-direction:column;
+  position: absolute; right: 0; bottom: 72px;
+  touch-action: none;
 }
 .cutie-header {
-  background: black;
-  color: white;
-  padding: 10px;
-  font-size: 18px;
-  display: flex;
-  justify-content: space-between;
+  background:#000;color:#fff;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:grab;
 }
-.cutie-messages {
-  padding: 10px;
-  flex: 1;
-  overflow-y: auto;
-  font-size: 14px;
-}
-.cutie-input {
-  display: flex;
-  border-top: 1px solid #ccc;
-}
-.cutie-input input {
-  flex: 1;
-  padding: 8px;
-  border: none;
-  outline: none;
-  font-family: 'Antonio', sans-serif;
-}
-.cutie-input button {
-  background: black;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-}
-.cutie-footer {
-  padding: 5px;
-  text-align: center;
-  border-top: 1px solid #ccc;
-  background: #f8f8f8;
-}
-.cutie-footer a {
-  text-decoration: none;
-  color: red;
-  font-size: 14px;
-}
-.cutie-msg {
-  margin-bottom: 8px;
-}
-.cutie-user { text-align: right; }
-.cutie-bot { text-align: left; }
-.reactions span {
-  margin-left: 5px;
-  cursor: pointer;
+.cutie-header .title { font-size:16px; font-weight:700; }
+.cutie-body { padding:10px; overflow:auto; flex:1; font-size:14px; }
+.cutie-row { margin-bottom:10px; display:block; clear:both; }
+.cutie-user{ text-align:right; color:#111; }
+.cutie-bot{ text-align:left; color:#111; }
+.cutie-input { display:flex; border-top:1px solid #eee; }
+.cutie-input input{ flex:1;padding:10px;border:none;outline:none;font-family:inherit; }
+.cutie-input button{ background:#000;color:#fff;border:none;padding:10px 12px;cursor:pointer; }
+.cutie-footer{ padding:8px;text-align:center;border-top:1px solid #eee;background:#fafafa;}
+.cutie-footer a{ text-decoration:none;color:#000;font-weight:700; }
+.cutie-reactions { margin-left:8px; display:inline-block; }
+.cutie-reaction-btn{ background:none;border:none;cursor:pointer;font-size:16px;margin-left:6px;padding:2px; }
+.cutie-typing { color:#777;font-style:italic;font-size:13px; }
+@media (max-width:520px){
+  #cutie-chat { width:92vw; left:4vw; right:4vw; bottom:90px; max-height:70vh; }
+  #cutie-wrapper { bottom:14px; right:12px; }
 }
 </style>
 
-<!-- Floating Button -->
-<button id="cutie-button">💬</button>
+<div id="cutie-wrapper" aria-live="polite">
+  <div id="cutie-button" role="button" aria-label="Open chat">💬</div>
 
-<!-- Chatbox -->
-<div id="cutie-chat">
-  <div class="cutie-header">
-    <span>Cutie 🤍</span>
-    <span style="cursor:pointer" id="cutie-close">✖</span>
-  </div>
-  <div class="cutie-messages" id="cutie-messages"></div>
-  <div class="cutie-input">
-    <input type="text" id="cutie-input-text" placeholder="Type your message...">
-    <button id="cutie-send">➤</button>
-  </div>
-  <div class="cutie-footer">
-    <a href="https://rzp.io/rzp/cutitsbs" target="_blank" id="cutie-donate">❤️ Donate</a>
+  <div id="cutie-chat" role="dialog" aria-label="Cutie chatbox">
+    <div class="cutie-header" id="cutie-drag-handle">
+      <div class="title">Cutie 🤍</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="cutie-minimize" title="Close" style="background:none;border:none;color:#fff;cursor:pointer;font-size:16px">✖</button>
+      </div>
+    </div>
+
+    <div class="cutie-body" id="cutie-body" tabindex="0" aria-live="polite"></div>
+
+    <div class="cutie-input" role="form" aria-label="Send message">
+      <input id="cutie-input" placeholder="Ask Cutie..." autocomplete="off" aria-label="Chat input" />
+      <button id="cutie-send" aria-label="Send">➤</button>
+    </div>
+
+    <div class="cutie-footer">
+      <a id="cutie-donate" href="https://rzp.io/rzp/cutitsbs" target="_blank" rel="noopener">❤️ Donate</a>
+    </div>
   </div>
 </div>
 
 <script>
-const MAX_CHATS = 15;
-let chatsToday = parseInt(localStorage.getItem("cutie_chats") || "0");
-let lastDate = localStorage.getItem("cutie_date");
-const today = new Date().toDateString();
-if (lastDate !== today) {
-  chatsToday = 0;
-  localStorage.setItem("cutie_date", today);
-}
-let messages = JSON.parse(localStorage.getItem("cutie_history") || "[]");
+/* Cutie chat single-block logic
+   - 15 free chats/day per visitor
+   - Attempts stable free endpoints with retries
+   - Two reactions (❤️ & 😂) saved in localStorage + GA events
+   - Draggable chatbox
+   - No auto-greeting (silent until first user message)
+*/
 
-const cutieBtn = document.getElementById("cutie-button");
-const cutieChat = document.getElementById("cutie-chat");
-const cutieClose = document.getElementById("cutie-close");
-const cutieMessages = document.getElementById("cutie-messages");
-const cutieInput = document.getElementById("cutie-input-text");
-const cutieSend = document.getElementById("cutie-send");
+/* ---------- Config & storage keys ---------- */
+const CUTIE_MAX = 15;
+const KEY_USAGE = 'cutie_usage_v2';
+const KEY_DATE = 'cutie_usage_date_v2';
+const KEY_HISTORY = 'cutie_history_v2';
+const KEY_REACTIONS = 'cutie_reacts_v2';
 
-function renderMessages() {
-  cutieMessages.innerHTML = "";
-  // First-time greeting
-  if (messages.length === 0) {
-    messages.push({text: "Hi bestie! 🤍 I’m Cutie, your always-here friend. How’s your vibe today?", user: false, bot: true});
-    localStorage.setItem("cutie_history", JSON.stringify(messages));
+const wrapper = document.getElementById('cutie-wrapper');
+const btn = document.getElementById('cutie-button');
+const chat = document.getElementById('cutie-chat');
+const body = document.getElementById('cutie-body');
+const input = document.getElementById('cutie-input');
+const sendBtn = document.getElementById('cutie-send');
+const minimize = document.getElementById('cutie-minimize');
+const donate = document.getElementById('cutie-donate');
+const dragHandle = document.getElementById('cutie-drag-handle');
+
+/* ---------- Usage daily reset ---------- */
+function ensureDailyReset(){
+  const today = (new Date()).toISOString().slice(0,10);
+  const last = localStorage.getItem(KEY_DATE);
+  if (last !== today) {
+    localStorage.setItem(KEY_DATE, today);
+    localStorage.setItem(KEY_USAGE, '0');
   }
-  messages.forEach(m => {
-    const div = document.createElement("div");
-    div.className = "cutie-msg " + (m.user ? "cutie-user" : "cutie-bot");
-    div.innerHTML = m.text + (m.bot ? `<span class="reactions"><span>❤️</span><span>😂</span></span>` : "");
-    cutieMessages.appendChild(div);
-  });
-  cutieMessages.scrollTop = cutieMessages.scrollHeight;
 }
-renderMessages();
+ensureDailyReset();
+function getUsage(){ ensureDailyReset(); return parseInt(localStorage.getItem(KEY_USAGE)||'0',10); }
+function incUsage(){ const n = getUsage()+1; localStorage.setItem(KEY_USAGE, String(n)); return n; }
 
-function botReply(text) {
-  let lower = text.toLowerCase();
-  if (lower.includes("who built you")) return "The CutIt.sbs team made me with love, chaos, and code ❤️";
-  if (lower.includes("what's your name")) return "I’m Cutie, your CutIt bestie 🤍";
-  if (lower === "hi") return "Heyyy bestie 🖤 how’s your vibe today?";
-  if (lower.includes("bye")) return "Don’t ghost me now 👀, come back soon!";
-  if (lower.includes("love")) return "Spreading only good vibes & love ✨";
+/* ---------- History & reactions ---------- */
+function loadHistory(){ try{ return JSON.parse(localStorage.getItem(KEY_HISTORY)||'[]'); }catch(e){return[]} }
+function saveHistory(h){ localStorage.setItem(KEY_HISTORY, JSON.stringify(h)); }
+function loadReacts(){ try{ return JSON.parse(localStorage.getItem(KEY_REACTIONS)||'{}'); }catch(e){return{} } }
+function saveReacts(r){ localStorage.setItem(KEY_REACTIONS, JSON.stringify(r)); }
+
+/* ---------- Utilities ---------- */
+function uid(){ return 'm'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function escapeHtml(s){ if(!s) return ''; return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+function gaEvent(name, params={}){ try{ if(window.gtag) gtag('event', name, params); }catch(e){} }
+
+/* ---------- Render messages ---------- */
+function renderAll(){
+  const history = loadHistory();
+  body.innerHTML = '';
+  history.forEach(msg => {
+    const el = document.createElement('div');
+    el.className = 'cutie-row ' + (msg.from === 'user' ? 'cutie-user' : 'cutie-bot');
+    el.dataset.id = msg.id;
+    const content = '<div>'+ escapeHtml(msg.text) + (msg.from==='cutie' ? reactionHtml(msg.id) : '') +'</div>';
+    el.innerHTML = content;
+    body.appendChild(el);
+  });
+  body.scrollTop = body.scrollHeight;
+  attachReactionHandlers(); // ensure reaction buttons wired
+}
+function reactionHtml(id){
+  const reacts = loadReacts();
+  const cur = reacts[id] || {};
+  const heart = cur.heart ? (' <span title="heart">❤️</span>') : ' <button class="cutie-reaction-btn" data-id="'+id+'" data-react="heart">❤️</button>';
+  const laugh = cur.laugh ? (' <span title="laugh">😂</span>') : ' <button class="cutie-reaction-btn" data-id="'+id+'" data-react="laugh">😂</button>';
+  return '<span class="cutie-reactions">'+heart+laugh+'</span>';
+}
+
+/* ---------- Reaction handlers ---------- */
+function attachReactionHandlers(){
+  const btns = body.querySelectorAll('.cutie-reaction-btn');
+  btns.forEach(b=>{
+    b.onclick = (e)=>{
+      const id = b.dataset.id;
+      const react = b.dataset.react;
+      const reacts = loadReacts();
+      reacts[id] = reacts[id] || {};
+      reacts[id][react === 'heart' ? 'heart' : 'laugh'] = true;
+      saveReacts(reacts);
+      gaEvent('cutie_reaction', {reaction: react, message_id: id});
+      renderAll();
+    };
+  });
+}
+
+/* ---------- Special-case local replies (bestie tone) ---------- */
+function localSpecial(text){
+  const t = (text||'').toLowerCase().trim();
+  if(!t) return null;
+  if(t.includes('who built')||t.includes('who made')||t.includes('who created')) return "I was created with love by the CutIt.sbs team ❤️ — I'm Cutie, your bestie.";
+  if(t.includes("what's your name")||t.includes("what is your name")||t.includes('whats your name')) return "I'm Cutie — your CutIt bestie 🤍";
+  if(['hi','hello','hey','hiya'].includes(t)) return "Hey bestie 🖤 — what's the vibe?";
+  if(t.includes('bye')) return "Don't go yet 👀 — come back soon!";
+  if(t.includes('love')) return "Spreading good vibes & love ✨";
   return null;
 }
 
-async function getAIResponse(userMsg) {
-  let special = botReply(userMsg);
-  if (special) return special;
+/* ---------- Fallback generator (deterministic friendly replies) ---------- */
+function fallbackReply(userText){
+  const l = (userText||'').toLowerCase();
+  if(l.includes('qr')) return "To make a QR, paste a link in the QR box and click Generate — I can guide you if you want.";
+  if(l.includes('short') || l.includes('shorten')) return "To shorten a link: click ✂️ Get Short Link or use our shortener page — quick & free.";
+  if(l.includes('how') && l.includes('work')) return "I help with short links & QR codes — ask me to guide you step-by-step.";
+  const fallback = [
+    "Nice — tell me more?",
+    "I got you. What else would you like to do?",
+    "Want me to make a QR or shorten something for you?",
+    "Yaaas, let's vibe. Ask me anything about QR or links."
+  ];
+  return fallback[Math.floor(Math.random()*fallback.length)];
+}
 
-  try {
-    const res = await fetch("https://api.monkedev.com/fun/chat", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({msg: userMsg})
-    });
-    const data = await res.json();
-    return data.response || "Sorry bestie, I’m feeling a little shy rn 😅";
-  } catch (err) {
-    return "Hmm… something’s off with my vibe rn. Try again later 🤍";
+/* ---------- Stable free endpoints & retrying ----------
+   We'll attempt endpoints in sequence with retry/timeouts:
+   1) HF Space (community) at /run/predict (best-effort)
+   2) monkedev quick fun chat (fallback)
+   If all fail, use local fallback.
+-------------------------------------------------------*/
+
+async function fetchWithTimeout(url, opts={}, timeout=11000){
+  const controller = new AbortController();
+  const id = setTimeout(()=>controller.abort(), timeout);
+  try{
+    const res = await fetch(url, {...opts, signal: controller.signal});
+    clearTimeout(id);
+    return res;
+  }catch(e){
+    clearTimeout(id);
+    throw e;
   }
 }
 
-cutieBtn.onclick = () => {
-  cutieChat.style.display = "flex";
-  gtag('event', 'cutie_chat_open');
-};
+async function tryHfSpace(text){
+  // Many spaces accept {data:[text]} -> .data[0]; try safely
+  const HF_URL = "https://yuntian-deng-chatgpt.hf.space/run/predict"; // community space (may change)
+  try{
+    const res = await fetchWithTimeout(HF_URL, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({data:[text]})
+    },11000);
+    if(!res.ok) throw new Error('hf bad');
+    const j = await res.json();
+    // Common place: j.data[0] or j.data[0][0]
+    if(j && j.data){
+      const v = j.data[0];
+      if(typeof v === 'string') return v;
+      if(Array.isArray(v) && typeof v[0] === 'string') return v[0];
+    }
+  }catch(e){ throw e; }
+  throw new Error('HF parse fail');
+}
 
-cutieClose.onclick = () => {
-  cutieChat.style.display = "none";
-};
+async function tryMonke(text){
+  // monke quick chat free (CORS-friendly)
+  try{
+    const res = await fetchWithTimeout('https://api.monkedev.com/fun/chat', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({msg:text})
+    },9000);
+    if(!res.ok) throw new Error('monke bad');
+    const j = await res.json();
+    if(j && j.response) return j.response;
+  }catch(e){ throw e; }
+  throw new Error('monke fail');
+}
 
-cutieSend.onclick = async () => {
-  const text = cutieInput.value.trim();
-  if (!text) return;
+async function getRemoteReplyWithRetries(text){
+  const attempts = [
+    ()=> tryHfSpace(text),
+    ()=> tryMonke(text)
+  ];
+  for(let i=0;i<attempts.length;i++){
+    const fn = attempts[i];
+    for(let tryI=0; tryI<2; tryI++){
+      try{
+        const r = await fn();
+        if(r && r.trim()) return r;
+      }catch(e){
+        // wait a bit before retry (backoff)
+        await new Promise(res=>setTimeout(res, 500 + tryI*500));
+      }
+    }
+  }
+  throw new Error('all endpoints failed');
+}
 
-  if (chatsToday >= MAX_CHATS) {
-    messages.push({text: "You’ve reached your free 15 chats for today 🤍", user: false, bot: true});
-    renderMessages();
+/* ---------- Main getCutieReply (tries remote then fallback) ---------- */
+async function getCutieReply(userText){
+  // special-case quick responses
+  const special = localSpecial(userText);
+  if(special) return special;
+  try{
+    const reply = await getRemoteReplyWithRetries(userText);
+    // lightly post-process to keep bestie tone
+    let t = reply.trim();
+    if(!/cutie|bestie|🤍|❤️/i.test(t) && Math.random()<0.2) t += " — your Cutie 🤍";
+    return t;
+  }catch(e){
+    // graceful friendly error message and fallback
+    const fallback = fallbackReply(userText);
+    return fallback + " (I had to use my backup brain — still here for you 🤍)";
+  }
+}
+
+/* ---------- Send flow ---------- */
+async function sendUserMessage(text){
+  if(!text) return;
+  // enforce usage
+  if(getUsage() >= CUTIE_MAX){
+    appendMessage('cutie', `You’ve reached your free ${CUTIE_MAX} chats for today 🤍`);
     return;
   }
+  // push user msg
+  const history = loadHistory();
+  const userMsg = { id: uid(), from: 'user', text: text, ts: Date.now() };
+  history.push(userMsg); saveHistory(history); renderAll();
+  gaEvent('cutie_message_sent');
 
-  messages.push({text, user: true});
-  cutieInput.value = "";
-  renderMessages();
+  // increment usage
+  incUsage();
 
-  chatsToday++;
-  localStorage.setItem("cutie_chats", chatsToday);
-  gtag('event', 'cutie_message_sent');
+  // show typing indicator
+  const typingId = 'typing_'+Date.now();
+  const tEl = document.createElement('div'); tEl.className='cutie-row cutie-bot'; tEl.id = typingId;
+  tEl.innerHTML = '<div class="cutie-typing">Cutie is typing…</div>'; body.appendChild(tEl); body.scrollTop = body.scrollHeight;
 
-  const reply = await getAIResponse(text);
-  messages.push({text: reply, user: false, bot: true});
-  localStorage.setItem("cutie_history", JSON.stringify(messages));
-  renderMessages();
-};
+  try{
+    const reply = await getCutieReply(text);
+    // remove typing
+    const tnode = document.getElementById(typingId); if(tnode) tnode.remove();
+    const cutieMsg = { id: uid(), from: 'cutie', text: reply, ts: Date.now() };
+    const h2 = loadHistory(); h2.push(cutieMsg); saveHistory(h2); renderAll();
+  }catch(e){
+    const tnode = document.getElementById(typingId); if(tnode) tnode.remove();
+    const errMsg = { id: uid(), from: 'cutie', text: "Oops bestie — my connection's fuzzy. Try again in a moment?", ts: Date.now() };
+    const h3 = loadHistory(); h3.push(errMsg); saveHistory(h3); renderAll();
+  }
+}
 
-document.getElementById("cutie-donate").onclick = () => {
-  gtag('event', 'cutie_donate_clicked');
+/* ---------- Append helper (not used directly, kept for compatibility) ---------- */
+function appendMessage(role, text){
+  const h = loadHistory();
+  h.push({id: uid(), from: role==='You'?'user':'cutie', text:text, ts:Date.now()});
+  saveHistory(h); renderAll();
+}
+
+/* ---------- UI wiring ---------- */
+btn.addEventListener('click', ()=>{
+  const was = chat.style.display === 'flex';
+  chat.style.display = was ? 'none' : 'flex';
+  if(!was){
+    gaEvent('cutie_chat_open'); // GA open event
+    renderAll(); // ensure history shows
+    input.focus();
+  }
+});
+
+minimize.addEventListener('click', ()=>{ chat.style.display='none'; });
+
+sendBtn.addEventListener('click', ()=>{
+  const t = input.value.trim();
+  if(!t) return;
+  input.value='';
+  sendUserMessage(t);
+});
+
+input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); sendBtn.click(); } });
+
+donate.addEventListener('click', ()=>{ gaEvent('cutie_donate_clicked'); });
+
+/* ---------- Attach reactions after render ---------- */
+function attachReactionHandlers(){ // covered inside renderAll() where called
+  // left intentionally for compat
+}
+
+/* ---------- Make chat draggable ---------- */
+(function makeDraggable(){
+  let isDown=false, startX=0, startY=0, startLeft=0, startTop=0;
+  dragHandle.style.touchAction='none';
+  dragHandle.addEventListener('pointerdown',(e)=>{
+    isDown=true;
+    dragHandle.setPointerCapture(e.pointerId);
+    startX = e.clientX; startY = e.clientY;
+    const rect = chat.getBoundingClientRect();
+    startLeft = rect.left; startTop = rect.top;
+    dragHandle.style.cursor='grabbing';
+  });
+  window.addEventListener('pointermove',(e)=>{
+    if(!isDown) return;
+    e.preventDefault();
+    const dx = e.clientX - startX; const dy = e.clientY - startY;
+    // clamp inside viewport a bit
+    let newLeft = startLeft + dx;
+    let newTop = startTop + dy;
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    if(newLeft < 6) newLeft = 6;
+    if(newTop < 6) newTop = 6;
+    if(newLeft + chat.offsetWidth > vw-6) newLeft = vw - chat.offsetWidth - 6;
+    if(newTop + chat.offsetHeight > vh-6) newTop = vh - chat.offsetHeight - 6;
+    chat.style.position = 'fixed';
+    chat.style.left = newLeft + 'px';
+    chat.style.top = newTop + 'px';
+    chat.style.right = 'auto';
+    chat.style.bottom = 'auto';
+  });
+  window.addEventListener('pointerup',(e)=>{
+    if(!isDown) return;
+    isDown=false;
+    try{ dragHandle.releasePointerCapture(e.pointerId); }catch(e){}
+    dragHandle.style.cursor='grab';
+  });
+})();
+
+/* ---------- Initialize minimal state: no auto-greeting ---------- */
+(function init(){
+  // Ensure history exists
+  if(!localStorage.getItem(KEY_HISTORY)) localStorage.setItem(KEY_HISTORY, JSON.stringify([]));
+  // Ensure reacts exists
+  if(!localStorage.getItem(KEY_REACTIONS)) localStorage.setItem(KEY_REACTIONS, JSON.stringify({}));
+  renderAll();
+})();
+
+/* ---------- Expose a small debug API on window for maintenance ---------- */
+window.Cutie = {
+  open: ()=>{ chat.style.display='flex'; renderAll(); },
+  close: ()=>{ chat.style.display='none'; },
+  clearHistory: ()=>{ localStorage.removeItem(KEY_HISTORY); renderAll(); },
+  resetUsage: ()=>{ localStorage.removeItem(KEY_USAGE); localStorage.removeItem(KEY_DATE); ensureDailyReset(); }
 };
 </script>
+<!-- =========== END CUTIE INLINE CHAT BLOCK =========== -->
   <a id="gameBtn" href="https://cutit.sbs/games">🎮 Play Games</a>
 </body>
 </html>
