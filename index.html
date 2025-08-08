@@ -81,6 +81,28 @@
     }
     @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+    /* Chatbox */
+    #chatBox {
+  display: none; flex-direction: column;
+  position: fixed; bottom: 80px; right: 20px;
+  width: 300px; height: 400px;
+  background: #fff; border: 2px solid #000; border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999; overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+    #chatBox > div:first-child {
+      background: #000; color: #fff; padding: 0.6rem; font-weight: bold;
+    }
+    #chatMessages { flex: 1; padding: 0.8rem; overflow-y: auto; font-size: 0.9rem; text-align: left; }
+    #chatForm { display: flex; border-top: 1px solid #ddd; }
+    #chatForm input {
+      flex: 1; border: none; padding: 0.7rem; font-size: 0.9rem; outline: none;
+    }
+    #chatForm button {
+      padding: 0.5rem 1rem; border: none; background: #000; color: #fff; cursor: pointer;
+    }
+
     #gameBtn {
       position: fixed;
       bottom: 15px;
@@ -351,6 +373,7 @@ if (lastDate !== today) {
   localStorage.setItem("cutie_date", today);
 }
 let messages = JSON.parse(localStorage.getItem("cutie_history") || "[]");
+
 const cutieBtn = document.getElementById("cutie-button");
 const cutieChat = document.getElementById("cutie-chat");
 const cutieClose = document.getElementById("cutie-close");
@@ -360,6 +383,11 @@ const cutieSend = document.getElementById("cutie-send");
 
 function renderMessages() {
   cutieMessages.innerHTML = "";
+  // First-time greeting
+  if (messages.length === 0) {
+    messages.push({text: "Hi bestie! 🤍 I’m Cutie, your always-here friend. How’s your vibe today?", user: false, bot: true});
+    localStorage.setItem("cutie_history", JSON.stringify(messages));
+  }
   messages.forEach(m => {
     const div = document.createElement("div");
     div.className = "cutie-msg " + (m.user ? "cutie-user" : "cutie-bot");
@@ -381,18 +409,20 @@ function botReply(text) {
 }
 
 async function getAIResponse(userMsg) {
-  // Try personality triggers first
   let special = botReply(userMsg);
   if (special) return special;
 
-  // Free public AI endpoint (HuggingFace Inference API with no key)
-  const res = await fetch("https://api.monkedev.com/fun/chat", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({msg: userMsg})
-  });
-  const data = await res.json();
-  return data.response || "Sorry bestie, I’m feeling a little shy rn 😅";
+  try {
+    const res = await fetch("https://api.monkedev.com/fun/chat", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({msg: userMsg})
+    });
+    const data = await res.json();
+    return data.response || "Sorry bestie, I’m feeling a little shy rn 😅";
+  } catch (err) {
+    return "Hmm… something’s off with my vibe rn. Try again later 🤍";
+  }
 }
 
 cutieBtn.onclick = () => {
@@ -407,11 +437,13 @@ cutieClose.onclick = () => {
 cutieSend.onclick = async () => {
   const text = cutieInput.value.trim();
   if (!text) return;
+
   if (chatsToday >= MAX_CHATS) {
     messages.push({text: "You’ve reached your free 15 chats for today 🤍", user: false, bot: true});
     renderMessages();
     return;
   }
+
   messages.push({text, user: true});
   cutieInput.value = "";
   renderMessages();
