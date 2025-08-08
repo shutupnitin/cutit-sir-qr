@@ -81,6 +81,28 @@
     }
     @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+    /* Chatbox */
+    #chatBox {
+  display: none; flex-direction: column;
+  position: fixed; bottom: 80px; right: 20px;
+  width: 300px; height: 400px;
+  background: #fff; border: 2px solid #000; border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999; overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+    #chatBox > div:first-child {
+      background: #000; color: #fff; padding: 0.6rem; font-weight: bold;
+    }
+    #chatMessages { flex: 1; padding: 0.8rem; overflow-y: auto; font-size: 0.9rem; text-align: left; }
+    #chatForm { display: flex; border-top: 1px solid #ddd; }
+    #chatForm input {
+      flex: 1; border: none; padding: 0.7rem; font-size: 0.9rem; outline: none;
+    }
+    #chatForm button {
+      padding: 0.5rem 1rem; border: none; background: #000; color: #fff; cursor: pointer;
+    }
+
     #gameBtn {
       position: fixed;
       bottom: 15px;
@@ -216,163 +238,42 @@
       };
       new Razorpay(options).open();
     }
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-70PVFGLP9G');
-</script>
 
-<!-- Cutie AI Chatbot -->
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Antonio&display=swap');
-#cutie-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #ff66b2, #8a2be2, #00cfff);
-  color: white;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  font-size: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 999999;
-  animation: cutie-spin 8s linear infinite;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-@keyframes cutie-spin {0% {transform: rotate(0deg);}100% {transform: rotate(360deg);}}
-#cutie-chatbox {
-  font-family: 'Antonio', sans-serif;
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  width: 320px;
-  max-height: 420px;
-  background: #000;
-  color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 999999;
-}
-#cutie-header {background: #111;padding: 10px;cursor: move;font-weight: bold;text-align: center;}
-#cutie-messages {flex: 1;overflow-y: auto;padding: 10px;}
-.cutie-msg {margin: 6px 0;}
-.cutie-user {color: #00cfff;}
-.cutie-bot {color: #ff66b2;}
-.cutie-reactions span {cursor: pointer;margin-left: 5px;}
-#cutie-input-area {display: flex;border-top: 1px solid #444;}
-#cutie-input {flex: 1;padding: 8px;border: none;outline: none;}
-#cutie-send {padding: 8px;background: #00cfff;color: #000;border: none;cursor: pointer;}
-#cutie-donate {background: #ff66b2;color: #fff;padding: 6px;text-align: center;cursor: pointer;}
-</style>
-
-<div id="cutie-button">😊</div>
-<div id="cutie-chatbox">
-  <div id="cutie-header">Cutie 🤍</div>
-  <div id="cutie-messages"></div>
-  <div id="cutie-input-area">
-    <input id="cutie-input" type="text" placeholder="Type here..." />
-    <button id="cutie-send">➤</button>
-  </div>
-  <div id="cutie-donate">💖 Donate</div>
-</div>
-
-<script>
-(function(){
-  const button = document.getElementById('cutie-button');
-  const chatbox = document.getElementById('cutie-chatbox');
-  const header = document.getElementById('cutie-header');
-  const messagesDiv = document.getElementById('cutie-messages');
-  const input = document.getElementById('cutie-input');
-  const sendBtn = document.getElementById('cutie-send');
-  const donateBtn = document.getElementById('cutie-donate');
-  let chatsToday = Number(localStorage.getItem('cutie_chats')||0);
-  let lastDate = localStorage.getItem('cutie_date');
-  const today = new Date().toDateString();
-  if (lastDate !== today) { chatsToday = 0; localStorage.setItem('cutie_date', today); }
-
-  function trackEvent(name, params={}) {
-    if (typeof gtag === 'function') gtag('event', name, params);
-  }
-
-  function appendMessage(sender, text) {
-    const msgId = 'm'+Date.now();
-    const div = document.createElement('div');
-    div.className = 'cutie-msg cutie-'+sender;
-    div.innerHTML = `<span>${text}</span> <span class="cutie-reactions" data-id="${msgId}">❤️ 😂</span>`;
-    messagesDiv.appendChild(div);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    // Reaction tracking
-    div.querySelectorAll('.cutie-reactions span').forEach(span => {
-      span.onclick = () => {
-        trackEvent('cutie_reaction', {reaction: span.textContent});
-        alert('Reaction saved: ' + span.textContent);
-      };
+    document.getElementById('chatForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const input = document.getElementById('userInput');
+      const msg = input.value.trim();
+      if (!msg) return;
+      appendMessage('You', msg);
+      input.value = '';
+      try {
+        const res = await fetch('https://api.sarvam.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'api-subscription-key': 'sk_u175bgqo_36esSAyqB1BxqwbBlFlRxcoZ'
+          },
+          body: JSON.stringify({
+            model: 'sarvam-m',
+            messages: [{ role: 'user', content: msg }]
+          })
+        });
+        const data = await res.json();
+        const reply = data?.choices?.[0]?.message?.content || "⚠️ No response.";
+        appendMessage('Cutie', reply);
+      } catch (err) {
+        appendMessage('Cutie', '⚠️ Something went wrong.');
+      }
     });
-  }
 
-  async function sendMessage(){
-    const text = input.value.trim();
-    if (!text) return;
-    appendMessage('user', text);
-    input.value = '';
-    chatsToday++;
-    localStorage.setItem('cutie_chats', chatsToday);
-    trackEvent('cutie_message_sent');
-    if (chatsToday > 15) {
-      appendMessage('bot', "Bestie, that's your free limit for today 💔 Come back tomorrow!");
-      return;
+    function appendMessage(sender, text) {
+      const msgDiv = document.createElement('div');
+      msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      const box = document.getElementById('chatMessages');
+      box.appendChild(msgDiv);
+      box.scrollTop = box.scrollHeight;
     }
-    if (text.toLowerCase().includes("who built you")) {
-      appendMessage('bot', "I was built with love by the CutIt.sbs team 🤍");
-      return;
-    }
-    try {
-      const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
-        method: "POST",
-        headers: {"Content-Type": "application/json","Authorization": "Bearer public-free"},
-        body: JSON.stringify({
-          model: "open-mistral-7b",
-          messages: [{role:"system",content:"You are Cutie, a woke, supportive best friend."},{role:"user",content:text}]
-        })
-      });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      appendMessage('bot', data.choices?.[0]?.message?.content || "Bestie, I'm lost for words 😅");
-    } catch {
-      appendMessage('bot', "Oops, I tripped on my thoughts 😅 Try again?");
-    }
-  }
-
-  button.onclick = () => {
-    chatbox.style.display = chatbox.style.display === 'flex' ? 'none' : 'flex';
-    trackEvent(chatbox.style.display === 'flex' ? 'cutie_opened' : 'cutie_closed');
-  };
-  sendBtn.onclick = sendMessage;
-  input.addEventListener("keypress", e => { if (e.key === "Enter") sendMessage(); });
-
-  donateBtn.onclick = () => {
-    trackEvent('cutie_donate_click');
-    window.open("https://rzp.io/rzp/cutitsbs", "_blank");
-  };
-
-  // Drag logic
-  let isDragging = false, offsetX, offsetY;
-  header.onmousedown = e => { isDragging = true; offsetX = e.clientX - chatbox.offsetLeft; offsetY = e.clientY - chatbox.offsetTop; };
-  document.onmouseup = () => isDragging = false;
-  document.onmousemove = e => { if (isDragging) { chatbox.style.left = e.clientX - offsetX + 'px'; chatbox.style.top = e.clientY - offsetY + 'px'; chatbox.style.bottom = 'auto'; chatbox.style.right = 'auto'; } };
-})();
-</script>
-<!-- End Cutie -->
+  </script>
   <a id="gameBtn" href="https://cutit.sbs/games">🎮 Play Games</a>
 </body>
 </html>
