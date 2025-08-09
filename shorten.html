@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -224,5 +222,96 @@ Team CutIt.sbs
       }
     }
 </script>
+  <!-- Google Analytics Full Interaction Tracking -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-70PVFGLP9G', { send_page_view: true });
+
+function trackEvent(action, params = {}) {
+  gtag('event', action, params);
+}
+
+// Track all button clicks
+document.addEventListener('click', function(e) {
+  if (e.target.tagName === 'BUTTON') {
+    trackEvent('button_click', {
+      button_text: e.target.innerText.trim(),
+      button_id: e.target.id || 'no_id',
+      page: window.location.pathname
+    });
+  }
+});
+
+// Track all link clicks
+document.addEventListener('click', function(e) {
+  if (e.target.tagName === 'A') {
+    trackEvent('link_click', {
+      link_url: e.target.href,
+      link_text: e.target.innerText.trim(),
+      page: window.location.pathname
+    });
+  }
+});
+
+// Track short link generation
+const originalGenerateShortLink = window.generateShortLink;
+window.generateShortLink = async function() {
+  await originalGenerateShortLink();
+  const resultBox = document.getElementById("resultBox");
+  if (resultBox && resultBox.innerText.includes("Short Link")) {
+    const shortLink = resultBox.querySelector("a")?.href || "";
+    trackEvent('short_link_created', {
+      short_url: shortLink,
+      page: window.location.pathname
+    });
+  }
+};
+
+// Track clipboard paste
+const originalPasteFromClipboard = window.pasteFromClipboard;
+window.pasteFromClipboard = async function() {
+  await originalPasteFromClipboard();
+  trackEvent('clipboard_paste', { page: window.location.pathname });
+};
+
+// Track share button clicks
+['shareWhatsApp', 'shareTelegram', 'shareTwitter'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('click', function() {
+      trackEvent('share_click', {
+        platform: id.replace('share', '').toLowerCase(),
+        page: window.location.pathname
+      });
+    });
+  }
+});
+
+// Track dark mode toggle
+const toggleBtn = document.querySelector('.toggle-btn');
+if (toggleBtn) {
+  toggleBtn.addEventListener('click', function() {
+    trackEvent('toggle_dark_mode', {
+      mode: document.body.classList.contains('dark-mode') ? 'dark' : 'light'
+    });
+  });
+}
+
+// Track page scroll depth
+let scrollTracked = {};
+window.addEventListener('scroll', function() {
+  const scrollPercent = Math.round((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100);
+  [25, 50, 75, 100].forEach(mark => {
+    if (scrollPercent >= mark && !scrollTracked[mark]) {
+      trackEvent('scroll_depth', { percent: mark });
+      scrollTracked[mark] = true;
+    }
+  });
+});
+</script>
+<!-- End Tracking -->
 </body>
 </html>
