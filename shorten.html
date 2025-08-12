@@ -1,163 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CutIt.sbs — Free Link Shortener & QR Codes</title>
-<meta name="description" content="Shorten links instantly, create free QR codes with no watermark, and share easily. CutIt.sbs is 100% free — always will be." />
-<meta name="keywords" content="link shortener, free QR codes, custom short link, no watermark QR, CutIt" />
-<meta property="og:title" content="CutIt.sbs — Free Link Shortener & QR Codes" />
-<meta property="og:description" content="Shorten links instantly, create free QR codes with no watermark, and share easily." />
-<meta property="og:url" content="https://cutit.sbs" />
-<meta property="og:type" content="website" />
-<meta property="og:image" content="https://cutit.sbs/logo.png" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="CutIt.sbs — Free Link Shortener & QR Codes" />
-<meta name="twitter:description" content="Shorten links instantly, create free QR codes with no watermark, and share easily." />
-<meta name="twitter:image" content="https://cutit.sbs/logo.png" />
-<link rel="icon" type="image/png" href="/favicon.png" />
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #fff;
-  color: #000;
-  margin: 0;
-  padding: 0;
-  transition: background 0.3s, color 0.3s;
-}
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-}
-.logo { font-size: 1.5rem; font-weight: bold; }
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 38px;
-  height: 20px;
-}
-.switch input { display: none; }
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-  border-radius: 20px;
-}
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 14px;
-  width: 14px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
-input:checked + .slider { background-color: #111; }
-.dark-mode .slider { background-color: #555; }
-input:checked + .slider:before { transform: translateX(18px); }
-main { max-width: 600px; margin: 2rem auto; text-align: center; }
-input[type="url"] {
-  width: 80%;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  background: #000;
-  color: #fff;
-  font-size: 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-button:hover { background: #222; }
-.result {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 1px dashed #aaa;
-  border-radius: 6px;
-}
-.qr-btn {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  background: #000;
-  color: #fff;
-  text-decoration: none;
-  margin-top: 0.5rem;
-}
-.qr-btn:hover { background: #222; }
-.dark-mode { background: #000; color: #fff; }
-.dark-mode input[type="url"] { background: #222; color: #fff; border-color: #555; }
-.dark-mode button { background: #fff; color: #000; }
-.dark-mode .qr-btn { background: #fff; color: #000; }
-.share-btns a {
-  display: inline-block;
-  margin: 0.3rem;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  background: #25D366;
-  color: #fff;
-  text-decoration: none;
-}
-.share-btns a.telegram { background: #0088cc; }
-</style>
+  <!-- Primary Meta -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shorten URLs ✦ CutIt.sbs – Free, Custom & Instant</title>
+  <meta name="description" content="Shorten your links instantly with custom aliases. 100% free forever. No login required. Powered by CutIt.sbs – your sleek, branded link creator.">
+  <meta name="keywords" content="url shortener, free link shortener, custom short link, cutit.sbs, shorten links, no login shortener, instant URL shortener">
+  <meta name="author" content="CutIt.sbs Team">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cutit.sbs/shortener">
+  <meta property="og:title" content="CutIt.sbs – Free URL Shortener">
+  <meta property="og:description" content="Create sleek, branded links in seconds. 100% free. No login. Instant sharing.">
+  <meta property="og:image" content="https://cutit.sbs/og-image.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CutIt.sbs – Free URL Shortener">
+  <meta name="twitter:description" content="Shorten links instantly with custom aliases. No login. Always free.">
+  <meta name="twitter:image" content="https://cutit.sbs/og-image.png">
+
+  <!-- Fonts -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" as="style">
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Antonio', sans-serif; }
+    body {
+      background:#fdfdff; color:#111; text-align:center; padding:2rem;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    .dark-mode { background:#111; color:#fdfdff; }
+    header { display:flex; justify-content:space-between; align-items:center; padding-bottom:1rem; border-bottom:1px solid #ccc; margin-bottom:2rem; }
+    .logo { font-size:2rem; font-weight:700; }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 38px;
+      height: 20px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #000;
+    }
+    input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+    .dark-mode .slider { background-color: #666; }
+    .dark-mode input:checked + .slider { background-color: #fff; }
+
+    h1 { font-size:2rem; margin-bottom:0.5rem; }
+    .tagline { color:#555; margin-bottom:2rem; }
+    .shortener-box {
+      background:#fff; padding:2rem; border-radius:12px; max-width:500px; margin:auto;
+      border:2px solid #000; box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    }
+    .dark-mode .shortener-box { background:#222; border-color:#fff; }
+    input {
+      width:100%; padding:1rem; margin-bottom:1rem; font-size:1rem;
+      border:2px solid #000; border-radius:8px;
+    }
+    .dark-mode input { border-color:#fff; background:#111; color:#fff; }
+    button {
+      width:100%; padding:1rem; font-size:1rem; cursor:pointer;
+      background:#000; color:#fff; border:2px solid #000; border-radius:8px;
+      margin-bottom:0.8rem; transition:background 0.2s;
+    }
+    button:hover { background:#222; }
+    .dark-mode button { background:#fff; color:#000; border-color:#fff; }
+    #resultBox { font-size:1.1rem; margin-top:1rem; word-break:break-word; }
+    #shareButtons { margin-top:1rem; }
+    #shareButtons a {
+      display:inline-block; padding:0.5rem 1rem; border-radius:6px;
+      background:#eee; text-decoration:none; margin:0.2rem;
+    }
+    #shareButtons a:hover { background:#ddd; }
+    .dark-mode #shareButtons a { background:#444; color:#fff; }
+    .team-message {
+      max-width:600px; margin:2rem auto; color:#555; font-size:1rem;
+    }
+    footer { margin-top:3rem; font-size:0.9rem; opacity:0.8; }
+  </style>
+
+  <!-- Firebase SDKs -->
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 </head>
 <body>
+
 <header>
   <div class="logo">CutIt.sbs</div>
-  <label class="switch">
-    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-    <span class="slider round"></span>
+  <label class="toggle-switch">
+    <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
+    <span class="slider"></span>
   </label>
 </header>
-<main>
-  <h1>Free Link Shortener</h1>
-  <p>Paste your link below and get a short URL instantly. 100% free, no limits.</p>
-  <input type="url" id="longUrl" placeholder="Enter your long URL..." />
-  <button onclick="generateShortLink()">Shorten</button>
-  <div id="resultBox" class="result" style="display:none;"></div>
-</main>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+<h1>Shorten Your Long URLs</h1>
+<p class="tagline">Create sleek, branded links in seconds – always free, no login.</p>
+
+<div class="shortener-box">
+  <input id="longUrl" placeholder="Paste your long URL here" aria-label="Paste your long URL here">
+  <input id="customAlias" placeholder="(Optional) Custom short link e.g. myname" aria-label="Custom short link">
+  <button onclick="pasteFromClipboard()">📋 Paste from Clipboard</button>
+  <button onclick="generateShortLink()">🚀 Generate Short Link</button>
+  <button onclick="window.open('https://cutit.sbs', '_blank')">📷 Generate QR Code</button>
+  <div id="resultBox"></div>
+  <div id="shareButtons" style="display:none;">
+    <p>🔗 Share this link:</p>
+    <a id="shareWhatsApp" target="_blank" rel="noopener">🟢 WhatsApp</a>
+    <a id="shareTelegram" target="_blank" rel="noopener">🔵 Telegram</a>
+    <a id="shareTwitter" target="_blank" rel="noopener">🐦 Twitter</a>
+  </div>
+</div>
+
+<div class="team-message">
+  From all of us at <strong>CutIt.sbs</strong> – we built this with love, creativity, and a bit of chaos 🤪
+  to help you express yourself and share in style. Whether it’s music, memes, or memories – your link is your voice.
+  No accounts. No limits. Always free. ❤️
+</div>
+
+<a href="https://startupslab.site" target="_blank" rel="noopener">
+  <img src="https://cdn.startupslab.site/site-images/badge-light.png" alt="Featured on Startups Lab" width="160" height="43">
+</a>
+
+<footer>
+  ✦ Created with rebellious love by <strong>CutIt.sbs</strong>
+</footer>
+
+<!-- Firebase Setup -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
+    authDomain: "cutitshortener.firebaseapp.com",
+    projectId: "cutitshortener",
+    storageBucket: "cutitshortener.appspot.com",
+    messagingSenderId: "958863508757",
+    appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window.db = db;
+  window.firestoreHelpers = { collection, doc, setDoc };
+</script>
+
+<!-- Main Script -->
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
-  authDomain: "cutitshortener.firebaseapp.com",
-  projectId: "cutitshortener",
-  storageBucket: "cutitshortener.appspot.com",
-  messagingSenderId: "958863508757",
-  appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
-};
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-async function generateShortLink() {
-  const longUrl = document.getElementById('longUrl').value.trim();
-  if (!longUrl) return alert('Please enter a URL.');
-  const shortId = Math.random().toString(36).substr(2, 6);
-  await db.collection('links').doc(shortId).set({ longUrl });
-  const shortUrl = window.location.origin + '/' + shortId;
-  document.getElementById('resultBox').style.display = 'block';
-  document.getElementById('resultBox').innerHTML =
-    `<strong>Short URL:</strong> <a href="${shortUrl}" target="_blank">${shortUrl}</a>
-     <br/><a href="https://cutit.sbs" target="_blank" class="qr-btn">📷 Generate QR Code</a>
-     <div class="share-btns">
-       <a href="https://wa.me/?text=${encodeURIComponent(shortUrl)}" target="_blank">WhatsApp</a>
-       <a href="https://t.me/share/url?url=${encodeURIComponent(shortUrl)}" target="_blank" class="telegram">Telegram</a>
-     </div>`;
-}
-
 function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
+  document.getElementById('darkModeToggle').checked = document.body.classList.contains('dark-mode');
+}
+async function pasteFromClipboard() {
+  const text = await navigator.clipboard.readText();
+  document.getElementById("longUrl").value = text;
+}
+async function generateShortLink() {
+  let url = document.getElementById("longUrl").value.trim();
+  const customAlias = document.getElementById("customAlias").value.trim();
+  if (!url) return alert("Please enter a URL.");
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  const shortID = customAlias || Math.random().toString(36).substring(2, 8);
+  try {
+    const db = window.db;
+    const { collection, doc, setDoc } = window.firestoreHelpers;
+    await setDoc(doc(collection(db, "shortlinks"), shortID), {
+      original: url,
+      created: new Date().toISOString(),
+      custom: !!customAlias
+    });
+    const shortUrl = `https://cutit.sbs/${shortID}`;
+    document.getElementById("resultBox").innerHTML =
+      `✅ Short Link: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+       <br/><button onclick="navigator.clipboard.writeText('${shortUrl}')">📋 Copy</button>`;
+    document.getElementById("shareButtons").style.display = "block";
+    document.getElementById("shareWhatsApp").href = `https://wa.me/?text=${encodeURIComponent(shortUrl)}`;
+    document.getElementById("shareTelegram").href = `https://t.me/share/url?url=${encodeURIComponent(shortUrl)}`;
+    document.getElementById("shareTwitter").href = `https://twitter.com/intent/tweet?text=${encodeURIComponent('Check this out: ' + shortUrl)}`;
+  } catch (e) {
+    alert("❌ That custom link may already exist.");
+  }
 }
 </script>
 </body>
