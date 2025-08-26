@@ -195,10 +195,24 @@ async function pasteFromClipboard() {
 }
 async function generateShortLink() {
   let url = document.getElementById("longUrl").value.trim();
-  const customAlias = document.getElementById("customAlias").value.trim();
+  let customAlias = document.getElementById("customAlias").value.trim();
+
   if (!url) return alert("Please enter a URL.");
   if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+  // ✅ Auto-replace spaces with dashes
+  if (customAlias) {
+    customAlias = customAlias.replace(/\s+/g, "-");
+  }
+
+  // ✅ Validation: only allow letters, numbers, dashes, underscores
+  const aliasRegex = /^[a-zA-Z0-9_-]+$/;
+  if (customAlias && !aliasRegex.test(customAlias)) {
+    return alert("❌ Custom link can only contain letters, numbers, dashes (-), and underscores (_).");
+  }
+
   const shortID = customAlias || Math.random().toString(36).substring(2, 8);
+
   try {
     const db = window.db;
     const { collection, doc, setDoc } = window.firestoreHelpers;
@@ -207,10 +221,12 @@ async function generateShortLink() {
       created: new Date().toISOString(),
       custom: !!customAlias
     });
+
     const shortUrl = `https://cutit.sbs/${shortID}`;
     document.getElementById("resultBox").innerHTML =
       `✅ Short Link: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
        <br/><button onclick="navigator.clipboard.writeText('${shortUrl}')">📋 Copy</button>`;
+
     document.getElementById("shareButtons").style.display = "block";
     document.getElementById("shareWhatsApp").href = `https://wa.me/?text=${encodeURIComponent(shortUrl)}`;
     document.getElementById("shareTelegram").href = `https://t.me/share/url?url=${encodeURIComponent(shortUrl)}`;
