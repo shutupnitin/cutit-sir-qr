@@ -158,6 +158,36 @@
     <div class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</div>
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
+    <!-- Responsive Ad Frame with Info Button -->
+<div id="ad-frame-container" style="position: relative; width: 100%; max-width: 900px; margin: 20px auto; text-align: center; z-index: 99998;">
+
+  <!-- Info Button -->
+  <button id="ad-info-btn" 
+          style="position: absolute; top: 8px; right: 8px; background: #007bff; color: #fff; border: none; border-radius: 50%; width: 25px; height: 25px; font-weight: bold; cursor: pointer;">
+    i
+  </button>
+
+  <!-- Info Box (hidden by default) -->
+  <div id="ad-info-box" 
+       style="display: none; position: absolute; top: 40px; right: 8px; background: #fff; color: #333; border: 1px solid #ddd; border-radius: 6px; padding: 10px; font-size: 13px; width: 250px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); text-align: left;">
+    <strong>Note:</strong> This advertisement is provided by a third-party network. We do not endorse or take responsibility for its content.
+  </div>
+
+  <!-- Ad Frame -->
+  <iframe data-aa='2414746' 
+          src='//acceptable.a-ads.com/2414746/?size=Adaptive'
+          style='border:0; padding:0; width:100%; max-width:700px; height:auto; overflow:hidden; display:block; margin: auto;'>
+  </iframe>
+</div>
+
+<!-- Toggle Info Box -->
+<script>
+  document.getElementById("ad-info-btn").addEventListener("click", function() {
+    const box = document.getElementById("ad-info-box");
+    box.style.display = box.style.display === "none" ? "block" : "none";
+  });
+</script>
+
   <div class="team-message">
   From all of us at CutIt.sbs — built with love, creativity, and chaos 🤪. Whether it’s music, memes, or memories — your code is your voice. Let it echo 🎤✨
 </div>
@@ -168,7 +198,36 @@
     </div>
     <p>✨ Created with rebellious love by CutIt.sbs – where QR meets pop culture. ✨</p>
   </footer>
-  
+  <!-- Responsive Ad Frame with Info Button -->
+<div id="ad-frame-container" style="position: relative; width: 100%; max-width: 900px; margin: 20px auto; text-align: center; z-index: 99998;">
+
+  <!-- Info Button -->
+  <button id="ad-info-btn" 
+          style="position: absolute; top: 8px; right: 8px; background: #007bff; color: #fff; border: none; border-radius: 50%; width: 25px; height: 25px; font-weight: bold; cursor: pointer;">
+    i
+  </button>
+
+  <!-- Info Box (hidden by default) -->
+  <div id="ad-info-box" 
+       style="display: none; position: absolute; top: 40px; right: 8px; background: #fff; color: #333; border: 1px solid #ddd; border-radius: 6px; padding: 10px; font-size: 13px; width: 250px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); text-align: left;">
+    <strong>Note:</strong> This advertisement is provided by a third-party network. We do not endorse or take responsibility for its content.
+  </div>
+
+  <!-- Ad Frame -->
+  <iframe data-aa='2414746' 
+          src='//acceptable.a-ads.com/2414746/?size=Adaptive'
+          style='border:0; padding:0; width:100%; max-width:700px; height:auto; overflow:hidden; display:block; margin: auto;'>
+  </iframe>
+</div>
+
+<!-- Toggle Info Box -->
+<script>
+  document.getElementById("ad-info-btn").addEventListener("click", function() {
+    const box = document.getElementById("ad-info-box");
+    box.style.display = box.style.display === "none" ? "block" : "none";
+  });
+</script>
+
   <div id="chatBox">
     <div>🧠 Cutie</div>
     <div id="chatMessages"></div>
