@@ -1,466 +1,374 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Basic HTML meta -->
   <meta charset="UTF-8" />
-  <title>CutIt.sbs – URL Shortener</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>CutIt.sbs | Shorten URLs & ₹1 Custom Links</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- SEO meta -->
+  <meta name="description" content="CutIt.sbs lets you shorten long URLs in seconds. Free random short links, or pay just ₹1 for a clean custom link. No login, simple and fast." />
+  <meta name="keywords" content="cutit, cutit.sbs, url shortener, link shortener, custom link, free url shortener, india url shortener" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://cutit.sbs/shorten" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="CutIt.sbs | Shorten URLs & ₹1 Custom Links" />
+  <meta property="og:description" content="Create sleek short links in seconds. Random links are free, custom links are just ₹1 each." />
+  <meta property="og:url" content="https://cutit.sbs/shorten" />
+  <meta property="og:site_name" content="CutIt.sbs" />
+  <meta property="og:image" content="https://cutit.sbs/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CutIt.sbs | Shorten URLs & ₹1 Custom Links" />
+  <meta name="twitter:description" content="Minimal, clean URL shortener. Free random links, ₹1 custom links." />
+  <meta name="twitter:image" content="https://cutit.sbs/og-image.png" />
+
+  <!-- JSON-LD structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "CutIt.sbs URL Shortener",
+    "url": "https://cutit.sbs/shorten",
+    "applicationCategory": "UtilityApplication",
+    "description": "Shorten long URLs for free and buy custom short links for ₹1 each, no login required.",
+    "offers": {
+      "@type": "Offer",
+      "price": "1.00",
+      "priceCurrency": "INR",
+      "description": "Custom short link alias"
+    },
+    "provider": {
+      "@type": "Organization",
+      "name": "CutIt.sbs",
+      "url": "https://cutit.sbs"
+    }
+  }
+  </script>
 
   <!-- Razorpay Checkout -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
+  <!-- Google Analytics 4 (replace G-70PVFGLP9G) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-70PVFGLP9G', { anonymize_ip: true }); // TODO: replace with your GA4 ID
+  </script>
+
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
-      --bg: #020617;
-      --bg-soft: #020617;
-      --card: #020617;
-      --accent: #4f46e5;
-      --accent-soft: rgba(79, 70, 229, 0.18);
-      --accent-strong: rgba(79, 70, 229, 0.45);
-      --text: #f9fafb;
-      --muted: #9ca3af;
-      --border: #1f2933;
-      --danger: #ef4444;
+      --bg: #f7f7f7;
+      --text: #111827;
+      --muted: #6b7280;
+      --card-border: #111827;
+      --btn-bg: #000000;
+      --btn-bg-hover: #111111;
+      --btn-text: #ffffff;
+      --danger: #dc2626;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     body {
       min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
       display: flex;
-      align-items: center;
       justify-content: center;
       padding: 1.5rem;
-      background:
-        radial-gradient(circle at top, #111827 0, #020617 52%, #000 100%);
-      color: var(--text);
     }
 
-    .shell {
+    .page {
       width: 100%;
-      max-width: 960px;
-      margin: 0 auto;
+      max-width: 900px;
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
-      animation: fadeIn 0.45s ease-out;
+      gap: 1.5rem;
     }
 
-    header {
+    /* Top bar */
+    .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
+      margin-bottom: 0.4rem;
     }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-    }
-
-    .logo-mark {
-      width: 26px;
-      height: 26px;
-      border-radius: 9px;
-      background: conic-gradient(from 200deg, #4f46e5, #ec4899, #22c55e, #4f46e5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8),
-                  0 10px 30px rgba(15, 23, 42, 0.9);
-    }
-
-    .logo-mark span {
-      font-size: 0.8rem;
+    .brand {
+      font-size: 1.8rem;
       font-weight: 700;
-      color: #e5e7eb;
+      letter-spacing: 0.06em;
     }
 
-    .logo-text {
-      font-size: 0.9rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .tagline {
-      font-size: 0.9rem;
-      color: var(--muted);
-      max-width: 360px;
-    }
-
-    .chip-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .pill {
-      font-size: 0.72rem;
-      padding: 0.18rem 0.6rem;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .pill-accent {
-      border-color: rgba(79, 70, 229, 0.65);
-      background: rgba(79, 70, 229, 0.2);
-      color: #e0e7ff;
-    }
-
-    main {
-      display: grid;
-      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1.1fr);
-      gap: 1.25rem;
-    }
-
-    @media (max-width: 780px) {
-      main {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-
-    .card {
-      background: rgba(3, 7, 18, 0.95);
-      border-radius: 1.4rem;
-      border: 1px solid rgba(31, 41, 55, 0.9);
-      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.95);
-      padding: 1.3rem 1.4rem 1.4rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: -120px;
-      background:
-        radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.12), transparent 55%);
-      opacity: 0.8;
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    .card-title {
-      font-size: 1.45rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .card-subtitle {
-      font-size: 0.88rem;
-      color: var(--muted);
-      margin-bottom: 1.1rem;
-    }
-
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      margin-bottom: 0.85rem;
-    }
-
-    label {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-    }
-
-    input[type="text"] {
-      width: 100%;
-      border-radius: 0.9rem;
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      background: rgba(15, 23, 42, 0.95);
-      padding: 0.6rem 0.8rem;
-      color: var(--text);
-      outline: none;
-      font-size: 0.9rem;
-      transition: border 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, transform 0.12s ease;
-    }
-
-    input[type="text"]:focus {
-      border-color: rgba(129, 140, 248, 0.9);
-      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.7);
-      background: rgba(15, 23, 42, 1);
-      transform: translateY(-0.5px);
-    }
-
-    input::placeholder {
-      color: rgba(148, 163, 184, 0.8);
-    }
-
-    .input-help {
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .custom-fee-info {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-top: 0.3rem;
-      padding: 0.45rem 0.7rem;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px dashed rgba(129, 140, 248, 0.45);
-      font-size: 0.8rem;
-      color: #e5e7eb;
-      animation: slideUpFade 0.35s ease-out;
-    }
-
-    .custom-fee-info .pill-mini {
-      font-size: 0.7rem;
-      padding: 0.15rem 0.6rem;
-      border-radius: 999px;
-      background: rgba(129, 140, 248, 0.18);
-      border: 1px solid rgba(129, 140, 248, 0.6);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .custom-fee-info strong {
-      font-weight: 600;
-    }
-
-    .btn-row {
-      margin-top: 0.75rem;
-      display: flex;
-      gap: 0.6rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      border-radius: 999px;
+    .divider {
       border: none;
-      padding: 0.65rem 1.3rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      background: linear-gradient(135deg, #4f46e5, #6366f1, #ec4899);
-      color: #f9fafb;
-      box-shadow: 0 18px 40px rgba(79, 70, 229, 0.6);
+      border-top: 1px solid #d4d4d8;
+      margin: 0.5rem 0 1.5rem;
+    }
+
+    .toggle-wrap {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+      font-size: 0.8rem;
+      color: var(--muted);
     }
 
-    .btn-primary:hover {
-      transform: translateY(-1.5px);
-      filter: brightness(1.03);
-      box-shadow: 0 22px 50px rgba(79, 70, 229, 0.8);
+    .toggle {
+      width: 46px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1px solid #d4d4d8;
+      background: #f9fafb;
+      display: flex;
+      align-items: center;
+      padding: 2px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s ease, border-color 0.2s ease;
     }
 
-    .btn-primary:active {
+    .toggle-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #111827;
+      transform: translateX(0);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .toggle.on {
+      background: #111827;
+      border-color: #111827;
+    }
+
+    .toggle.on .toggle-thumb {
+      background: #f9fafb;
+      transform: translateX(20px);
+    }
+
+    /* Main heading */
+    .headline-wrap {
+      text-align: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .headline {
+      font-size: 2.1rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .subheadline {
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    /* Card */
+    .card {
+      max-width: 640px;
+      margin: 0 auto;
+      border-radius: 28px;
+      border: 2px solid var(--card-border);
+      padding: 2rem 1.8rem 1.4rem;
+      background: #ffffff;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    .field {
+      margin-bottom: 1rem;
+    }
+
+    .input {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border-radius: 18px;
+      border: 2px solid #111827;
+      font-size: 0.95rem;
+      outline: none;
+      transition: box-shadow 0.16s ease, transform 0.12s ease;
+    }
+
+    .input::placeholder {
+      color: #9ca3af;
+      font-weight: 400;
+    }
+
+    .input:focus {
+      box-shadow: 0 0 0 2px #111827;
+      transform: translateY(-1px);
+    }
+
+    .helper-text {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    .custom-info-box {
+      margin-top: 0.5rem;
+      padding: 0.6rem 0.9rem;
+      border-radius: 16px;
+      border: 1px dashed #111827;
+      font-size: 0.82rem;
+      background: #fafafa;
+    }
+
+    .pill-small {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid #111827;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-right: 0.4rem;
+    }
+
+    .currency-text {
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border-radius: 18px;
+      border: none;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      transition: background 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease;
+    }
+
+    .btn + .btn {
+      margin-top: 0.6rem;
+    }
+
+    .btn:hover {
+      background: var(--btn-bg-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(15, 23, 42, 0.25);
+    }
+
+    .btn:active {
       transform: translateY(0);
-      box-shadow: 0 10px 26px rgba(79, 70, 229, 0.75);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.25);
     }
 
-    .btn-primary[disabled] {
+    .btn.outline {
+      background: transparent;
+      color: var(--text);
+      border: 2px solid #111827;
+      box-shadow: none;
+    }
+
+    .btn.outline:hover {
+      background: #111827;
+      color: #ffffff;
+    }
+
+    .btn[disabled] {
       opacity: 0.7;
       cursor: wait;
       box-shadow: none;
       transform: none;
     }
 
-    .btn-ghost {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      padding: 0.5rem 0.95rem;
-      font-size: 0.8rem;
-      cursor: pointer;
-      background: transparent;
-      color: var(--muted);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      transition: background 0.16s ease, border 0.16s ease, color 0.16s ease;
-    }
-
-    .btn-ghost:hover {
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-    }
-
-    .hint-row {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .hint-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #22c55e, #4ade80);
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
-      animation: pulse 1.8s infinite ease-out;
-    }
-
-    .side-card {
-      background: rgba(3, 7, 18, 0.95);
-      border-radius: 1.4rem;
-      border: 1px solid rgba(31, 41, 55, 0.95);
-      padding: 1.15rem 1.25rem 1.3rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .side-card-title {
-      font-size: 0.96rem;
-      font-weight: 600;
-    }
-
-    .side-card-body {
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .side-chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: 0.4rem;
-    }
-
-    .side-chip {
-      font-size: 0.75rem;
-      padding: 0.22rem 0.6rem;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(75, 85, 99, 0.8);
-      backdrop-filter: blur(12px);
-    }
-
-    .side-card::before {
-      content: "";
-      position: absolute;
-      inset: -40%;
-      background:
-        radial-gradient(circle at top right, rgba(79, 70, 229, 0.16), transparent 60%),
-        radial-gradient(circle at bottom left, rgba(34, 197, 94, 0.12), transparent 55%);
-      opacity: 0.8;
-      pointer-events: none;
-      z-index: -1;
+    .error-text {
+      margin-top: 0.6rem;
+      font-size: 0.82rem;
+      color: var(--danger);
+      text-align: center;
     }
 
     .result-box {
-      margin-top: 1rem;
-      min-height: 3rem;
-    }
-
-    .result-success {
-      padding: 0.8rem 1rem;
-      border-radius: 1rem;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      margin-top: 0.85rem;
       font-size: 0.9rem;
+      text-align: center;
+      min-height: 2.2rem;
     }
 
-    .result-success-title {
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 0.2rem;
-    }
-
-    .result-success a {
-      display: inline-block;
-      margin-right: 0.5rem;
-      font-weight: 600;
-      color: #e5e7eb;
-      text-decoration: none;
-    }
-
-    .result-success a:hover {
-      text-decoration: underline;
-    }
-
-    .result-success button {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      padding: 0.25rem 0.65rem;
-      font-size: 0.8rem;
-      background: transparent;
-      color: #e5e7eb;
-      cursor: pointer;
-      transition: background 0.16s ease, color 0.16s ease;
-    }
-
-    .result-success button:hover {
-      background: rgba(31, 41, 55, 0.95);
-    }
-
-    .result-box.pop-in .result-success {
-      animation: popIn 0.24s ease-out;
-    }
-
-    .error-text {
-      margin-top: 0.45rem;
-      font-size: 0.8rem;
-      color: var(--danger);
+    .result-inner {
+      padding: 0.7rem 0.9rem;
+      border-radius: 16px;
+      background: #f5f5f5;
+      display: inline-flex;
+      gap: 0.5rem;
+      align-items: center;
+      max-width: 100%;
+      word-break: break-all;
+      animation: popIn 0.22s ease-out;
     }
 
     .share-row {
       display: none;
-      align-items: center;
+      justify-content: center;
       flex-wrap: wrap;
-      gap: 0.35rem;
-      margin-top: 0.65rem;
+      gap: 0.4rem;
+      margin-top: 0.7rem;
       font-size: 0.8rem;
     }
 
     .share-row a {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      padding: 0.25rem 0.6rem;
-      text-decoration: none;
-      color: #e5e7eb;
-      background: transparent;
-      font-size: 0.78rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.2rem;
+      justify-content: center;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid #111827;
+      color: #111827;
+      text-decoration: none;
     }
 
     .share-row a:hover {
-      background: rgba(15, 23, 42, 0.9);
+      background: #111827;
+      color: #ffffff;
     }
 
+    .note {
+      margin-top: 0.8rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Footer */
     footer {
+      margin-top: 1.8rem;
       font-size: 0.78rem;
       color: var(--muted);
-      opacity: 0.85;
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
       align-items: center;
+      justify-content: space-between;
       gap: 0.5rem;
     }
 
@@ -473,150 +381,114 @@
       text-decoration: underline;
     }
 
-    @media (max-width: 600px) {
-      .card, .side-card {
-        border-radius: 1.1rem;
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
       }
-      .card-title {
-        font-size: 1.3rem;
+      .card {
+        padding: 1.6rem 1.3rem 1.3rem;
+        border-radius: 22px;
       }
-      .card-subtitle {
-        font-size: 0.84rem;
-      }
-      footer {
-        flex-direction: column;
-        align-items: flex-start;
+      .headline {
+        font-size: 1.8rem;
       }
     }
 
     /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes slideUpFade {
-      from { opacity: 0; transform: translateY(6px) scale(0.98); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.18); opacity: 0.55; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
     @keyframes popIn {
-      0% { transform: translateY(4px) scale(0.97); opacity: 0; }
-      100% { transform: translateY(0) scale(1); opacity: 1; }
+      from { opacity: 0; transform: translateY(4px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <header>
-      <div class="logo">
-        <div class="logo-mark"><span>C</span></div>
-        <div>
-          <div class="logo-text">CUTIT.SBS</div>
-          <p class="tagline">Turn any long URL into a tiny, shareable link in seconds.</p>
+  <div class="page">
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="brand">CutIt.sbs</div>
+      <div class="toggle-wrap" id="modeToggleWrap">
+        <div class="toggle" id="modeToggle">
+          <div class="toggle-thumb"></div>
         </div>
       </div>
-      <div class="chip-row">
-        <div class="pill">No login</div>
-        <div class="pill pill-accent">₹0 for random links</div>
-        <div class="pill">₹1 per custom link</div>
-      </div>
-    </header>
+    </div>
 
+    <hr class="divider" />
+
+    <!-- Headline -->
+    <div class="headline-wrap">
+      <h1 class="headline">Shorten Your Long URLs</h1>
+      <p class="subheadline">
+        Create sleek, branded links in seconds – free random links, or ₹1 for a custom alias.
+      </p>
+    </div>
+
+    <!-- Card -->
     <main>
-      <!-- MAIN SHORTENER CARD -->
-      <section class="card">
-        <h1 class="card-title">Shorten your link</h1>
-        <p class="card-subtitle">
-          Paste a URL below. Leave custom link empty for a free random short link, or pay ₹1 to lock your own alias.
-        </p>
-
-        <div class="field-group">
-          <label for="longUrl">Long URL</label>
+      <section class="card" aria-label="URL shortener">
+        <div class="field">
           <input
             id="longUrl"
+            class="input"
             type="text"
-            placeholder="https://example.com/your/very/long/link"
+            placeholder="Paste your long URL here"
             autocomplete="off"
           />
-          <p class="input-help">We’ll add <code>https://</code> automatically if you forget.</p>
+          <div class="helper-text">Example: https://example.com/your/very/long/link</div>
         </div>
 
-        <div class="field-group">
-          <label for="customAlias">Custom short link (₹1)</label>
+        <div class="field">
           <input
             id="customAlias"
+            class="input"
             type="text"
-            placeholder="Optional: my-special-link"
+            placeholder="(Optional) Custom short link e.g. myname"
             autocomplete="off"
           />
-          <div class="custom-fee-info">
-            <div class="pill-mini">New</div>
+          <div class="custom-info-box">
             <div>
-              Custom short links cost <strong>₹1</strong> each.  
-              Leave empty to generate a free random link.
+              <span class="pill-small">Custom</span>
+              Custom short links cost <strong>₹1</strong> per alias. Leave this blank for a free random link.
+            </div>
+            <div id="currencyInfo" class="currency-text">
+              Detecting approximate price in your local currency…
             </div>
           </div>
         </div>
 
-        <div class="btn-row">
-          <button class="btn-primary" id="shortenBtn" type="button">
-            <span id="shortenBtnLabel">Shorten link</span>
-            <span id="shortenBtnEmoji">→</span>
-          </button>
+        <button id="pasteBtn" class="btn" type="button">
+          📋 Paste from Clipboard
+        </button>
 
-          <button class="btn-ghost" type="button" onclick="window.location.reload()">
-            Reset
-          </button>
+        <button id="shortenBtn" class="btn" type="button">
+          🚀 <span id="shortenBtnLabel">Generate Short Link</span>
+        </button>
 
-          <div class="hint-row">
-            <div class="hint-dot"></div>
-            <span>Custom links are one-time purchase per alias.</span>
-          </div>
-        </div>
+        <button id="qrBtn" class="btn outline" type="button">
+          📸 Generate QR Code
+        </button>
 
         <div id="errorBox" class="error-text"></div>
-
         <div id="resultBox" class="result-box"></div>
 
         <div id="shareButtons" class="share-row">
           <span>Share:</span>
-          <a id="shareWhatsApp" href="#" target="_blank">WhatsApp</a>
-          <a id="shareTelegram" href="#" target="_blank">Telegram</a>
-          <a id="shareTwitter" href="#" target="_blank">Twitter / X</a>
+          <a id="shareWhatsApp" href="#" target="_blank" rel="noopener">WhatsApp</a>
+          <a id="shareTelegram" href="#" target="_blank" rel="noopener">Telegram</a>
+          <a id="shareTwitter" href="#" target="_blank" rel="noopener">Twitter / X</a>
         </div>
-      </section>
 
-      <!-- SIDE CARD / INFO -->
-      <aside class="side-card">
-        <div class="side-card-title">How pricing works</div>
-        <div class="side-card-body">
-          • <strong>Random links:</strong> Always free, unlimited.  
-          • <strong>Custom links:</strong> ₹1 for each unique alias you create.
-        </div>
-        <div class="side-card-body">
-          Your links are stored and resolved from our Firestore backend. Just share
-          the short link – we’ll handle the redirect.
-        </div>
-        <div class="side-chip-row">
-          <span class="side-chip">No account needed</span>
-          <span class="side-chip">Firebase powered</span>
-          <span class="side-chip">Razorpay payments</span>
-          <span class="side-chip">Copy & share in one tap</span>
-        </div>
-      </aside>
+        <p class="note">
+          Random links are always free. Custom aliases are a one-time purchase per name.
+        </p>
+      </section>
     </main>
 
     <footer>
-      <div>Made for fast sharing — keep it tiny, keep it cute.</div>
+      <div>© <span id="year"></span> CutIt.sbs · Built for fast, clean sharing.</div>
       <div>
-        <a href="https://cutit.sbs" target="_blank" rel="noopener">Back to main site</a>
+        <a href="privacy.html">Privacy</a> ·
+        <a href="terms.html">Terms</a>
       </div>
     </footer>
   </div>
@@ -628,8 +500,7 @@
       getFirestore,
       collection,
       doc,
-      setDoc,
-      getDoc
+      setDoc
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -644,27 +515,71 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Expose for non-module script if needed
     window._cutitDb = db;
-    window._cutitFsHelpers = { collection, doc, setDoc, getDoc };
+    window._cutitFsHelpers = { collection, doc, setDoc };
   </script>
 
-  <!-- Main Logic (non-module for simplicity) -->
+  <!-- Main Logic -->
   <script>
-    // Razorpay key (public)
+    // PUBLIC Razorpay key (safe to expose)
     window.razorpayKeyId = "rzp_live_Rn9xYDkClzcTcG";
+    const basePriceINR = 1;
 
     const longUrlInput   = document.getElementById("longUrl");
     const customInput    = document.getElementById("customAlias");
     const shortenBtn     = document.getElementById("shortenBtn");
     const shortenLabel   = document.getElementById("shortenBtnLabel");
-    const shortenEmoji   = document.getElementById("shortenBtnEmoji");
+    const pasteBtn       = document.getElementById("pasteBtn");
+    const qrBtn          = document.getElementById("qrBtn");
     const resultBox      = document.getElementById("resultBox");
     const errorBox       = document.getElementById("errorBox");
     const shareBox       = document.getElementById("shareButtons");
     const shareWhatsApp  = document.getElementById("shareWhatsApp");
     const shareTelegram  = document.getElementById("shareTelegram");
     const shareTwitter   = document.getElementById("shareTwitter");
+    const currencyInfoEl = document.getElementById("currencyInfo");
+    const modeToggle     = document.getElementById("modeToggle");
+    const yearSpan       = document.getElementById("year");
+
+    yearSpan.textContent = new Date().getFullYear();
+
+    function gtagSafe() {
+      if (typeof gtag === "function") {
+        gtag.apply(null, arguments);
+      }
+    }
+
+    // Lightweight dark / light toggle (just for user, not required)
+    modeToggle.addEventListener("click", () => {
+      modeToggle.classList.toggle("on");
+      document.body.style.background = modeToggle.classList.contains("on")
+        ? "#111827"
+        : "#f7f7f7";
+      document.body.style.color = modeToggle.classList.contains("on")
+        ? "#f9fafb"
+        : "#111827";
+      gtagSafe("event", "mode_toggled", {
+        event_category: "engagement",
+        mode: modeToggle.classList.contains("on") ? "dark" : "light"
+      });
+    });
+
+    // Cursor tracking (throttled)
+    (function initCursorTracking() {
+      let last = 0;
+      document.addEventListener("mousemove", (e) => {
+        const now = Date.now();
+        if (now - last < 1000) return;
+        last = now;
+        gtagSafe("event", "cursor_move", {
+          event_category: "interaction",
+          viewport_w: window.innerWidth,
+          viewport_h: window.innerHeight,
+          x: Math.round(e.clientX),
+          y: Math.round(e.clientY)
+        });
+      });
+    })();
 
     function createRandomId(length = 6) {
       const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -678,9 +593,8 @@
     async function saveShortLink(shortID, url, isCustom, paymentId) {
       const db = window._cutitDb;
       const { collection, doc, setDoc } = window._cutitFsHelpers;
-
       const linksCol = collection(db, "shortlinks");
-      const linkRef  = doc(linksCol, shortID);
+      const linkRef = doc(linksCol, shortID);
 
       await setDoc(linkRef, {
         original: url,
@@ -691,17 +605,15 @@
 
       const shortUrl = `https://cutit.sbs/${shortID}`;
 
-      // Populate UI
       errorBox.textContent = "";
       resultBox.innerHTML = `
-        <div class="result-success">
-          <div class="result-success-title">Your short link</div>
-          <a href="${shortUrl}" target="_blank">${shortUrl}</a>
-          <button type="button" onclick="navigator.clipboard.writeText('${shortUrl}')">📋 Copy</button>
+        <div class="result-inner">
+          <span>✅</span>
+          <a href="${shortUrl}" target="_blank" rel="noopener">${shortUrl}</a>
+          <button type="button" id="copyBtn">Copy</button>
         </div>
       `;
 
-      // share links
       if (shareBox) {
         shareBox.style.display = "flex";
         const encoded = encodeURIComponent(shortUrl);
@@ -710,17 +622,27 @@
         if (shareTwitter)  shareTwitter.href  = `https://twitter.com/intent/tweet?text=${encodeURIComponent("Check this out: " + shortUrl)}`;
       }
 
-      // small pop animation
-      resultBox.classList.remove("pop-in");
-      void resultBox.offsetWidth;
-      resultBox.classList.add("pop-in");
+      const copyBtn = document.getElementById("copyBtn");
+      if (copyBtn) {
+        copyBtn.addEventListener("click", () => {
+          navigator.clipboard.writeText(shortUrl).then(() => {
+            gtagSafe("event", "copy_short_link", {
+              event_category: "engagement",
+              alias_type: isCustom ? "custom" : "random"
+            });
+          });
+        });
+      }
+
+      gtagSafe("event", "short_link_created", {
+        event_category: "conversion",
+        alias_type: isCustom ? "custom" : "random"
+      });
     }
 
     function setLoading(isLoading) {
-      if (!shortenBtn) return;
       shortenBtn.disabled = isLoading;
-      shortenLabel.textContent = isLoading ? "Working..." : "Shorten link";
-      shortenEmoji.textContent = isLoading ? "⏳" : "→";
+      shortenLabel.textContent = isLoading ? "Working..." : "Generate Short Link";
     }
 
     function openCustomLinkPayment(url, customAlias) {
@@ -729,23 +651,30 @@
         return;
       }
 
-      const amountPaise = 100; // ₹1
+      const amountPaise = basePriceINR * 100;
+
+      gtagSafe("event", "payment_initiated", {
+        event_category: "purchase",
+        value_in_inr: basePriceINR,
+        alias_type: "custom"
+      });
+
       const options = {
         key: window.razorpayKeyId,
         amount: amountPaise,
         currency: "INR",
         name: "CutIt.sbs",
         description: `Custom short link: ${customAlias}`,
-        notes: {
-          custom_alias: customAlias,
-          original_url: url
-        },
         handler: async function (response) {
-          // Payment was successful
           try {
             setLoading(true);
             const paymentId = response.razorpay_payment_id;
             await saveShortLink(customAlias, url, true, paymentId);
+            gtagSafe("event", "payment_success", {
+              event_category: "purchase",
+              value_in_inr: basePriceINR,
+              alias_type: "custom"
+            });
           } catch (err) {
             console.error(err);
             alert(
@@ -756,15 +685,18 @@
             setLoading(false);
           }
         },
-        theme: {
-          color: "#4f46e5"
-        }
+        theme: { color: "#111827" }
       };
 
       const rzp = new Razorpay(options);
       rzp.on("payment.failed", function (response) {
         console.warn("Payment failed:", response.error);
-        alert("Payment failed or was cancelled. You can try again.");
+        alert("Payment failed or cancelled. You can try again.");
+        gtagSafe("event", "payment_failed", {
+          event_category: "purchase",
+          alias_type: "custom",
+          reason: response.error && response.error.description ? response.error.description : "unknown"
+        });
       });
       rzp.open();
     }
@@ -779,25 +711,30 @@
 
       if (!url) {
         errorBox.textContent = "Please paste a URL first.";
+        gtagSafe("event", "shorten_error", { event_category: "engagement", error_type: "empty_url" });
         return;
       }
 
-      // auto add https
       if (!/^https?:\/\//i.test(url)) {
         url = "https://" + url;
       }
 
-      // handle alias
       if (customAlias) {
         customAlias = customAlias.replace(/\s+/g, "-");
         const aliasRegex = /^[a-zA-Z0-9_-]+$/;
         if (!aliasRegex.test(customAlias)) {
           errorBox.textContent = "Custom link can only contain letters, numbers, dashes (-), and underscores (_).";
+          gtagSafe("event", "shorten_error", { event_category: "engagement", error_type: "invalid_alias" });
           return;
         }
       }
 
-      // CASE 1: no custom alias → free random link
+      gtagSafe("event", "shorten_attempt", {
+        event_category: "engagement",
+        alias_type: customAlias ? "custom" : "random"
+      });
+
+      // Free random
       if (!customAlias) {
         try {
           setLoading(true);
@@ -806,29 +743,62 @@
         } catch (err) {
           console.error(err);
           errorBox.textContent = "Something went wrong while creating your link. Please try again.";
+          gtagSafe("event", "shorten_error", {
+            event_category: "engagement",
+            error_type: "random_create_failed"
+          });
         } finally {
           setLoading(false);
         }
         return;
       }
 
-      // CASE 2: custom alias → confirm & then pay ₹1
+      // Paid custom
       const confirmMsg =
-        `Custom short link "${customAlias}" will cost ₹1.\n\n` +
+        `Custom short link "${customAlias}" will cost ₹${basePriceINR}.\n\n` +
         `Press OK to continue to Razorpay payment, or Cancel to go back.`;
       const ok = confirm(confirmMsg);
-      if (!ok) return;
+      if (!ok) {
+        gtagSafe("event", "payment_cancelled_before_checkout", {
+          event_category: "purchase",
+          alias_type: "custom"
+        });
+        return;
+      }
 
       openCustomLinkPayment(url, customAlias);
     }
 
-    if (shortenBtn) {
-      shortenBtn.addEventListener("click", generateShortLink);
+    // Clipboard paste button
+    async function pasteFromClipboard() {
+      try {
+        if (!navigator.clipboard || !navigator.clipboard.readText) {
+          alert("Clipboard access is not supported in this browser.");
+          return;
+        }
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          longUrlInput.value = text;
+          gtagSafe("event", "clipboard_paste", { event_category: "engagement" });
+        } else {
+          alert("Clipboard is empty.");
+        }
+      } catch (e) {
+        console.error(e);
+        alert("Unable to read from clipboard.");
+      }
     }
 
-    // allow Enter to submit from inputs
+    // QR button (go to your QR page)
+    qrBtn.addEventListener("click", () => {
+      gtagSafe("event", "qr_button_click", { event_category: "navigation" });
+      window.location.href = "index.html"; // change if your QR page has different path
+    });
+
+    shortenBtn.addEventListener("click", generateShortLink);
+    pasteBtn.addEventListener("click", pasteFromClipboard);
+
     [longUrlInput, customInput].forEach((el) => {
-      if (!el) return;
       el.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -836,6 +806,46 @@
         }
       });
     });
+
+    // Location-based currency info
+    async function initCurrencyInfo() {
+      if (!currencyInfoEl) return;
+      try {
+        const locRes = await fetch("https://ipapi.co/json/");
+        if (!locRes.ok) throw new Error("location fail");
+        const locData = await locRes.json();
+        const userCurrency = locData.currency || "INR";
+        const countryName = locData.country_name || "your region";
+
+        if (userCurrency === "INR") {
+          currencyInfoEl.textContent =
+            `Price where you are (${countryName}): ₹${basePriceINR.toFixed(2)} (INR).`;
+          return;
+        }
+
+        const rateRes = await fetch(
+          `https://api.exchangerate.host/convert?from=INR&to=${userCurrency}&amount=${basePriceINR}`
+        );
+        if (!rateRes.ok) throw new Error("rate fail");
+        const rateData = await rateRes.json();
+        const converted = typeof rateData.result === "number" ? rateData.result : null;
+
+        if (converted != null) {
+          currencyInfoEl.textContent =
+            `Approx. price where you are (${countryName}): ` +
+            `₹${basePriceINR.toFixed(2)} ≈ ${converted.toFixed(2)} ${userCurrency}.`;
+        } else {
+          currencyInfoEl.textContent =
+            `Price: ₹${basePriceINR.toFixed(2)} (INR). Your bank will convert it to your local currency.`;
+        }
+      } catch (e) {
+        console.warn("Currency info failed:", e);
+        currencyInfoEl.textContent =
+          `Price: ₹${basePriceINR.toFixed(2)} (INR). Your bank will convert it to your local currency.`;
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", initCurrencyInfo);
   </script>
 </body>
 </html>
