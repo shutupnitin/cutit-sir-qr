@@ -1,18 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7479266047074322"
-     crossorigin="anonymous"></script>
-<script>
-    window.ezstandalone = window.ezstandalone || {};
-    ezstandalone.cmd = ezstandalone.cmd || [];
-</script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-70PVFGLP9G');
-  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CutIt.sbs ✦ QR Generator</title>
@@ -62,13 +50,6 @@
     .watermark { margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.6; }
     #downloadBtn { margin-top: 1.2rem; padding: 0.6rem 1.2rem; font-size: 1rem; background: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
 
-    #cutieBot, #donateBtn {
-      position: fixed; bottom: 20px; width: 50px; height: 50px; border-radius: 50%;
-      font-size: 24px; display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer;
-    }
-    #cutieBot { right: 20px; background: #fff; }
-    #donateBtn { left: 20px; background: #000; color: #fff; }
     footer { margin-top: 3rem; font-size: 0.9rem; opacity: 0.7; }
     .footer-links a { margin: 0 0.5rem; color: inherit; text-decoration: underline; }
     .team-message { font-size: 1rem; margin-top: 2rem; max-width: 600px; margin-inline: auto; color: #666; }
@@ -79,28 +60,6 @@
       font-size: 1.3rem; display: none; z-index: 1000; animation: pop 0.3s ease-in-out;
     }
     @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-    /* Chatbox */
-    #chatBox {
-  display: none; flex-direction: column;
-  position: fixed; bottom: 80px; right: 20px;
-  width: 300px; height: 400px;
-  background: #fff; border: 2px solid #000; border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  z-index: 9999; overflow: hidden;
-  font-family: Arial, sans-serif;
-}
-    #chatBox > div:first-child {
-      background: #000; color: #fff; padding: 0.6rem; font-weight: bold;
-    }
-    #chatMessages { flex: 1; padding: 0.8rem; overflow-y: auto; font-size: 0.9rem; text-align: left; }
-    #chatForm { display: flex; border-top: 1px solid #ddd; }
-    #chatForm input {
-      flex: 1; border: none; padding: 0.7rem; font-size: 0.9rem; outline: none;
-    }
-    #chatForm button {
-      padding: 0.5rem 1rem; border: none; background: #000; color: #fff; cursor: pointer;
-    }
 
     #gameBtn {
       position: fixed;
@@ -116,29 +75,30 @@
       z-index: 10000;
       text-decoration: none;
     }
-  .center-action-btn {
-  display: inline-block;
-  margin-top: 1.5rem;
-  padding: 0.8rem 1.5rem;
-  background: #000;
-  color: #fff;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: bold;
-  transition: background 0.3s;
-}
-.center-action-btn:hover {
-  background: #ffcc00;
-  color: #000;
-}
+    .center-action-btn {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.5rem;
+      background: #000;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .center-action-btn:hover {
+      background: #ffcc00;
+      color: #000;
+    }
   </style>
 </head>
 <body>
-<header>
+  <header>
     <div class="logo">CutIt.sbs</div>
     <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Dark Mode</button>
   </header>
+
   <h1>Craft your QR vibe, effortlessly.</h1>
   <p>From parties to playlists, make every code pop. Just paste your link, pick a mode, and boom — QR magic.</p>
   <div class="divider">CutIt.sbs ✦ your vibe. your code.</div>
@@ -151,254 +111,31 @@
     <button class="mode-btn" onclick="switchMode('text')">📝 Text</button>
   </div>
 
-  <div id="inputs"><input id="linkInput" placeholder="Paste your link here" /></div>
+  <div id="inputs">
+    <input id="linkInput" placeholder="Paste your link here" />
+  </div>
+
   <button id="generateBtn" onclick="generateQR()">Generate QR</button>
+
   <div id="qrContainer">
     <canvas id="qrCanvas"></canvas>
     <div class="watermark">Made by CutIt.sbs ✦ your vibe. your code.</div>
     <button id="downloadBtn" onclick="downloadQR()">⬇️ Download</button>
   </div>
-    <!-- Elegant Responsive Ad Frame with Info Button -->
-<div id="ad-frame-container" style="position: relative; width: 100%; max-width: 900px; margin: 20px auto; text-align: center; z-index: 99998; background: rgba(255, 255, 255, 0.98); border-radius: 16px; padding: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12); transition: transform 0.3s ease, box-shadow 0.3s ease;">
-  
-  <!-- Ad Label and Info Button Header -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-    <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Advertisement</span>
-    
-    <!-- Info Button -->
-    <button id="ad-info-btn" 
-            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;"
-            onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.5)';"
-            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.35)';"
-            aria-label="Advertisement Information">
-      i
-    </button>
-  </div>
-  
-  <!-- Info Box (hidden by default) -->
-  <div id="ad-info-box" 
-       style="display: none; position: absolute; top: 70px; right: 20px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; width: 280px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); text-align: left; z-index: 1000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(-10px);">
-    <div style="font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-      <span style="display: inline-block; width: 18px; height: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; color: white; font-size: 11px; line-height: 18px; text-align: center; font-weight: bold;">!</span>
-      Third-Party Advertisement
-    </div>
-    <div style="font-size: 13px; line-height: 1.6; color: #475569;">
-      This advertisement is provided by an external network. We do not endorse or take responsibility for its content.
-    </div>
-  </div>
-  
-  <!-- Ad Frame Wrapper -->
-  <div style="position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #f8fafc; min-height: 200px; display: flex; align-items: center; justify-content: center;">
-    <iframe data-aa='2414746' 
-            src='//acceptable.a-ads.com/2414746/?size=Adaptive'
-            title="Advertisement"
-            loading="lazy"
-            style='border: 0; padding: 0; width: 100%; max-width: 700px; height: auto; min-height: 200px; overflow: hidden; display: block; margin: auto;'>
-    </iframe>
-  </div>
-</div>
-
-<!-- Toggle Info Box Script -->
-<script>
-  (function() {
-    const infoBtn = document.getElementById("ad-info-btn");
-    const infoBox = document.getElementById("ad-info-box");
-    const container = document.getElementById("ad-frame-container");
-    
-    // Toggle info box
-    infoBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      const isVisible = infoBox.style.display === "block";
-      
-      if (isVisible) {
-        infoBox.style.opacity = "0";
-        infoBox.style.transform = "translateY(-10px)";
-        setTimeout(() => { infoBox.style.display = "none"; }, 300);
-      } else {
-        infoBox.style.display = "block";
-        setTimeout(() => {
-          infoBox.style.opacity = "1";
-          infoBox.style.transform = "translateY(0)";
-        }, 10);
-      }
-    });
-    
-    // Close info box when clicking outside
-    document.addEventListener("click", function(e) {
-      if (!infoBox.contains(e.target) && e.target !== infoBtn) {
-        if (infoBox.style.display === "block") {
-          infoBox.style.opacity = "0";
-          infoBox.style.transform = "translateY(-10px)";
-          setTimeout(() => { infoBox.style.display = "none"; }, 300);
-        }
-      }
-    });
-    
-    // Close on Escape key
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape" && infoBox.style.display === "block") {
-        infoBox.style.opacity = "0";
-        infoBox.style.transform = "translateY(-10px)";
-        setTimeout(() => { infoBox.style.display = "none"; }, 300);
-      }
-    });
-    
-    // Container hover effect
-    container.addEventListener("mouseenter", function() {
-      this.style.transform = "translateY(-2px)";
-      this.style.boxShadow = "0 15px 50px rgba(0, 0, 0, 0.15)";
-    });
-    
-    container.addEventListener("mouseleave", function() {
-      this.style.transform = "translateY(0)";
-      this.style.boxShadow = "0 10px 40px rgba(0, 0, 0, 0.12)";
-    });
-  })();
-</script>
-
-<style>
-  @media (max-width: 768px) {
-    #ad-frame-container {
-      padding: 16px !important;
-      border-radius: 12px !important;
-    }
-    
-    #ad-info-box {
-      right: 16px !important;
-      width: calc(100% - 32px) !important;
-      max-width: 280px !important;
-    }
-  }
-</style>
 
   <div class="team-message">
-  From all of us at CutIt.sbs — built with love, creativity, and chaos 🤪. Whether it’s music, memes, or memories — your code is your voice. Let it echo 🎤✨
-</div>
-<a href="https://cutit.sbs/shorten" class="center-action-btn">✂️ Get Short Link</a>
+    From all of us at CutIt.sbs — built with love, creativity, and chaos 🤪. Whether it’s music, memes, or memories — your code is your voice. Let it echo 🎤✨
+  </div>
+
+  <a href="https://cutit.sbs/shorten" class="center-action-btn">✂️ Get Short Link</a>
+
   <footer>
     <div class="footer-links">
       <a href="terms.html">Terms</a> | <a href="privacy.html">Privacy</a> | <a href="contact.html">Contact Us</a>
     </div>
     <p>✨ Created with rebellious love by CutIt.sbs – where QR meets pop culture. ✨</p>
   </footer>
-  <!-- Elegant Responsive Ad Frame with Info Button -->
-<div id="ad-frame-container" style="position: relative; width: 100%; max-width: 900px; margin: 20px auto; text-align: center; z-index: 99998; background: rgba(255, 255, 255, 0.98); border-radius: 16px; padding: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12); transition: transform 0.3s ease, box-shadow 0.3s ease;">
-  
-  <!-- Ad Label and Info Button Header -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-    <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Advertisement</span>
-    
-    <!-- Info Button -->
-    <button id="ad-info-btn" 
-            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;"
-            onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.5)';"
-            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.35)';"
-            aria-label="Advertisement Information">
-      i
-    </button>
-  </div>
-  
-  <!-- Info Box (hidden by default) -->
-  <div id="ad-info-box" 
-       style="display: none; position: absolute; top: 70px; right: 20px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; width: 280px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); text-align: left; z-index: 1000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(-10px);">
-    <div style="font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-      <span style="display: inline-block; width: 18px; height: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; color: white; font-size: 11px; line-height: 18px; text-align: center; font-weight: bold;">!</span>
-      Third-Party Advertisement
-    </div>
-    <div style="font-size: 13px; line-height: 1.6; color: #475569;">
-      This advertisement is provided by an external network. We do not endorse or take responsibility for its content.
-    </div>
-  </div>
-  
-  <!-- Ad Frame Wrapper -->
-  <div style="position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #f8fafc; min-height: 200px; display: flex; align-items: center; justify-content: center;">
-    <iframe data-aa='2414746' 
-            src='//acceptable.a-ads.com/2414746/?size=Adaptive'
-            title="Advertisement"
-            loading="lazy"
-            style='border: 0; padding: 0; width: 100%; max-width: 700px; height: auto; min-height: 200px; overflow: hidden; display: block; margin: auto;'>
-    </iframe>
-  </div>
-</div>
 
-<!-- Toggle Info Box Script -->
-<script>
-  (function() {
-    const infoBtn = document.getElementById("ad-info-btn");
-    const infoBox = document.getElementById("ad-info-box");
-    const container = document.getElementById("ad-frame-container");
-    
-    // Toggle info box
-    infoBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      const isVisible = infoBox.style.display === "block";
-      
-      if (isVisible) {
-        infoBox.style.opacity = "0";
-        infoBox.style.transform = "translateY(-10px)";
-        setTimeout(() => { infoBox.style.display = "none"; }, 300);
-      } else {
-        infoBox.style.display = "block";
-        setTimeout(() => {
-          infoBox.style.opacity = "1";
-          infoBox.style.transform = "translateY(0)";
-        }, 10);
-      }
-    });
-    
-    // Close info box when clicking outside
-    document.addEventListener("click", function(e) {
-      if (!infoBox.contains(e.target) && e.target !== infoBtn) {
-        if (infoBox.style.display === "block") {
-          infoBox.style.opacity = "0";
-          infoBox.style.transform = "translateY(-10px)";
-          setTimeout(() => { infoBox.style.display = "none"; }, 300);
-        }
-      }
-    });
-    
-    // Close on Escape key
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape" && infoBox.style.display === "block") {
-        infoBox.style.opacity = "0";
-        infoBox.style.transform = "translateY(-10px)";
-        setTimeout(() => { infoBox.style.display = "none"; }, 300);
-      }
-    });
-    
-    // Container hover effect
-    container.addEventListener("mouseenter", function() {
-      this.style.transform = "translateY(-2px)";
-      this.style.boxShadow = "0 15px 50px rgba(0, 0, 0, 0.15)";
-    });
-    
-    container.addEventListener("mouseleave", function() {
-      this.style.transform = "translateY(0)";
-      this.style.boxShadow = "0 10px 40px rgba(0, 0, 0, 0.12)";
-    });
-  })();
-</script>
-
-<style>
-  @media (max-width: 768px) {
-    #ad-frame-container {
-      padding: 16px !important;
-      border-radius: 12px !important;
-    }
-    
-    #ad-info-box {
-      right: 16px !important;
-      width: calc(100% - 32px) !important;
-      max-width: 280px !important;
-    }
-  }
-</style>
-  <div id="chatBox">
-    <div>🧠 Cutie</div>
-    <div id="chatMessages"></div>
-    <form id="chatForm"><input id="userInput" type="text" placeholder="Ask anything..." /><button type="submit">➤</button></form>
-  </div>
-  <div id="cutieBot" onclick="toggleChat()">🤖</div>
   <div id="successAnim">🎉 Thanks for supporting us! 🎉</div>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.0/build/qrcode.min.js"></script>
@@ -408,292 +145,175 @@
       document.body.classList.toggle('dark-mode');
     }
 
-    function toggleChat() {
-      const box = document.getElementById('chatBox');
-      box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
-    }
-
     let selectedMode = 'default';
+
     function switchMode(mode) {
       selectedMode = mode;
       document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
       const inputArea = document.getElementById('inputs');
       inputArea.innerHTML = '';
-      if (mode === 'wifi') inputArea.innerHTML = '<input id="wifiName" placeholder="Wi-Fi Name" /><input id="wifiPass" placeholder="Password" />';
-      else if (mode === 'mobile') inputArea.innerHTML = '<input id="phoneNumber" placeholder="Phone Number" />';
-      else if (mode === 'email') inputArea.innerHTML = '<input id="emailAddr" placeholder="Email Address" /><input id="emailSubj" placeholder="Subject" />';
-      else if (mode === 'text') inputArea.innerHTML = '<input id="textMsg" placeholder="Message Text" />';
-      else inputArea.innerHTML = '<input id="linkInput" placeholder="Paste your link here" />';
+
+      if (mode === 'wifi') {
+        inputArea.innerHTML = `
+          <input id="wifiName" placeholder="Wi-Fi Name" />
+          <input id="wifiPass" placeholder="Password" />
+        `;
+      } else if (mode === 'mobile') {
+        inputArea.innerHTML = `<input id="phoneNumber" placeholder="Phone Number" />`;
+      } else if (mode === 'email') {
+        inputArea.innerHTML = `
+          <input id="emailAddr" placeholder="Email Address" />
+          <input id="emailSubj" placeholder="Subject" />
+        `;
+      } else if (mode === 'text') {
+        inputArea.innerHTML = `<input id="textMsg" placeholder="Message Text" />`;
+      } else {
+        inputArea.innerHTML = `<input id="linkInput" placeholder="Paste your link here" />`;
+      }
     }
 
     function generateQR() {
       let data = '';
-      if (selectedMode === 'wifi') data = `WIFI:T:WPA;S:${wifiName.value};P:${wifiPass.value};;`;
-      else if (selectedMode === 'mobile') data = `tel:${phoneNumber.value}`;
-      else if (selectedMode === 'email') data = `mailto:${emailAddr.value}?subject=${emailSubj.value}`;
-      else if (selectedMode === 'text') data = textMsg.value;
-      else data = linkInput.value.trim();
+      if (selectedMode === 'wifi') {
+        const wifiName = document.getElementById('wifiName')?.value || '';
+        const wifiPass = document.getElementById('wifiPass')?.value || '';
+        data = `WIFI:T:WPA;S:${wifiName};P:${wifiPass};;`;
+      } else if (selectedMode === 'mobile') {
+        const phoneNumber = document.getElementById('phoneNumber')?.value || '';
+        data = `tel:${phoneNumber}`;
+      } else if (selectedMode === 'email') {
+        const emailAddr = document.getElementById('emailAddr')?.value || '';
+        const emailSubj = document.getElementById('emailSubj')?.value || '';
+        data = `mailto:${emailAddr}?subject=${encodeURIComponent(emailSubj)}`;
+      } else if (selectedMode === 'text') {
+        const textMsg = document.getElementById('textMsg')?.value || '';
+        data = textMsg;
+      } else {
+        const linkInput = document.getElementById('linkInput');
+        data = (linkInput?.value || '').trim();
+      }
 
-      QRCode.toCanvas(document.getElementById('qrCanvas'), data, { margin: 1, color: { dark: '#000', light: '#fff' } });
-      document.getElementById('qrContainer').style.display = 'block';
+      if (!data) return;
+
+      QRCode.toCanvas(
+        document.getElementById('qrCanvas'),
+        data,
+        { margin: 1, color: { dark: '#000', light: '#fff' } },
+        function (error) {
+          if (!error) {
+            document.getElementById('qrContainer').style.display = 'block';
+          }
+        }
+      );
     }
 
     function downloadQR() {
+      const canvas = document.getElementById('qrCanvas');
+      if (!canvas) return;
       const link = document.createElement('a');
       link.download = 'cutit-qr.png';
-      link.href = document.getElementById('qrCanvas').toDataURL();
+      link.href = canvas.toDataURL();
       link.click();
     }
 
     function startDonation() {
       const options = {
         key: 'rzp_live_AJEAZ1WJHOpOOQ',
-        amount: 5000, currency: 'INR', name: 'CutIt.sbs',
+        amount: 5000,
+        currency: 'INR',
+        name: 'CutIt.sbs',
         description: 'Support Us',
         handler: () => {
-          document.getElementById('successAnim').style.display = 'block';
-          setTimeout(() => document.getElementById('successAnim').style.display = 'none', 3000);
+          const anim = document.getElementById('successAnim');
+          anim.style.display = 'block';
+          setTimeout(() => { anim.style.display = 'none'; }, 3000);
         }
       };
       new Razorpay(options).open();
     }
-
-    document.getElementById('chatForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const input = document.getElementById('userInput');
-      const msg = input.value.trim();
-      if (!msg) return;
-      appendMessage('You', msg);
-      input.value = '';
-      try {
-        const res = await fetch('https://api.sarvam.ai/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'api-subscription-key': 'sk_u175bgqo_36esSAyqB1BxqwbBlFlRxcoZ'
-          },
-          body: JSON.stringify({
-            model: 'sarvam-m',
-            messages: [{ role: 'user', content: msg }]
-          })
-        });
-        const data = await res.json();
-        const reply = data?.choices?.[0]?.message?.content || "⚠️ No response.";
-        appendMessage('Cutie', reply);
-      } catch (err) {
-        appendMessage('Cutie', '⚠️ Something went wrong.');
-      }
-    });
-
-    function appendMessage(sender, text) {
-      const msgDiv = document.createElement('div');
-      msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      const box = document.getElementById('chatMessages');
-      box.appendChild(msgDiv);
-      box.scrollTop = box.scrollHeight;
-    }
   </script>
+
   <a id="gameBtn" href="https://cutit.sbs/games">🎮 Play Games</a>
+
   <!-- Google Analytics Full Interaction Tracking -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-70PVFGLP9G', { send_page_view: true });
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-70PVFGLP9G', { send_page_view: true });
 
-function trackEvent(action, params = {}) {
-  gtag('event', action, params);
-}
-
-// Track all button clicks
-document.querySelectorAll('button').forEach(btn => {
-  btn.addEventListener('click', function() {
-    trackEvent('button_click', {
-      button_text: this.innerText.trim(),
-      button_id: this.id || 'no_id',
-      page: window.location.pathname
-    });
-  });
-});
-
-// Track all link clicks
-document.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', function() {
-    trackEvent('link_click', {
-      link_url: this.href,
-      link_text: this.innerText.trim(),
-      page: window.location.pathname
-    });
-  });
-});
-
-// Track QR generation
-if (document.getElementById('generateBtn')) {
-  document.getElementById('generateBtn').addEventListener('click', function() {
-    trackEvent('generate_qr', { mode: window.selectedMode || 'default' });
-  });
-}
-
-// Track QR download
-if (document.getElementById('downloadBtn')) {
-  document.getElementById('downloadBtn').addEventListener('click', function() {
-    trackEvent('download_qr', { page: window.location.pathname });
-  });
-}
-
-// Track dark mode toggle
-const toggleBtn = document.querySelector('.toggle-btn');
-if (toggleBtn) {
-  toggleBtn.addEventListener('click', function() {
-    trackEvent('toggle_dark_mode', {
-      mode: document.body.classList.contains('dark-mode') ? 'dark' : 'light'
-    });
-  });
-}
-
-// Track chatbot messages
-const chatForm = document.getElementById('chatForm');
-if (chatForm) {
-  chatForm.addEventListener('submit', function() {
-    const msg = document.getElementById('userInput')?.value || '';
-    trackEvent('chat_message_sent', { message_length: msg.length });
-  });
-}
-
-// Track donation button click
-const donateBtn = document.getElementById('donateBtn');
-if (donateBtn) {
-  donateBtn.addEventListener('click', function() {
-    trackEvent('donate_click', { page: window.location.pathname });
-  });
-}
-
-// Track page scroll depth (25%, 50%, 75%, 100%)
-let scrollTracked = {};
-window.addEventListener('scroll', function() {
-  const scrollPercent = Math.round((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100);
-  [25, 50, 75, 100].forEach(mark => {
-    if (scrollPercent >= mark && !scrollTracked[mark]) {
-      trackEvent('scroll_depth', { percent: mark });
-      scrollTracked[mark] = true;
+    function trackEvent(action, params = {}) {
+      gtag('event', action, params);
     }
-  });
-});
-</script>
-<!-- End Tracking -->
-    <!-- Elegant Responsive Ad Frame with Info Button -->
-<div id="ad-frame-container" style="position: relative; width: 100%; max-width: 900px; margin: 20px auto; text-align: center; z-index: 99998; background: rgba(255, 255, 255, 0.98); border-radius: 16px; padding: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12); transition: transform 0.3s ease, box-shadow 0.3s ease;">
-  
-  <!-- Ad Label and Info Button Header -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-    <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Advertisement</span>
-    
-    <!-- Info Button -->
-    <button id="ad-info-btn" 
-            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;"
-            onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.5)';"
-            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.35)';"
-            aria-label="Advertisement Information">
-      i
-    </button>
-  </div>
-  
-  <!-- Info Box (hidden by default) -->
-  <div id="ad-info-box" 
-       style="display: none; position: absolute; top: 70px; right: 20px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; width: 280px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); text-align: left; z-index: 1000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(-10px);">
-    <div style="font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
-      <span style="display: inline-block; width: 18px; height: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; color: white; font-size: 11px; line-height: 18px; text-align: center; font-weight: bold;">!</span>
-      Third-Party Advertisement
-    </div>
-    <div style="font-size: 13px; line-height: 1.6; color: #475569;">
-      This advertisement is provided by an external network. We do not endorse or take responsibility for its content.
-    </div>
-  </div>
-  
-  <!-- Ad Frame Wrapper -->
-  <div style="position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #f8fafc; min-height: 200px; display: flex; align-items: center; justify-content: center;">
-    <iframe data-aa='2414746' 
-            src='//acceptable.a-ads.com/2414746/?size=Adaptive'
-            title="Advertisement"
-            loading="lazy"
-            style='border: 0; padding: 0; width: 100%; max-width: 700px; height: auto; min-height: 200px; overflow: hidden; display: block; margin: auto;'>
-    </iframe>
-  </div>
-</div>
 
-<!-- Toggle Info Box Script -->
-<script>
-  (function() {
-    const infoBtn = document.getElementById("ad-info-btn");
-    const infoBox = document.getElementById("ad-info-box");
-    const container = document.getElementById("ad-frame-container");
-    
-    // Toggle info box
-    infoBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      const isVisible = infoBox.style.display === "block";
-      
-      if (isVisible) {
-        infoBox.style.opacity = "0";
-        infoBox.style.transform = "translateY(-10px)";
-        setTimeout(() => { infoBox.style.display = "none"; }, 300);
-      } else {
-        infoBox.style.display = "block";
-        setTimeout(() => {
-          infoBox.style.opacity = "1";
-          infoBox.style.transform = "translateY(0)";
-        }, 10);
-      }
+    // Track all button clicks
+    document.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', function() {
+        trackEvent('button_click', {
+          button_text: this.innerText.trim(),
+          button_id: this.id || 'no_id',
+          page: window.location.pathname
+        });
+      });
     });
-    
-    // Close info box when clicking outside
-    document.addEventListener("click", function(e) {
-      if (!infoBox.contains(e.target) && e.target !== infoBtn) {
-        if (infoBox.style.display === "block") {
-          infoBox.style.opacity = "0";
-          infoBox.style.transform = "translateY(-10px)";
-          setTimeout(() => { infoBox.style.display = "none"; }, 300);
+
+    // Track all link clicks
+    document.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', function() {
+        trackEvent('link_click', {
+          link_url: this.href,
+          link_text: this.innerText.trim(),
+          page: window.location.pathname
+        });
+      });
+    });
+
+    // Track QR generation
+    if (document.getElementById('generateBtn')) {
+      document.getElementById('generateBtn').addEventListener('click', function() {
+        trackEvent('generate_qr', { mode: window.selectedMode || 'default' });
+      });
+    }
+
+    // Track QR download
+    if (document.getElementById('downloadBtn')) {
+      document.getElementById('downloadBtn').addEventListener('click', function() {
+        trackEvent('download_qr', { page: window.location.pathname });
+      });
+    }
+
+    // Track dark mode toggle
+    const toggleBtn = document.querySelector('.toggle-btn');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function() {
+        trackEvent('toggle_dark_mode', {
+          mode: document.body.classList.contains('dark-mode') ? 'dark' : 'light'
+        });
+      });
+    }
+
+    // Track donation button click
+    const donateBtn = document.getElementById('donateBtn');
+    if (donateBtn) {
+      donateBtn.addEventListener('click', function() {
+        trackEvent('donate_click', { page: window.location.pathname });
+      });
+    }
+
+    // Track page scroll depth (25%, 50%, 75%, 100%)
+    let scrollTracked = {};
+    window.addEventListener('scroll', function() {
+      const scrollPercent = Math.round((window.scrollY + window.innerHeight) / document.documentElement.scrollHeight * 100);
+      [25, 50, 75, 100].forEach(mark => {
+        if (scrollPercent >= mark && !scrollTracked[mark]) {
+          trackEvent('scroll_depth', { percent: mark });
+          scrollTracked[mark] = true;
         }
-      }
+      });
     });
-    
-    // Close on Escape key
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape" && infoBox.style.display === "block") {
-        infoBox.style.opacity = "0";
-        infoBox.style.transform = "translateY(-10px)";
-        setTimeout(() => { infoBox.style.display = "none"; }, 300);
-      }
-    });
-    
-    // Container hover effect
-    container.addEventListener("mouseenter", function() {
-      this.style.transform = "translateY(-2px)";
-      this.style.boxShadow = "0 15px 50px rgba(0, 0, 0, 0.15)";
-    });
-    
-    container.addEventListener("mouseleave", function() {
-      this.style.transform = "translateY(0)";
-      this.style.boxShadow = "0 10px 40px rgba(0, 0, 0, 0.12)";
-    });
-  })();
-</script>
-
-<style>
-  @media (max-width: 768px) {
-    #ad-frame-container {
-      padding: 16px !important;
-      border-radius: 12px !important;
-    }
-    
-    #ad-info-box {
-      right: 16px !important;
-      width: calc(100% - 32px) !important;
-      max-width: 280px !important;
-    }
-  }
-</style>
+  </script>
+  <!-- End Tracking -->
 </body>
 </html>
