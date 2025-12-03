@@ -1,239 +1,841 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7479266047074322"
-     crossorigin="anonymous"></script>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <meta charset="UTF-8" />
+  <title>CutIt.sbs – URL Shortener</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  gtag('config', 'G-70PVFGLP9G');
-</script>
-  <!-- Primary Meta -->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shorten URLs ✦ CutIt.sbs – Free, Custom & Instant</title>
-  <meta name="description" content="Shorten your links instantly with custom aliases. 100% free forever. No login required. Powered by CutIt.sbs – your sleek, branded link creator.">
-  <meta name="keywords" content="url shortener, free link shortener, custom short link, cutit.sbs, shorten links, no login shortener, instant URL shortener">
-  <meta name="author" content="CutIt.sbs Team">
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://cutit.sbs/shortener">
-  <meta property="og:title" content="CutIt.sbs – Free URL Shortener">
-  <meta property="og:description" content="Create sleek, branded links in seconds. 100% free. No login. Instant sharing.">
-  <meta property="og:image" content="https://cutit.sbs/og-image.png">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="CutIt.sbs – Free URL Shortener">
-  <meta name="twitter:description" content="Shorten links instantly with custom aliases. No login. Always free.">
-  <meta name="twitter:image" content="https://cutit.sbs/og-image.png">
+  <!-- Razorpay Checkout -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <!-- Fonts -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" as="style">
-  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Antonio', sans-serif; }
+    :root {
+      --bg: #020617;
+      --bg-soft: #020617;
+      --card: #020617;
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.18);
+      --accent-strong: rgba(79, 70, 229, 0.45);
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --border: #1f2933;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
     body {
-      background:#fdfdff; color:#111; text-align:center; padding:2rem;
-      transition: background 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background:
+        radial-gradient(circle at top, #111827 0, #020617 52%, #000 100%);
+      color: var(--text);
     }
-    .dark-mode { background:#111; color:#fdfdff; }
-    header { display:flex; justify-content:space-between; align-items:center; padding-bottom:1rem; border-bottom:1px solid #ccc; margin-bottom:2rem; }
-    .logo { font-size:2rem; font-weight:700; }
-    
-    /* Toggle Switch */
-    .toggle-switch {
+
+    .shell {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      animation: fadeIn 0.45s ease-out;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .logo-mark {
+      width: 26px;
+      height: 26px;
+      border-radius: 9px;
+      background: conic-gradient(from 200deg, #4f46e5, #ec4899, #22c55e, #4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8),
+                  0 10px 30px rgba(15, 23, 42, 0.9);
+    }
+
+    .logo-mark span {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #e5e7eb;
+    }
+
+    .logo-text {
+      font-size: 0.9rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .tagline {
+      font-size: 0.9rem;
+      color: var(--muted);
+      max-width: 360px;
+    }
+
+    .chip-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      font-size: 0.72rem;
+      padding: 0.18rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .pill-accent {
+      border-color: rgba(79, 70, 229, 0.65);
+      background: rgba(79, 70, 229, 0.2);
+      color: #e0e7ff;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1.1fr);
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 780px) {
+      main {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    .card {
+      background: rgba(3, 7, 18, 0.95);
+      border-radius: 1.4rem;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.95);
+      padding: 1.3rem 1.4rem 1.4rem;
       position: relative;
-      width: 38px;
-      height: 20px;
+      overflow: hidden;
     }
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 34px;
-    }
-    .slider:before {
-      position: absolute;
+
+    .card::before {
       content: "";
-      height: 14px;
-      width: 14px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
+      position: absolute;
+      inset: -120px;
+      background:
+        radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.12), transparent 55%);
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: -1;
     }
-    input:checked + .slider {
-      background-color: #000;
-    }
-    input:checked + .slider:before {
-      transform: translateX(18px);
-    }
-    .dark-mode .slider { background-color: #666; }
-    .dark-mode input:checked + .slider { background-color: #fff; }
 
-    h1 { font-size:2rem; margin-bottom:0.5rem; }
-    .tagline { color:#555; margin-bottom:2rem; }
-    .shortener-box {
-      background:#fff; padding:2rem; border-radius:12px; max-width:500px; margin:auto;
-      border:2px solid #000; box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    .card-title {
+      font-size: 1.45rem;
+      margin-bottom: 0.25rem;
     }
-    .dark-mode .shortener-box { background:#222; border-color:#fff; }
-    input {
-      width:100%; padding:1rem; margin-bottom:1rem; font-size:1rem;
-      border:2px solid #000; border-radius:8px;
+
+    .card-subtitle {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 1.1rem;
     }
-    .dark-mode input { border-color:#fff; background:#111; color:#fff; }
-    button {
-      width:100%; padding:1rem; font-size:1rem; cursor:pointer;
-      background:#000; color:#fff; border:2px solid #000; border-radius:8px;
-      margin-bottom:0.8rem; transition:background 0.2s;
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 0.85rem;
     }
-    button:hover { background:#222; }
-    .dark-mode button { background:#fff; color:#000; border-color:#fff; }
-    #resultBox { font-size:1.1rem; margin-top:1rem; word-break:break-word; }
-    #shareButtons { margin-top:1rem; }
-    #shareButtons a {
-      display:inline-block; padding:0.5rem 1rem; border-radius:6px;
-      background:#eee; text-decoration:none; margin:0.2rem;
+
+    label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
     }
-    #shareButtons a:hover { background:#ddd; }
-    .dark-mode #shareButtons a { background:#444; color:#fff; }
-    .team-message {
-      max-width:600px; margin:2rem auto; color:#555; font-size:1rem;
+
+    input[type="text"] {
+      width: 100%;
+      border-radius: 0.9rem;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: rgba(15, 23, 42, 0.95);
+      padding: 0.6rem 0.8rem;
+      color: var(--text);
+      outline: none;
+      font-size: 0.9rem;
+      transition: border 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, transform 0.12s ease;
     }
-    footer { margin-top:3rem; font-size:0.9rem; opacity:0.8; }
+
+    input[type="text"]:focus {
+      border-color: rgba(129, 140, 248, 0.9);
+      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.7);
+      background: rgba(15, 23, 42, 1);
+      transform: translateY(-0.5px);
+    }
+
+    input::placeholder {
+      color: rgba(148, 163, 184, 0.8);
+    }
+
+    .input-help {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .custom-fee-info {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 0.3rem;
+      padding: 0.45rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px dashed rgba(129, 140, 248, 0.45);
+      font-size: 0.8rem;
+      color: #e5e7eb;
+      animation: slideUpFade 0.35s ease-out;
+    }
+
+    .custom-fee-info .pill-mini {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(129, 140, 248, 0.18);
+      border: 1px solid rgba(129, 140, 248, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .custom-fee-info strong {
+      font-weight: 600;
+    }
+
+    .btn-row {
+      margin-top: 0.75rem;
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      border-radius: 999px;
+      border: none;
+      padding: 0.65rem 1.3rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #4f46e5, #6366f1, #ec4899);
+      color: #f9fafb;
+      box-shadow: 0 18px 40px rgba(79, 70, 229, 0.6);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1.5px);
+      filter: brightness(1.03);
+      box-shadow: 0 22px 50px rgba(79, 70, 229, 0.8);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 10px 26px rgba(79, 70, 229, 0.75);
+    }
+
+    .btn-primary[disabled] {
+      opacity: 0.7;
+      cursor: wait;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .btn-ghost {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 0.5rem 0.95rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background 0.16s ease, border 0.16s ease, color 0.16s ease;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+    }
+
+    .hint-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .hint-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #22c55e, #4ade80);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+      animation: pulse 1.8s infinite ease-out;
+    }
+
+    .side-card {
+      background: rgba(3, 7, 18, 0.95);
+      border-radius: 1.4rem;
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      padding: 1.15rem 1.25rem 1.3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .side-card-title {
+      font-size: 0.96rem;
+      font-weight: 600;
+    }
+
+    .side-card-body {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .side-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+
+    .side-chip {
+      font-size: 0.75rem;
+      padding: 0.22rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(75, 85, 99, 0.8);
+      backdrop-filter: blur(12px);
+    }
+
+    .side-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at top right, rgba(79, 70, 229, 0.16), transparent 60%),
+        radial-gradient(circle at bottom left, rgba(34, 197, 94, 0.12), transparent 55%);
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .result-box {
+      margin-top: 1rem;
+      min-height: 3rem;
+    }
+
+    .result-success {
+      padding: 0.8rem 1rem;
+      border-radius: 1rem;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 0.9rem;
+    }
+
+    .result-success-title {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .result-success a {
+      display: inline-block;
+      margin-right: 0.5rem;
+      font-weight: 600;
+      color: #e5e7eb;
+      text-decoration: none;
+    }
+
+    .result-success a:hover {
+      text-decoration: underline;
+    }
+
+    .result-success button {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 0.25rem 0.65rem;
+      font-size: 0.8rem;
+      background: transparent;
+      color: #e5e7eb;
+      cursor: pointer;
+      transition: background 0.16s ease, color 0.16s ease;
+    }
+
+    .result-success button:hover {
+      background: rgba(31, 41, 55, 0.95);
+    }
+
+    .result-box.pop-in .result-success {
+      animation: popIn 0.24s ease-out;
+    }
+
+    .error-text {
+      margin-top: 0.45rem;
+      font-size: 0.8rem;
+      color: var(--danger);
+    }
+
+    .share-row {
+      display: none;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.65rem;
+      font-size: 0.8rem;
+    }
+
+    .share-row a {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 0.25rem 0.6rem;
+      text-decoration: none;
+      color: #e5e7eb;
+      background: transparent;
+      font-size: 0.78rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .share-row a:hover {
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    footer {
+      font-size: 0.78rem;
+      color: var(--muted);
+      opacity: 0.85;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    footer a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .card, .side-card {
+        border-radius: 1.1rem;
+      }
+      .card-title {
+        font-size: 1.3rem;
+      }
+      .card-subtitle {
+        font-size: 0.84rem;
+      }
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(6px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.18); opacity: 0.55; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes popIn {
+      0% { transform: translateY(4px) scale(0.97); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
   </style>
-
-  <!-- Firebase SDKs -->
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 </head>
 <body>
+  <div class="shell">
+    <header>
+      <div class="logo">
+        <div class="logo-mark"><span>C</span></div>
+        <div>
+          <div class="logo-text">CUTIT.SBS</div>
+          <p class="tagline">Turn any long URL into a tiny, shareable link in seconds.</p>
+        </div>
+      </div>
+      <div class="chip-row">
+        <div class="pill">No login</div>
+        <div class="pill pill-accent">₹0 for random links</div>
+        <div class="pill">₹1 per custom link</div>
+      </div>
+    </header>
 
-<header>
-  <div class="logo">CutIt.sbs</div>
-  <label class="toggle-switch">
-    <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
-    <span class="slider"></span>
-  </label>
-</header>
+    <main>
+      <!-- MAIN SHORTENER CARD -->
+      <section class="card">
+        <h1 class="card-title">Shorten your link</h1>
+        <p class="card-subtitle">
+          Paste a URL below. Leave custom link empty for a free random short link, or pay ₹1 to lock your own alias.
+        </p>
 
-<h1>Shorten Your Long URLs</h1>
-<p class="tagline">Create sleek, branded links in seconds – always free, no login.</p>
+        <div class="field-group">
+          <label for="longUrl">Long URL</label>
+          <input
+            id="longUrl"
+            type="text"
+            placeholder="https://example.com/your/very/long/link"
+            autocomplete="off"
+          />
+          <p class="input-help">We’ll add <code>https://</code> automatically if you forget.</p>
+        </div>
 
-<div class="shortener-box">
-  <input id="longUrl" placeholder="Paste your long URL here" aria-label="Paste your long URL here">
-  <input id="customAlias" placeholder="(Optional) Custom short link e.g. myname" aria-label="Custom short link">
-  <button onclick="pasteFromClipboard()">📋 Paste from Clipboard</button>
-  <button onclick="generateShortLink()">🚀 Generate Short Link</button>
-  <div id="resultBox"></div>
-  <div id="shareButtons" style="display:none;">
-    <p>🔗 Share this link:</p>
-    <a id="shareWhatsApp" target="_blank" rel="noopener">🟢 WhatsApp</a>
-    <a id="shareTelegram" target="_blank" rel="noopener">🔵 Telegram</a>
-    <a id="shareTwitter" target="_blank" rel="noopener">🐦 Twitter</a>
+        <div class="field-group">
+          <label for="customAlias">Custom short link (₹1)</label>
+          <input
+            id="customAlias"
+            type="text"
+            placeholder="Optional: my-special-link"
+            autocomplete="off"
+          />
+          <div class="custom-fee-info">
+            <div class="pill-mini">New</div>
+            <div>
+              Custom short links cost <strong>₹1</strong> each.  
+              Leave empty to generate a free random link.
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" id="shortenBtn" type="button">
+            <span id="shortenBtnLabel">Shorten link</span>
+            <span id="shortenBtnEmoji">→</span>
+          </button>
+
+          <button class="btn-ghost" type="button" onclick="window.location.reload()">
+            Reset
+          </button>
+
+          <div class="hint-row">
+            <div class="hint-dot"></div>
+            <span>Custom links are one-time purchase per alias.</span>
+          </div>
+        </div>
+
+        <div id="errorBox" class="error-text"></div>
+
+        <div id="resultBox" class="result-box"></div>
+
+        <div id="shareButtons" class="share-row">
+          <span>Share:</span>
+          <a id="shareWhatsApp" href="#" target="_blank">WhatsApp</a>
+          <a id="shareTelegram" href="#" target="_blank">Telegram</a>
+          <a id="shareTwitter" href="#" target="_blank">Twitter / X</a>
+        </div>
+      </section>
+
+      <!-- SIDE CARD / INFO -->
+      <aside class="side-card">
+        <div class="side-card-title">How pricing works</div>
+        <div class="side-card-body">
+          • <strong>Random links:</strong> Always free, unlimited.  
+          • <strong>Custom links:</strong> ₹1 for each unique alias you create.
+        </div>
+        <div class="side-card-body">
+          Your links are stored and resolved from our Firestore backend. Just share
+          the short link – we’ll handle the redirect.
+        </div>
+        <div class="side-chip-row">
+          <span class="side-chip">No account needed</span>
+          <span class="side-chip">Firebase powered</span>
+          <span class="side-chip">Razorpay payments</span>
+          <span class="side-chip">Copy & share in one tap</span>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <div>Made for fast sharing — keep it tiny, keep it cute.</div>
+      <div>
+        <a href="https://cutit.sbs" target="_blank" rel="noopener">Back to main site</a>
+      </div>
+    </footer>
   </div>
-</div>
 
-<!-- QR Button moved outside -->
-<div style="max-width:500px; margin:1rem auto;">
-  <button onclick="window.open('https://cutit.sbs', '_blank')">📷 Generate QR Code</button>
-</div>
-<div class="team-message">
-  From all of us at <strong>CutIt.sbs</strong> – we built this with love, creativity, and a bit of chaos 🤪
-  to help you express yourself and share in style. Whether it’s music, memes, or memories – your link is your voice.
-  No accounts. No limits. Always free. ❤️
-</div>
+  <!-- Firebase + Firestore Setup (Module) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      setDoc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-<footer>
-  ✦ Created with rebellious love by <strong>CutIt.sbs</strong>
-</footer>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
+      authDomain: "cutitshortener.firebaseapp.com",
+      projectId: "cutitshortener",
+      storageBucket: "cutitshortener.appspot.com",
+      messagingSenderId: "958863508757",
+      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
+    };
 
-<!-- Firebase Setup -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
-    authDomain: "cutitshortener.firebaseapp.com",
-    projectId: "cutitshortener",
-    storageBucket: "cutitshortener.appspot.com",
-    messagingSenderId: "958863508757",
-    appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  window.db = db;
-  window.firestoreHelpers = { collection, doc, setDoc };
-</script>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-<!-- Main Script -->
-<script>
-function toggleDarkMode() {
-  document.body.classList.toggle('dark-mode');
-  document.getElementById('darkModeToggle').checked = document.body.classList.contains('dark-mode');
-}
-async function pasteFromClipboard() {
-  const text = await navigator.clipboard.readText();
-  document.getElementById("longUrl").value = text;
-}
-async function generateShortLink() {
-  let url = document.getElementById("longUrl").value.trim();
-  let customAlias = document.getElementById("customAlias").value.trim();
+    // Expose for non-module script if needed
+    window._cutitDb = db;
+    window._cutitFsHelpers = { collection, doc, setDoc, getDoc };
+  </script>
 
-  if (!url) return alert("Please enter a URL.");
-  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  <!-- Main Logic (non-module for simplicity) -->
+  <script>
+    // Razorpay key (public)
+    window.razorpayKeyId = "rzp_live_Rn9xYDkClzcTcG";
 
-  // ✅ Auto-replace spaces with dashes
-  if (customAlias) {
-    customAlias = customAlias.replace(/\s+/g, "-");
-  }
+    const longUrlInput   = document.getElementById("longUrl");
+    const customInput    = document.getElementById("customAlias");
+    const shortenBtn     = document.getElementById("shortenBtn");
+    const shortenLabel   = document.getElementById("shortenBtnLabel");
+    const shortenEmoji   = document.getElementById("shortenBtnEmoji");
+    const resultBox      = document.getElementById("resultBox");
+    const errorBox       = document.getElementById("errorBox");
+    const shareBox       = document.getElementById("shareButtons");
+    const shareWhatsApp  = document.getElementById("shareWhatsApp");
+    const shareTelegram  = document.getElementById("shareTelegram");
+    const shareTwitter   = document.getElementById("shareTwitter");
 
-  // ✅ Validation: only allow letters, numbers, dashes, underscores
-  const aliasRegex = /^[a-zA-Z0-9_-]+$/;
-  if (customAlias && !aliasRegex.test(customAlias)) {
-    return alert("❌ Custom link can only contain letters, numbers, dashes (-), and underscores (_).");
-  }
+    function createRandomId(length = 6) {
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      let out = "";
+      for (let i = 0; i < length; i++) {
+        out += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return out;
+    }
 
-  const shortID = customAlias || Math.random().toString(36).substring(2, 8);
+    async function saveShortLink(shortID, url, isCustom, paymentId) {
+      const db = window._cutitDb;
+      const { collection, doc, setDoc } = window._cutitFsHelpers;
 
-  try {
-    const db = window.db;
-    const { collection, doc, setDoc } = window.firestoreHelpers;
-    await setDoc(doc(collection(db, "shortlinks"), shortID), {
-      original: url,
-      created: new Date().toISOString(),
-      custom: !!customAlias
+      const linksCol = collection(db, "shortlinks");
+      const linkRef  = doc(linksCol, shortID);
+
+      await setDoc(linkRef, {
+        original: url,
+        created: new Date().toISOString(),
+        custom: !!isCustom,
+        paymentId: paymentId || null
+      });
+
+      const shortUrl = `https://cutit.sbs/${shortID}`;
+
+      // Populate UI
+      errorBox.textContent = "";
+      resultBox.innerHTML = `
+        <div class="result-success">
+          <div class="result-success-title">Your short link</div>
+          <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+          <button type="button" onclick="navigator.clipboard.writeText('${shortUrl}')">📋 Copy</button>
+        </div>
+      `;
+
+      // share links
+      if (shareBox) {
+        shareBox.style.display = "flex";
+        const encoded = encodeURIComponent(shortUrl);
+        if (shareWhatsApp) shareWhatsApp.href = `https://wa.me/?text=${encoded}`;
+        if (shareTelegram) shareTelegram.href = `https://t.me/share/url?url=${encoded}`;
+        if (shareTwitter)  shareTwitter.href  = `https://twitter.com/intent/tweet?text=${encodeURIComponent("Check this out: " + shortUrl)}`;
+      }
+
+      // small pop animation
+      resultBox.classList.remove("pop-in");
+      void resultBox.offsetWidth;
+      resultBox.classList.add("pop-in");
+    }
+
+    function setLoading(isLoading) {
+      if (!shortenBtn) return;
+      shortenBtn.disabled = isLoading;
+      shortenLabel.textContent = isLoading ? "Working..." : "Shorten link";
+      shortenEmoji.textContent = isLoading ? "⏳" : "→";
+    }
+
+    function openCustomLinkPayment(url, customAlias) {
+      if (!window.razorpayKeyId) {
+        alert("Payment key missing. Please try again later.");
+        return;
+      }
+
+      const amountPaise = 100; // ₹1
+      const options = {
+        key: window.razorpayKeyId,
+        amount: amountPaise,
+        currency: "INR",
+        name: "CutIt.sbs",
+        description: `Custom short link: ${customAlias}`,
+        notes: {
+          custom_alias: customAlias,
+          original_url: url
+        },
+        handler: async function (response) {
+          // Payment was successful
+          try {
+            setLoading(true);
+            const paymentId = response.razorpay_payment_id;
+            await saveShortLink(customAlias, url, true, paymentId);
+          } catch (err) {
+            console.error(err);
+            alert(
+              "We received the payment but hit an error saving your link.\n\n" +
+              "Please contact support with this Payment ID: " + response.razorpay_payment_id
+            );
+          } finally {
+            setLoading(false);
+          }
+        },
+        theme: {
+          color: "#4f46e5"
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.on("payment.failed", function (response) {
+        console.warn("Payment failed:", response.error);
+        alert("Payment failed or was cancelled. You can try again.");
+      });
+      rzp.open();
+    }
+
+    async function generateShortLink() {
+      let url = longUrlInput.value.trim();
+      let customAlias = customInput.value.trim();
+
+      errorBox.textContent = "";
+      resultBox.innerHTML = "";
+      shareBox.style.display = "none";
+
+      if (!url) {
+        errorBox.textContent = "Please paste a URL first.";
+        return;
+      }
+
+      // auto add https
+      if (!/^https?:\/\//i.test(url)) {
+        url = "https://" + url;
+      }
+
+      // handle alias
+      if (customAlias) {
+        customAlias = customAlias.replace(/\s+/g, "-");
+        const aliasRegex = /^[a-zA-Z0-9_-]+$/;
+        if (!aliasRegex.test(customAlias)) {
+          errorBox.textContent = "Custom link can only contain letters, numbers, dashes (-), and underscores (_).";
+          return;
+        }
+      }
+
+      // CASE 1: no custom alias → free random link
+      if (!customAlias) {
+        try {
+          setLoading(true);
+          const randomId = createRandomId(6);
+          await saveShortLink(randomId, url, false, null);
+        } catch (err) {
+          console.error(err);
+          errorBox.textContent = "Something went wrong while creating your link. Please try again.";
+        } finally {
+          setLoading(false);
+        }
+        return;
+      }
+
+      // CASE 2: custom alias → confirm & then pay ₹1
+      const confirmMsg =
+        `Custom short link "${customAlias}" will cost ₹1.\n\n` +
+        `Press OK to continue to Razorpay payment, or Cancel to go back.`;
+      const ok = confirm(confirmMsg);
+      if (!ok) return;
+
+      openCustomLinkPayment(url, customAlias);
+    }
+
+    if (shortenBtn) {
+      shortenBtn.addEventListener("click", generateShortLink);
+    }
+
+    // allow Enter to submit from inputs
+    [longUrlInput, customInput].forEach((el) => {
+      if (!el) return;
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          generateShortLink();
+        }
+      });
     });
-
-    const shortUrl = `https://cutit.sbs/${shortID}`;
-    document.getElementById("resultBox").innerHTML =
-      `✅ Short Link: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
-       <br/><button onclick="navigator.clipboard.writeText('${shortUrl}')">📋 Copy</button>`;
-
-    document.getElementById("shareButtons").style.display = "block";
-    document.getElementById("shareWhatsApp").href = `https://wa.me/?text=${encodeURIComponent(shortUrl)}`;
-    document.getElementById("shareTelegram").href = `https://t.me/share/url?url=${encodeURIComponent(shortUrl)}`;
-    document.getElementById("shareTwitter").href = `https://twitter.com/intent/tweet?text=${encodeURIComponent('Check this out: ' + shortUrl)}`;
-  } catch (e) {
-    alert("❌ That custom link may already exist.");
-  }
-}
-</script>
+  </script>
 </body>
 </html>
