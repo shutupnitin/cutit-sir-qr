@@ -1,30 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Basic HTML meta -->
+  <!-- Basic HTML & SEO -->
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>CutIt.sbs | Shorten URLs & ₹1 Custom Links</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- SEO meta -->
-  <meta name="description" content="CutIt.sbs lets you shorten long URLs in seconds. Free random short links, or pay just ₹1 for a clean custom link. No login, simple and fast." />
-  <meta name="keywords" content="cutit, cutit.sbs, url shortener, link shortener, custom link, free url shortener, india url shortener" />
+  <meta name="description"
+        content="Shorten your long URLs in seconds with CutIt.sbs. Free random short links, or pay just ₹1 for a clean custom link. No login, simple and fast." />
+  <meta name="keywords"
+        content="cutit, CutIt.sbs, url shortener, link shortener, custom link, free url shortener, india url shortener, short link generator" />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://cutit.sbs/shorten" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="CutIt.sbs | Shorten URLs & ₹1 Custom Links" />
-  <meta property="og:description" content="Create sleek short links in seconds. Random links are free, custom links are just ₹1 each." />
+  <meta property="og:description"
+        content="Create sleek, branded short links in seconds. Random links are free, custom links are just ₹1 each." />
   <meta property="og:url" content="https://cutit.sbs/shorten" />
   <meta property="og:site_name" content="CutIt.sbs" />
+  <!-- Change image URL to your actual OG image -->
   <meta property="og:image" content="https://cutit.sbs/og-image.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="CutIt.sbs | Shorten URLs & ₹1 Custom Links" />
-  <meta name="twitter:description" content="Minimal, clean URL shortener. Free random links, ₹1 custom links." />
+  <meta name="twitter:description"
+        content="Minimal, clean URL shortener. Free random links, ₹1 custom links. No login, just paste and go." />
   <meta name="twitter:image" content="https://cutit.sbs/og-image.png" />
 
   <!-- JSON-LD structured data -->
@@ -53,29 +57,33 @@
   <!-- Razorpay Checkout -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-  <!-- Google Analytics 4 (replace G-70PVFGLP9G) -->
+  <!-- Google Analytics 4 (replace G-70PVFGLP9G with your ID) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag(){ dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-70PVFGLP9G', { anonymize_ip: true }); // TODO: replace with your GA4 ID
   </script>
 
-  <!-- Fonts -->
+  <!-- Fonts to match your existing UI -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
 
   <style>
     :root {
-      --bg: #f7f7f7;
-      --text: #111827;
-      --muted: #6b7280;
-      --card-border: #111827;
-      --btn-bg: #000000;
-      --btn-bg-hover: #111111;
-      --btn-text: #ffffff;
+      --bg-light: #f5f5f5;
+      --bg-dark: #050505;
+      --text-light: #111111;
+      --text-dark: #f9fafb;
+      --accent: #000000;
+      --border: #111111;
+      --muted-light: #6b7280;
+      --muted-dark: #9ca3af;
       --danger: #dc2626;
     }
 
@@ -83,102 +91,101 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     body {
       min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--bg-light);
+      color: var(--text-light);
       display: flex;
       justify-content: center;
       padding: 1.5rem;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
     }
 
     .page {
       width: 100%;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+      max-width: 960px;
     }
 
-    /* Top bar */
+    /* Top bar - matches your existing layout */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.4rem;
     }
 
     .brand {
-      font-size: 1.8rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
+      font-family: "Bebas Neue", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.08em;
+    }
+
+    .mode-toggle {
+      font-size: 0.9rem;
+      color: var(--muted-light);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      user-select: none;
+    }
+
+    body.dark .mode-toggle {
+      color: var(--muted-dark);
+    }
+
+    .mode-pill {
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid #d4d4d8;
+      background: #ffffff;
+      font-size: 0.8rem;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    body.dark .mode-pill {
+      background: #111827;
+      color: #f9fafb;
+      border-color: #4b5563;
     }
 
     .divider {
       border: none;
       border-top: 1px solid #d4d4d8;
-      margin: 0.5rem 0 1.5rem;
+      margin: 0.75rem 0 1.6rem;
     }
 
-    .toggle-wrap {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.8rem;
-      color: var(--muted);
+    body.dark .divider {
+      border-top-color: #4b5563;
     }
 
-    .toggle {
-      width: 46px;
-      height: 24px;
-      border-radius: 999px;
-      border: 1px solid #d4d4d8;
-      background: #f9fafb;
-      display: flex;
-      align-items: center;
-      padding: 2px;
-      cursor: pointer;
-      position: relative;
-      transition: background 0.2s ease, border-color 0.2s ease;
-    }
-
-    .toggle-thumb {
-      width: 18px;
-      height: 18px;
-      border-radius: 999px;
-      background: #111827;
-      transform: translateX(0);
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-
-    .toggle.on {
-      background: #111827;
-      border-color: #111827;
-    }
-
-    .toggle.on .toggle-thumb {
-      background: #f9fafb;
-      transform: translateX(20px);
-    }
-
-    /* Main heading */
+    /* Heading & subheading */
     .headline-wrap {
       text-align: center;
-      margin-bottom: 0.6rem;
+      margin-bottom: 1.3rem;
     }
 
     .headline {
-      font-size: 2.1rem;
-      font-weight: 700;
-      margin-bottom: 0.3rem;
+      font-family: "Bebas Neue", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 2.6rem;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.25rem;
     }
 
     .subheadline {
-      font-size: 0.95rem;
-      color: var(--muted);
+      font-size: 0.96rem;
+      color: var(--muted-light);
+    }
+
+    body.dark .subheadline {
+      color: var(--muted-dark);
     }
 
     /* Card */
@@ -186,10 +193,17 @@
       max-width: 640px;
       margin: 0 auto;
       border-radius: 28px;
-      border: 2px solid var(--card-border);
-      padding: 2rem 1.8rem 1.4rem;
+      border: 2px solid var(--border);
+      padding: 2rem 1.9rem 1.6rem;
       background: #ffffff;
       box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    body.dark .card {
+      background: #020617;
+      border-color: #f9fafb;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
     }
 
     .field {
@@ -200,10 +214,17 @@
       width: 100%;
       padding: 0.9rem 1rem;
       border-radius: 18px;
-      border: 2px solid #111827;
+      border: 2px solid var(--border);
       font-size: 0.95rem;
       outline: none;
-      transition: box-shadow 0.16s ease, transform 0.12s ease;
+      background: #ffffff;
+      color: inherit;
+      transition: box-shadow 0.15s ease, transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+
+    body.dark .input {
+      background: #020617;
+      border-color: #f9fafb;
     }
 
     .input::placeholder {
@@ -212,87 +233,86 @@
     }
 
     .input:focus {
-      box-shadow: 0 0 0 2px #111827;
+      box-shadow: 0 0 0 2px var(--border);
       transform: translateY(-1px);
     }
 
     .helper-text {
       font-size: 0.8rem;
-      color: var(--muted);
+      color: var(--muted-light);
       margin-top: 0.25rem;
     }
 
-    .custom-info-box {
-      margin-top: 0.5rem;
-      padding: 0.6rem 0.9rem;
+    body.dark .helper-text {
+      color: var(--muted-dark);
+    }
+
+    .custom-box {
+      margin-top: 0.6rem;
+      padding: 0.7rem 0.9rem;
       border-radius: 16px;
-      border: 1px dashed #111827;
-      font-size: 0.82rem;
+      border: 1px dashed var(--border);
       background: #fafafa;
+      font-size: 0.84rem;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    body.dark .custom-box {
+      background: #020617;
+      border-color: #e5e7eb;
     }
 
     .pill-small {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 0.1rem 0.5rem;
+      padding: 0.1rem 0.6rem;
       border-radius: 999px;
-      border: 1px solid #111827;
-      font-size: 0.68rem;
+      border: 1px solid var(--border);
+      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.09em;
       margin-right: 0.4rem;
     }
 
     .currency-text {
       font-size: 0.76rem;
-      color: var(--muted);
-      margin-top: 0.2rem;
+      color: var(--muted-light);
+      margin-top: 0.25rem;
     }
 
-    /* Buttons */
+    body.dark .currency-text {
+      color: var(--muted-dark);
+    }
+
+    /* Buttons like your current site */
     .btn {
       width: 100%;
-      padding: 0.9rem 1rem;
+      padding: 0.85rem 1rem;
       border-radius: 18px;
       border: none;
-      background: var(--btn-bg);
-      color: var(--btn-text);
-      font-size: 0.95rem;
+      background: #000000;
+      color: #ffffff;
+      font-size: 0.96rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.35rem;
+      gap: 0.45rem;
+      margin-top: 0.7rem;
       transition: background 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease;
     }
 
-    .btn + .btn {
-      margin-top: 0.6rem;
-    }
-
     .btn:hover {
-      background: var(--btn-bg-hover);
+      background: #111111;
       transform: translateY(-1px);
-      box-shadow: 0 14px 26px rgba(15, 23, 42, 0.25);
+      box-shadow: 0 14px 24px rgba(15, 23, 42, 0.25);
     }
 
     .btn:active {
       transform: translateY(0);
-      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.25);
-    }
-
-    .btn.outline {
-      background: transparent;
-      color: var(--text);
-      border: 2px solid #111827;
-      box-shadow: none;
-    }
-
-    .btn.outline:hover {
-      background: #111827;
-      color: #ffffff;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.25);
     }
 
     .btn[disabled] {
@@ -302,38 +322,77 @@
       transform: none;
     }
 
+    .btn-outline {
+      background: transparent;
+      color: inherit;
+      border: 2px solid var(--border);
+    }
+
+    body.dark .btn-outline {
+      border-color: #f9fafb;
+    }
+
     .error-text {
-      margin-top: 0.6rem;
+      margin-top: 0.7rem;
       font-size: 0.82rem;
       color: var(--danger);
       text-align: center;
+      min-height: 1.1rem;
     }
 
     .result-box {
-      margin-top: 0.85rem;
+      margin-top: 0.8rem;
       font-size: 0.9rem;
       text-align: center;
       min-height: 2.2rem;
     }
 
     .result-inner {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
       padding: 0.7rem 0.9rem;
       border-radius: 16px;
-      background: #f5f5f5;
-      display: inline-flex;
-      gap: 0.5rem;
-      align-items: center;
+      background: #f3f4f6;
       max-width: 100%;
       word-break: break-all;
-      animation: popIn 0.22s ease-out;
+      animation: popIn 0.23s ease-out;
+    }
+
+    body.dark .result-inner {
+      background: #111827;
+    }
+
+    .result-inner a {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .result-inner a:hover {
+      text-decoration: underline;
+    }
+
+    .result-inner button {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.7rem;
+      font-size: 0.8rem;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    body.dark .result-inner button {
+      border-color: #f9fafb;
     }
 
     .share-row {
       display: none;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: 0.7rem;
+      gap: 0.45rem;
+      margin-top: 0.75rem;
       font-size: 0.8rem;
     }
 
@@ -341,44 +400,59 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 0.3rem 0.7rem;
+      padding: 0.28rem 0.7rem;
       border-radius: 999px;
-      border: 1px solid #111827;
-      color: #111827;
+      border: 1px solid var(--border);
+      color: inherit;
       text-decoration: none;
     }
 
+    body.dark .share-row a {
+      border-color: #f9fafb;
+    }
+
     .share-row a:hover {
-      background: #111827;
+      background: #000000;
       color: #ffffff;
     }
 
     .note {
       margin-top: 0.8rem;
       font-size: 0.8rem;
-      color: var(--muted);
+      color: var(--muted-light);
       text-align: center;
     }
 
-    /* Footer */
+    body.dark .note {
+      color: var(--muted-dark);
+    }
+
+    /* Footer like your screenshot */
     footer {
       margin-top: 1.8rem;
-      font-size: 0.78rem;
-      color: var(--muted);
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--muted-light);
+      text-align: center;
+    }
+
+    body.dark footer {
+      color: var(--muted-dark);
     }
 
     footer a {
-      color: var(--muted);
+      color: inherit;
       text-decoration: none;
+      margin: 0 0.25rem;
     }
 
     footer a:hover {
       text-decoration: underline;
+    }
+
+    /* Animations */
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(4px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     @media (max-width: 640px) {
@@ -386,18 +460,12 @@
         padding: 1rem;
       }
       .card {
-        padding: 1.6rem 1.3rem 1.3rem;
+        padding: 1.6rem 1.4rem 1.4rem;
         border-radius: 22px;
       }
       .headline {
-        font-size: 1.8rem;
+        font-size: 2.2rem;
       }
-    }
-
-    /* Animations */
-    @keyframes popIn {
-      from { opacity: 0; transform: translateY(4px) scale(0.97); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
   </style>
 </head>
@@ -406,20 +474,18 @@
     <!-- Top bar -->
     <div class="topbar">
       <div class="brand">CutIt.sbs</div>
-      <div class="toggle-wrap" id="modeToggleWrap">
-        <div class="toggle" id="modeToggle">
-          <div class="toggle-thumb"></div>
-        </div>
+      <div class="mode-toggle" id="modeToggle">
+        <span class="mode-pill">Dark Mode</span>
       </div>
     </div>
 
     <hr class="divider" />
 
-    <!-- Headline -->
+    <!-- Heading -->
     <div class="headline-wrap">
       <h1 class="headline">Shorten Your Long URLs</h1>
       <p class="subheadline">
-        Create sleek, branded links in seconds – free random links, or ₹1 for a custom alias.
+        Create sleek, branded links in seconds – free random links, or ₹1 for a custom short link.
       </p>
     </div>
 
@@ -445,7 +511,7 @@
             placeholder="(Optional) Custom short link e.g. myname"
             autocomplete="off"
           />
-          <div class="custom-info-box">
+          <div class="custom-box">
             <div>
               <span class="pill-small">Custom</span>
               Custom short links cost <strong>₹1</strong> per alias. Leave this blank for a free random link.
@@ -464,7 +530,7 @@
           🚀 <span id="shortenBtnLabel">Generate Short Link</span>
         </button>
 
-        <button id="qrBtn" class="btn outline" type="button">
+        <button id="qrBtn" class="btn btn-outline" type="button">
           📸 Generate QR Code
         </button>
 
@@ -479,16 +545,20 @@
         </div>
 
         <p class="note">
-          Random links are always free. Custom aliases are a one-time purchase per name.
+          Random links are always free. Custom aliases are a one-time purchase per name using Razorpay.
         </p>
       </section>
     </main>
 
     <footer>
-      <div>© <span id="year"></span> CutIt.sbs · Built for fast, clean sharing.</div>
       <div>
+        Terms |
+        <a href="terms.html">Terms</a> ·
         <a href="privacy.html">Privacy</a> ·
-        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact Us</a>
+      </div>
+      <div style="margin-top: 0.3rem;">
+        ✨ Created with rebellious love by CutIt.sbs – where short links meet pop culture. ✨
       </div>
     </footer>
   </div>
@@ -519,9 +589,9 @@
     window._cutitFsHelpers = { collection, doc, setDoc };
   </script>
 
-  <!-- Main Logic -->
+  <!-- Main Logic (Razorpay + GA + currency + interactions) -->
   <script>
-    // PUBLIC Razorpay key (safe to expose)
+    // Razorpay public key
     window.razorpayKeyId = "rzp_live_Rn9xYDkClzcTcG";
     const basePriceINR = 1;
 
@@ -539,9 +609,6 @@
     const shareTwitter   = document.getElementById("shareTwitter");
     const currencyInfoEl = document.getElementById("currencyInfo");
     const modeToggle     = document.getElementById("modeToggle");
-    const yearSpan       = document.getElementById("year");
-
-    yearSpan.textContent = new Date().getFullYear();
 
     function gtagSafe() {
       if (typeof gtag === "function") {
@@ -549,28 +616,22 @@
       }
     }
 
-    // Lightweight dark / light toggle (just for user, not required)
+    // Dark mode toggle (just visual)
     modeToggle.addEventListener("click", () => {
-      modeToggle.classList.toggle("on");
-      document.body.style.background = modeToggle.classList.contains("on")
-        ? "#111827"
-        : "#f7f7f7";
-      document.body.style.color = modeToggle.classList.contains("on")
-        ? "#f9fafb"
-        : "#111827";
+      document.body.classList.toggle("dark");
       gtagSafe("event", "mode_toggled", {
         event_category: "engagement",
-        mode: modeToggle.classList.contains("on") ? "dark" : "light"
+        mode: document.body.classList.contains("dark") ? "dark" : "light"
       });
     });
 
-    // Cursor tracking (throttled)
+    // Cursor tracking (throttled to ~1 per sec)
     (function initCursorTracking() {
-      let last = 0;
+      let lastTime = 0;
       document.addEventListener("mousemove", (e) => {
         const now = Date.now();
-        if (now - last < 1000) return;
-        last = now;
+        if (now - lastTime < 1000) return;
+        lastTime = now;
         gtagSafe("event", "cursor_move", {
           event_category: "interaction",
           viewport_w: window.innerWidth,
@@ -594,7 +655,7 @@
       const db = window._cutitDb;
       const { collection, doc, setDoc } = window._cutitFsHelpers;
       const linksCol = collection(db, "shortlinks");
-      const linkRef = doc(linksCol, shortID);
+      const linkRef  = doc(linksCol, shortID);
 
       await setDoc(linkRef, {
         original: url,
@@ -685,7 +746,7 @@
             setLoading(false);
           }
         },
-        theme: { color: "#111827" }
+        theme: { color: "#000000" }
       };
 
       const rzp = new Razorpay(options);
@@ -711,7 +772,10 @@
 
       if (!url) {
         errorBox.textContent = "Please paste a URL first.";
-        gtagSafe("event", "shorten_error", { event_category: "engagement", error_type: "empty_url" });
+        gtagSafe("event", "shorten_error", {
+          event_category: "engagement",
+          error_type: "empty_url"
+        });
         return;
       }
 
@@ -724,7 +788,10 @@
         const aliasRegex = /^[a-zA-Z0-9_-]+$/;
         if (!aliasRegex.test(customAlias)) {
           errorBox.textContent = "Custom link can only contain letters, numbers, dashes (-), and underscores (_).";
-          gtagSafe("event", "shorten_error", { event_category: "engagement", error_type: "invalid_alias" });
+          gtagSafe("event", "shorten_error", {
+            event_category: "engagement",
+            error_type: "invalid_alias"
+          });
           return;
         }
       }
@@ -734,7 +801,7 @@
         alias_type: customAlias ? "custom" : "random"
       });
 
-      // Free random
+      // Free random link
       if (!customAlias) {
         try {
           setLoading(true);
@@ -753,7 +820,7 @@
         return;
       }
 
-      // Paid custom
+      // Paid custom link
       const confirmMsg =
         `Custom short link "${customAlias}" will cost ₹${basePriceINR}.\n\n` +
         `Press OK to continue to Razorpay payment, or Cancel to go back.`;
@@ -769,7 +836,6 @@
       openCustomLinkPayment(url, customAlias);
     }
 
-    // Clipboard paste button
     async function pasteFromClipboard() {
       try {
         if (!navigator.clipboard || !navigator.clipboard.readText) {
@@ -779,7 +845,9 @@
         const text = await navigator.clipboard.readText();
         if (text) {
           longUrlInput.value = text;
-          gtagSafe("event", "clipboard_paste", { event_category: "engagement" });
+          gtagSafe("event", "clipboard_paste", {
+            event_category: "engagement"
+          });
         } else {
           alert("Clipboard is empty.");
         }
@@ -789,25 +857,28 @@
       }
     }
 
-    // QR button (go to your QR page)
-    qrBtn.addEventListener("click", () => {
-      gtagSafe("event", "qr_button_click", { event_category: "navigation" });
-      window.location.href = "index.html"; // change if your QR page has different path
-    });
+    function initEvents() {
+      shortenBtn.addEventListener("click", generateShortLink);
+      pasteBtn.addEventListener("click", pasteFromClipboard);
 
-    shortenBtn.addEventListener("click", generateShortLink);
-    pasteBtn.addEventListener("click", pasteFromClipboard);
-
-    [longUrlInput, customInput].forEach((el) => {
-      el.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          generateShortLink();
-        }
+      qrBtn.addEventListener("click", () => {
+        gtagSafe("event", "qr_button_click", {
+          event_category: "navigation"
+        });
+        window.location.href = "index.html"; // QR generator page
       });
-    });
 
-    // Location-based currency info
+      [longUrlInput, customInput].forEach((el) => {
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            generateShortLink();
+          }
+        });
+      });
+    }
+
+    // Currency detection: show approx price in local currency
     async function initCurrencyInfo() {
       if (!currencyInfoEl) return;
       try {
@@ -845,7 +916,10 @@
       }
     }
 
-    document.addEventListener("DOMContentLoaded", initCurrencyInfo);
+    document.addEventListener("DOMContentLoaded", () => {
+      initEvents();
+      initCurrencyInfo();
+    });
   </script>
 </body>
 </html>
