@@ -1,924 +1,352 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Basic HTML & SEO -->
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>CutIt.sbs | Shorten URLs & ₹1 Custom Links</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7479266047074322"
+     crossorigin="anonymous"></script>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-70PVFGLP9G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-  <meta name="description"
-        content="Shorten your long URLs in seconds with CutIt.sbs. Free random short links, or pay just ₹1 for a clean custom link. No login, simple and fast." />
-  <meta name="keywords"
-        content="cutit, CutIt.sbs, url shortener, link shortener, custom link, free url shortener, india url shortener, short link generator" />
-  <meta name="robots" content="index,follow" />
-  <link rel="canonical" href="https://cutit.sbs/shorten" />
+  gtag('config', 'G-70PVFGLP9G');
+</script>
+  <!-- Primary Meta -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shorten URLs ✦ CutIt.sbs – Free, Custom & Instant</title>
+  <meta name="description" content="Shorten your links instantly with custom aliases. 100% free forever. No login required. Powered by CutIt.sbs – your sleek, branded link creator.">
+  <meta name="keywords" content="url shortener, free link shortener, custom short link, cutit.sbs, shorten links, no login shortener, instant URL shortener">
+  <meta name="author" content="CutIt.sbs Team">
 
   <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="CutIt.sbs | Shorten URLs & ₹1 Custom Links" />
-  <meta property="og:description"
-        content="Create sleek, branded short links in seconds. Random links are free, custom links are just ₹1 each." />
-  <meta property="og:url" content="https://cutit.sbs/shorten" />
-  <meta property="og:site_name" content="CutIt.sbs" />
-  <meta property="og:image" content="https://cutit.sbs/og-image.png" />
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cutit.sbs/shortener">
+  <meta property="og:title" content="CutIt.sbs – Free URL Shortener">
+  <meta property="og:description" content="Create sleek, branded links in seconds. 100% free. No login. Instant sharing.">
+  <meta property="og:image" content="https://cutit.sbs/og-image.png">
 
   <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="CutIt.sbs | Shorten URLs & ₹1 Custom Links" />
-  <meta name="twitter:description"
-        content="Minimal, clean URL shortener. Free random links, ₹1 custom links. No login, just paste and go." />
-  <meta name="twitter:image" content="https://cutit.sbs/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CutIt.sbs – Free URL Shortener">
+  <meta name="twitter:description" content="Shorten links instantly with custom aliases. No login. Always free.">
+  <meta name="twitter:image" content="https://cutit.sbs/og-image.png">
 
-  <!-- JSON-LD structured data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "CutIt.sbs URL Shortener",
-    "url": "https://cutit.sbs/shorten",
-    "applicationCategory": "UtilityApplication",
-    "description": "Shorten long URLs for free and buy custom short links for ₹1 each, no login required.",
-    "offers": {
-      "@type": "Offer",
-      "price": "1.00",
-      "priceCurrency": "INR",
-      "description": "Custom short link alias"
-    },
-    "provider": {
-      "@type": "Organization",
-      "name": "CutIt.sbs",
-      "url": "https://cutit.sbs"
-    }
-  }
-  </script>
-
-  <!-- Razorpay Checkout -->
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-  <!-- Google Analytics 4 (replace G-70PVFGLP9G with your ID) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-70PVFGLP9G', { anonymize_ip: true }); // TODO: replace with your GA4 ID
-  </script>
-
-  <!-- Fonts to match live CutIt.sbs -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <!-- Fonts -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" as="style">
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&display=swap" rel="stylesheet">
 
   <style>
-    :root {
-      --bg-light: #f5f5f5;
-      --bg-dark: #050505;
-      --text-light: #111111;
-      --text-dark: #f9fafb;
-      --muted-light: #6b7280;
-      --muted-dark: #9ca3af;
-      --border: #111111;
-      --danger: #dc2626;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Antonio', sans-serif; }
     body {
-      min-height: 100vh;
-      background: var(--bg-light);
-      color: var(--text-light);
-      display: flex;
-      justify-content: center;
-      padding: 1.5rem;
-      transition: background 0.2s ease, color 0.2s ease;
+      background:#fdfdff; color:#111; text-align:center; padding:2rem;
+      transition: background 0.3s ease, color 0.3s ease;
     }
-
-    body.dark {
-      background: var(--bg-dark);
-      color: var(--text-dark);
+    .dark-mode { background:#111; color:#fdfdff; }
+    header { display:flex; justify-content:space-between; align-items:center; padding-bottom:1rem; border-bottom:1px solid #ccc; margin-bottom:2rem; }
+    .logo { font-size:2rem; font-weight:700; }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 38px;
+      height: 20px;
     }
-
-    .page {
-      width: 100%;
-      max-width: 960px;
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
     }
-
-    /* Top bar – match QR page */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .brand {
-      font-family: "Bebas Neue", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 2.1rem;
-      letter-spacing: 0.08em;
-    }
-
-    .mode-toggle {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      color: var(--muted-light);
+    .slider {
+      position: absolute;
       cursor: pointer;
-      user-select: none;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
     }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #000;
+    }
+    input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+    .dark-mode .slider { background-color: #666; }
+    .dark-mode input:checked + .slider { background-color: #fff; }
 
-    body.dark .mode-toggle {
-      color: var(--muted-dark);
+    h1 { font-size:2rem; margin-bottom:0.5rem; }
+    .tagline { color:#555; margin-bottom:2rem; }
+    .shortener-box {
+      background:#fff; padding:2rem; border-radius:12px; max-width:500px; margin:auto;
+      border:2px solid #000; box-shadow:0 4px 10px rgba(0,0,0,0.05);
     }
-
-    .mode-pill {
-      padding: 0.35rem 0.9rem;
-      border-radius: 999px;
-      border: 1px solid #d4d4d8;
-      background: #ffffff;
-      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    .dark-mode .shortener-box { background:#222; border-color:#fff; }
+    input {
+      width:100%; padding:1rem; margin-bottom:1rem; font-size:1rem;
+      border:2px solid #000; border-radius:8px;
     }
-
-    body.dark .mode-pill {
-      background: #111827;
-      color: #f9fafb;
-      border-color: #4b5563;
+    .dark-mode input { border-color:#fff; background:#111; color:#fff; }
+    button {
+      width:100%; padding:1rem; font-size:1rem; cursor:pointer;
+      background:#000; color:#fff; border:2px solid #000; border-radius:8px;
+      margin-bottom:0.8rem; transition:background 0.2s;
     }
-
-    .divider {
-      border: none;
-      border-top: 1px solid #d4d4d8;
-      margin: 0.8rem 0 1.8rem;
+    button:hover { background:#222; }
+    .dark-mode button { background:#fff; color:#000; border-color:#fff; }
+    #resultBox { font-size:1.1rem; margin-top:1rem; word-break:break-word; }
+    #shareButtons { margin-top:1rem; }
+    #shareButtons a {
+      display:inline-block; padding:0.5rem 1rem; border-radius:6px;
+      background:#eee; text-decoration:none; margin:0.2rem;
     }
-
-    body.dark .divider {
-      border-top-color: #4b5563;
+    #shareButtons a:hover { background:#ddd; }
+    .dark-mode #shareButtons a { background:#444; color:#fff; }
+    .team-message {
+      max-width:600px; margin:2rem auto; color:#555; font-size:1rem;
     }
-
-    /* Headline & copy – same structure */
-    .headline-wrap {
-      text-align: center;
-      margin-bottom: 1.2rem;
-    }
-
-    .headline {
-      font-family: "Bebas Neue", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 2.8rem;
-      letter-spacing: 0.06em;
-      margin-bottom: 0.15rem;
-    }
-
-    .subheadline {
-      font-size: 0.95rem;
-      color: var(--muted-light);
-      margin-bottom: 0.4rem;
-    }
-
-    .mini-tagline {
-      font-size: 0.85rem;
-      color: var(--muted-light);
-      margin-bottom: 1rem;
-    }
-
-    body.dark .subheadline,
-    body.dark .mini-tagline {
-      color: var(--muted-dark);
-    }
-
-    /* Form card – same proportions as QR card */
-    .card {
-      max-width: 640px;
-      margin: 0 auto;
-      border-radius: 28px;
-      border: 2px solid var(--border);
-      padding: 1.7rem 1.8rem 1.5rem;
-      background: #ffffff;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    body.dark .card {
-      background: #020617;
-      border-color: #f9fafb;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-    }
-
-    .field {
-      margin-bottom: 0.9rem;
-    }
-
-    .input {
-      width: 100%;
-      padding: 0.9rem 1rem;
-      border-radius: 18px;
-      border: 2px solid var(--border);
-      font-size: 0.95rem;
-      outline: none;
-      background: #ffffff;
-      color: inherit;
-      transition: box-shadow 0.15s ease, transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
-    }
-
-    body.dark .input {
-      background: #020617;
-      border-color: #f9fafb;
-    }
-
-    .input::placeholder {
-      color: #9ca3af;
-      font-weight: 400;
-    }
-
-    .input:focus {
-      box-shadow: 0 0 0 2px var(--border);
-      transform: translateY(-1px);
-    }
-
-    .helper-text {
-      font-size: 0.8rem;
-      color: var(--muted-light);
-      margin-top: 0.25rem;
-    }
-
-    body.dark .helper-text {
-      color: var(--muted-dark);
-    }
-
-    .custom-box {
-      margin-top: 0.6rem;
-      padding: 0.7rem 0.9rem;
-      border-radius: 16px;
-      border: 1px dashed var(--border);
-      background: #fafafa;
-      font-size: 0.84rem;
-      transition: background 0.2s ease, border-color 0.2s ease;
-    }
-
-    body.dark .custom-box {
-      background: #020617;
-      border-color: #e5e7eb;
-    }
-
-    .pill-small {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.12rem 0.6rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-right: 0.4rem;
-    }
-
-    .currency-text {
-      font-size: 0.76rem;
-      color: var(--muted-light);
-      margin-top: 0.25rem;
-    }
-
-    body.dark .currency-text {
-      color: var(--muted-dark);
-    }
-
-    /* Buttons – copy of QR page style */
-    .btn {
-      width: 100%;
-      padding: 0.9rem 1rem;
-      border-radius: 18px;
-      border: none;
-      background: #000000;
-      color: #ffffff;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.35rem;
-      margin-top: 0.7rem;
-      transition: background 0.16s ease, transform 0.12s ease, box-shadow 0.16s ease;
-    }
-
-    .btn:hover {
-      background: #111111;
-      transform: translateY(-1px);
-      box-shadow: 0 14px 24px rgba(15, 23, 42, 0.25);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.25);
-    }
-
-    .btn[disabled] {
-      opacity: 0.7;
-      cursor: wait;
-      box-shadow: none;
-      transform: none;
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: inherit;
-      border: 2px solid var(--border);
-    }
-
-    body.dark .btn-outline {
-      border-color: #f9fafb;
-    }
-
-    /* Result & error */
-    .error-text {
-      margin-top: 0.7rem;
-      font-size: 0.82rem;
-      color: var(--danger);
-      text-align: center;
-      min-height: 1.1rem;
-    }
-
-    .result-box {
-      margin-top: 0.8rem;
-      font-size: 0.9rem;
-      text-align: center;
-      min-height: 2.2rem;
-    }
-
-    .result-inner {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.7rem 0.9rem;
-      border-radius: 16px;
-      background: #f3f4f6;
-      max-width: 100%;
-      word-break: break-all;
-      animation: popIn 0.23s ease-out;
-    }
-
-    body.dark .result-inner {
-      background: #111827;
-    }
-
-    .result-inner a {
-      color: inherit;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .result-inner a:hover {
-      text-decoration: underline;
-    }
-
-    .result-inner button {
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      padding: 0.25rem 0.7rem;
-      font-size: 0.8rem;
-      background: transparent;
-      color: inherit;
-      cursor: pointer;
-    }
-
-    body.dark .result-inner button {
-      border-color: #f9fafb;
-    }
-
-    .share-row {
-      display: none;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.45rem;
-      margin-top: 0.75rem;
-      font-size: 0.8rem;
-    }
-
-    .share-row a {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.28rem 0.7rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      color: inherit;
-      text-decoration: none;
-    }
-
-    body.dark .share-row a {
-      border-color: #f9fafb;
-    }
-
-    .share-row a:hover {
-      background: #000000;
-      color: #ffffff;
-    }
-
-    .note {
-      margin-top: 0.8rem;
-      font-size: 0.8rem;
-      color: var(--muted-light);
-      text-align: center;
-    }
-
-    body.dark .note {
-      color: var(--muted-dark);
-    }
-
-    /* Footer – same feeling as QR page */
-    footer {
-      margin-top: 1.8rem;
-      font-size: 0.8rem;
-      color: var(--muted-light);
-      text-align: center;
-    }
-
-    body.dark footer {
-      color: var(--muted-dark);
-    }
-
-    footer a {
-      color: inherit;
-      text-decoration: none;
-      margin: 0 0.25rem;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    @keyframes popIn {
-      from { opacity: 0; transform: translateY(4px) scale(0.97); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    @media (max-width: 640px) {
-      body { padding: 1rem; }
-      .card { padding: 1.6rem 1.4rem 1.4rem; border-radius: 22px; }
-      .headline { font-size: 2.3rem; }
-    }
+    footer { margin-top:3rem; font-size:0.9rem; opacity:0.8; }
   </style>
+
+  <!-- Firebase SDKs -->
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
 </head>
 <body>
-  <div class="page">
-    <!-- Top bar -->
-    <div class="topbar">
-      <div class="brand">CutIt.sbs</div>
-      <div class="mode-toggle" id="modeToggle">
-        <span class="mode-pill">🌙 Dark Mode</span>
-      </div>
-    </div>
 
-    <hr class="divider" />
+<header>
+  <div class="logo">CutIt.sbs</div>
+  <label class="toggle-switch">
+    <input type="checkbox" id="darkModeToggle" onclick="toggleDarkMode()">
+    <span class="slider"></span>
+  </label>
+</header>
 
-    <!-- Headings (layout matches QR page) -->
-    <div class="headline-wrap">
-      <h1 class="headline">Shorten Your Long URLs.</h1>
-      <p class="subheadline">
-        Turn any long link into a tiny one – free random links, or ₹1 for a custom short link. No login, no clutter.
-      </p>
-      <p class="mini-tagline">
-        CutIt.sbs ✦ your link. your vibe.
-      </p>
-    </div>
+<h1>Shorten Your Long URLs</h1>
+<p class="tagline">Create sleek, branded links in seconds – always free, no login.</p>
 
-    <!-- Card -->
-    <main>
-      <section class="card" aria-label="URL shortener">
-        <div class="field">
-          <input
-            id="longUrl"
-            class="input"
-            type="text"
-            placeholder="Paste your long URL here"
-            autocomplete="off"
-          />
-          <div class="helper-text">Example: https://example.com/your/very/long/link</div>
-        </div>
-
-        <div class="field">
-          <input
-            id="customAlias"
-            class="input"
-            type="text"
-            placeholder="(Optional) Custom short link e.g. myname"
-            autocomplete="off"
-          />
-          <div class="custom-box">
-            <div>
-              <span class="pill-small">Custom</span>
-              Custom short links cost <strong>₹1</strong> per alias. Leave this blank for a free random link.
-            </div>
-            <div id="currencyInfo" class="currency-text">
-              Detecting approximate price in your local currency…
-            </div>
-          </div>
-        </div>
-
-        <button id="pasteBtn" class="btn" type="button">
-          📋 Paste from Clipboard
-        </button>
-
-        <button id="shortenBtn" class="btn" type="button">
-          🚀 <span id="shortenBtnLabel">Generate Short Link</span>
-        </button>
-
-        <button id="qrBtn" class="btn btn-outline" type="button">
-          📸 Generate QR Code
-        </button>
-
-        <div id="errorBox" class="error-text"></div>
-        <div id="resultBox" class="result-box"></div>
-
-        <div id="shareButtons" class="share-row">
-          <span>Share:</span>
-          <a id="shareWhatsApp" href="#" target="_blank" rel="noopener">WhatsApp</a>
-          <a id="shareTelegram" href="#" target="_blank" rel="noopener">Telegram</a>
-          <a id="shareTwitter" href="#" target="_blank" rel="noopener">Twitter / X</a>
-        </div>
-
-        <p class="note">
-          Random links are always free. Custom aliases are a one-time purchase per name using Razorpay.
-        </p>
-      </section>
-    </main>
-
-    <footer>
-      <div style="margin-bottom:0.25rem;">
-        <a href="terms.html">Terms</a> ·
-        <a href="privacy.html">Privacy</a> ·
-        <a href="contact.html">Contact Us</a>
-      </div>
-      <div>
-        ✨ Created with rebellious love by CutIt.sbs – where short links meet pop culture. ✨
-      </div>
-    </footer>
+<div class="shortener-box">
+  <input id="longUrl" placeholder="Paste your long URL here" aria-label="Paste your long URL here">
+  <input id="customAlias" placeholder="(Optional) Custom short link e.g. myname" aria-label="Custom short link">
+  <button onclick="pasteFromClipboard()">📋 Paste from Clipboard</button>
+  <button onclick="generateShortLink()">🚀 Generate Short Link</button>
+  <div id="resultBox"></div>
+  <div id="shareButtons" style="display:none;">
+    <p>🔗 Share this link:</p>
+    <a id="shareWhatsApp" target="_blank" rel="noopener">🟢 WhatsApp</a>
+    <a id="shareTelegram" target="_blank" rel="noopener">🔵 Telegram</a>
+    <a id="shareTwitter" target="_blank" rel="noopener">🐦 Twitter</a>
   </div>
+</div>
 
-  <!-- Firebase + Firestore Setup (Module) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      doc,
-      setDoc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<!-- QR Button moved outside -->
+<div style="max-width:500px; margin:1rem auto;">
+  <button onclick="window.open('https://cutit.sbs', '_blank')">📷 Generate QR Code</button>
+</div>
+<!-- Elegant Responsive Ad Frame with Info Button -->
+<div id="ad-frame-container" style="position: relative; width: 100%; max-width: 900px; margin: 20px auto; text-align: center; z-index: 99998; background: rgba(255, 255, 255, 0.98); border-radius: 16px; padding: 20px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12); transition: transform 0.3s ease, box-shadow 0.3s ease;">
+  
+  <!-- Ad Label and Info Button Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">Advertisement</span>
+    
+    <!-- Info Button -->
+    <button id="ad-info-btn" 
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;"
+            onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 6px 16px rgba(102, 126, 234, 0.5)';"
+            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.35)';"
+            aria-label="Advertisement Information">
+      i
+    </button>
+  </div>
+  
+  <!-- Info Box (hidden by default) -->
+  <div id="ad-info-box" 
+       style="display: none; position: absolute; top: 70px; right: 20px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; width: 280px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); text-align: left; z-index: 1000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(-10px);">
+    <div style="font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+      <span style="display: inline-block; width: 18px; height: 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; color: white; font-size: 11px; line-height: 18px; text-align: center; font-weight: bold;">!</span>
+      Third-Party Advertisement
+    </div>
+    <div style="font-size: 13px; line-height: 1.6; color: #475569;">
+      This advertisement is provided by an external network. We do not endorse or take responsibility for its content.
+    </div>
+  </div>
+  
+  <!-- Ad Frame Wrapper -->
+  <div style="position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #f8fafc; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+    <iframe data-aa='2414746' 
+            src='//acceptable.a-ads.com/2414746/?size=Adaptive'
+            title="Advertisement"
+            loading="lazy"
+            style='border: 0; padding: 0; width: 100%; max-width: 700px; height: auto; min-height: 200px; overflow: hidden; display: block; margin: auto;'>
+    </iframe>
+  </div>
+</div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
-      authDomain: "cutitshortener.firebaseapp.com",
-      projectId: "cutitshortener",
-      storageBucket: "cutitshortener.appspot.com",
-      messagingSenderId: "958863508757",
-      appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window._cutitDb = db;
-    window._cutitFsHelpers = { collection, doc, setDoc };
-  </script>
-
-  <!-- Main Logic -->
-  <script>
-    // Razorpay public key
-    window.razorpayKeyId = "rzp_live_Rn9xYDkClzcTcG";
-    const basePriceINR = 1;
-
-    const longUrlInput   = document.getElementById("longUrl");
-    const customInput    = document.getElementById("customAlias");
-    const shortenBtn     = document.getElementById("shortenBtn");
-    const shortenLabel   = document.getElementById("shortenBtnLabel");
-    const pasteBtn       = document.getElementById("pasteBtn");
-    const qrBtn          = document.getElementById("qrBtn");
-    const resultBox      = document.getElementById("resultBox");
-    const errorBox       = document.getElementById("errorBox");
-    const shareBox       = document.getElementById("shareButtons");
-    const shareWhatsApp  = document.getElementById("shareWhatsApp");
-    const shareTelegram  = document.getElementById("shareTelegram");
-    const shareTwitter   = document.getElementById("shareTwitter");
-    const currencyInfoEl = document.getElementById("currencyInfo");
-    const modeToggle     = document.getElementById("modeToggle");
-
-    function gtagSafe() {
-      if (typeof gtag === "function") {
-        gtag.apply(null, arguments);
+<!-- Toggle Info Box Script -->
+<script>
+  (function() {
+    const infoBtn = document.getElementById("ad-info-btn");
+    const infoBox = document.getElementById("ad-info-box");
+    const container = document.getElementById("ad-frame-container");
+    
+    // Toggle info box
+    infoBtn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      const isVisible = infoBox.style.display === "block";
+      
+      if (isVisible) {
+        infoBox.style.opacity = "0";
+        infoBox.style.transform = "translateY(-10px)";
+        setTimeout(() => { infoBox.style.display = "none"; }, 300);
+      } else {
+        infoBox.style.display = "block";
+        setTimeout(() => {
+          infoBox.style.opacity = "1";
+          infoBox.style.transform = "translateY(0)";
+        }, 10);
       }
-    }
+    });
+    
+    // Close info box when clicking outside
+    document.addEventListener("click", function(e) {
+      if (!infoBox.contains(e.target) && e.target !== infoBtn) {
+        if (infoBox.style.display === "block") {
+          infoBox.style.opacity = "0";
+          infoBox.style.transform = "translateY(-10px)";
+          setTimeout(() => { infoBox.style.display = "none"; }, 300);
+        }
+      }
+    });
+    
+    // Close on Escape key
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape" && infoBox.style.display === "block") {
+        infoBox.style.opacity = "0";
+        infoBox.style.transform = "translateY(-10px)";
+        setTimeout(() => { infoBox.style.display = "none"; }, 300);
+      }
+    });
+    
+    // Container hover effect
+    container.addEventListener("mouseenter", function() {
+      this.style.transform = "translateY(-2px)";
+      this.style.boxShadow = "0 15px 50px rgba(0, 0, 0, 0.15)";
+    });
+    
+    container.addEventListener("mouseleave", function() {
+      this.style.transform = "translateY(0)";
+      this.style.boxShadow = "0 10px 40px rgba(0, 0, 0, 0.12)";
+    });
+  })();
+</script>
 
-    // Dark mode toggle
-    modeToggle.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      gtagSafe("event", "mode_toggled", {
-        event_category: "engagement",
-        mode: document.body.classList.contains("dark") ? "dark" : "light"
-      });
+<style>
+  @media (max-width: 768px) {
+    #ad-frame-container {
+      padding: 16px !important;
+      border-radius: 12px !important;
+    }
+    
+    #ad-info-box {
+      right: 16px !important;
+      width: calc(100% - 32px) !important;
+      max-width: 280px !important;
+    }
+  }
+</style>
+
+<div class="team-message">
+  From all of us at <strong>CutIt.sbs</strong> – we built this with love, creativity, and a bit of chaos 🤪
+  to help you express yourself and share in style. Whether it’s music, memes, or memories – your link is your voice.
+  No accounts. No limits. Always free. ❤️
+</div>
+
+<footer>
+  ✦ Created with rebellious love by <strong>CutIt.sbs</strong>
+</footer>
+
+<!-- Firebase Setup -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyCyHnq7dc3ELpVhOQM40jKmKLvRHcCC_Mk",
+    authDomain: "cutitshortener.firebaseapp.com",
+    projectId: "cutitshortener",
+    storageBucket: "cutitshortener.appspot.com",
+    messagingSenderId: "958863508757",
+    appId: "1:958863508757:web:0d2ff1df8c96fd6368951c"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window.db = db;
+  window.firestoreHelpers = { collection, doc, setDoc };
+</script>
+
+<!-- Main Script -->
+<script>
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  document.getElementById('darkModeToggle').checked = document.body.classList.contains('dark-mode');
+}
+async function pasteFromClipboard() {
+  const text = await navigator.clipboard.readText();
+  document.getElementById("longUrl").value = text;
+}
+async function generateShortLink() {
+  let url = document.getElementById("longUrl").value.trim();
+  let customAlias = document.getElementById("customAlias").value.trim();
+
+  if (!url) return alert("Please enter a URL.");
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+  // ✅ Auto-replace spaces with dashes
+  if (customAlias) {
+    customAlias = customAlias.replace(/\s+/g, "-");
+  }
+
+  // ✅ Validation: only allow letters, numbers, dashes, underscores
+  const aliasRegex = /^[a-zA-Z0-9_-]+$/;
+  if (customAlias && !aliasRegex.test(customAlias)) {
+    return alert("❌ Custom link can only contain letters, numbers, dashes (-), and underscores (_).");
+  }
+
+  const shortID = customAlias || Math.random().toString(36).substring(2, 8);
+
+  try {
+    const db = window.db;
+    const { collection, doc, setDoc } = window.firestoreHelpers;
+    await setDoc(doc(collection(db, "shortlinks"), shortID), {
+      original: url,
+      created: new Date().toISOString(),
+      custom: !!customAlias
     });
 
-    // Cursor tracking (throttled)
-    (function initCursorTracking() {
-      let lastTime = 0;
-      document.addEventListener("mousemove", (e) => {
-        const now = Date.now();
-        if (now - lastTime < 1000) return;
-        lastTime = now;
-        gtagSafe("event", "cursor_move", {
-          event_category: "interaction",
-          viewport_w: window.innerWidth,
-          viewport_h: window.innerHeight,
-          x: Math.round(e.clientX),
-          y: Math.round(e.clientY)
-        });
-      });
-    })();
+    const shortUrl = `https://cutit.sbs/${shortID}`;
+    document.getElementById("resultBox").innerHTML =
+      `✅ Short Link: <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+       <br/><button onclick="navigator.clipboard.writeText('${shortUrl}')">📋 Copy</button>`;
 
-    function createRandomId(length = 6) {
-      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      let out = "";
-      for (let i = 0; i < length; i++) {
-        out += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return out;
-    }
-
-    async function saveShortLink(shortID, url, isCustom, paymentId) {
-      const db = window._cutitDb;
-      const { collection, doc, setDoc } = window._cutitFsHelpers;
-      const linksCol = collection(db, "shortlinks");
-      const linkRef  = doc(linksCol, shortID);
-
-      await setDoc(linkRef, {
-        original: url,
-        created: new Date().toISOString(),
-        custom: !!isCustom,
-        paymentId: paymentId || null
-      });
-
-      const shortUrl = `https://cutit.sbs/${shortID}`;
-
-      errorBox.textContent = "";
-      resultBox.innerHTML = `
-        <div class="result-inner">
-          <span>✅</span>
-          <a href="${shortUrl}" target="_blank" rel="noopener">${shortUrl}</a>
-          <button type="button" id="copyBtn">Copy</button>
-        </div>
-      `;
-
-      if (shareBox) {
-        shareBox.style.display = "flex";
-        const encoded = encodeURIComponent(shortUrl);
-        if (shareWhatsApp) shareWhatsApp.href = `https://wa.me/?text=${encoded}`;
-        if (shareTelegram) shareTelegram.href = `https://t.me/share/url?url=${encoded}`;
-        if (shareTwitter)  shareTwitter.href  = `https://twitter.com/intent/tweet?text=${encodeURIComponent("Check this out: " + shortUrl)}`;
-      }
-
-      const copyBtn = document.getElementById("copyBtn");
-      if (copyBtn) {
-        copyBtn.addEventListener("click", () => {
-          navigator.clipboard.writeText(shortUrl).then(() => {
-            gtagSafe("event", "copy_short_link", {
-              event_category: "engagement",
-              alias_type: isCustom ? "custom" : "random"
-            });
-          });
-        });
-      }
-
-      gtagSafe("event", "short_link_created", {
-        event_category: "conversion",
-        alias_type: isCustom ? "custom" : "random"
-      });
-    }
-
-    function setLoading(isLoading) {
-      shortenBtn.disabled = isLoading;
-      shortenLabel.textContent = isLoading ? "Working..." : "Generate Short Link";
-    }
-
-    function openCustomLinkPayment(url, customAlias) {
-      if (!window.razorpayKeyId) {
-        alert("Payment key missing. Please try again later.");
-        return;
-      }
-
-      const amountPaise = basePriceINR * 100;
-
-      gtagSafe("event", "payment_initiated", {
-        event_category: "purchase",
-        value_in_inr: basePriceINR,
-        alias_type: "custom"
-      });
-
-      const options = {
-        key: window.razorpayKeyId,
-        amount: amountPaise,
-        currency: "INR",
-        name: "CutIt.sbs",
-        description: `Custom short link: ${customAlias}`,
-        handler: async function (response) {
-          try {
-            setLoading(true);
-            const paymentId = response.razorpay_payment_id;
-            await saveShortLink(customAlias, url, true, paymentId);
-            gtagSafe("event", "payment_success", {
-              event_category: "purchase",
-              value_in_inr: basePriceINR,
-              alias_type: "custom"
-            });
-          } catch (err) {
-            console.error(err);
-            alert(
-              "We received the payment but hit an error saving your link.\n\n" +
-              "Please contact support with this Payment ID: " + response.razorpay_payment_id
-            );
-          } finally {
-            setLoading(false);
-          }
-        },
-        theme: { color: "#000000" }
-      };
-
-      const rzp = new Razorpay(options);
-      rzp.on("payment.failed", function (response) {
-        console.warn("Payment failed:", response.error);
-        alert("Payment failed or cancelled. You can try again.");
-        gtagSafe("event", "payment_failed", {
-          event_category: "purchase",
-          alias_type: "custom",
-          reason: response.error && response.error.description ? response.error.description : "unknown"
-        });
-      });
-      rzp.open();
-    }
-
-    async function generateShortLink() {
-      let url = longUrlInput.value.trim();
-      let customAlias = customInput.value.trim();
-
-      errorBox.textContent = "";
-      resultBox.innerHTML = "";
-      shareBox.style.display = "none";
-
-      if (!url) {
-        errorBox.textContent = "Please paste a URL first.";
-        gtagSafe("event", "shorten_error", {
-          event_category: "engagement",
-          error_type: "empty_url"
-        });
-        return;
-      }
-
-      if (!/^https?:\/\//i.test(url)) {
-        url = "https://" + url;
-      }
-
-      if (customAlias) {
-        customAlias = customAlias.replace(/\s+/g, "-");
-        const aliasRegex = /^[a-zA-Z0-9_-]+$/;
-        if (!aliasRegex.test(customAlias)) {
-          errorBox.textContent = "Custom link can only contain letters, numbers, dashes (-), and underscores (_).";
-          gtagSafe("event", "shorten_error", {
-            event_category: "engagement",
-            error_type: "invalid_alias"
-          });
-          return;
-        }
-      }
-
-      gtagSafe("event", "shorten_attempt", {
-        event_category: "engagement",
-        alias_type: customAlias ? "custom" : "random"
-      });
-
-      // Free random link
-      if (!customAlias) {
-        try {
-          setLoading(true);
-          const randomId = createRandomId(6);
-          await saveShortLink(randomId, url, false, null);
-        } catch (err) {
-          console.error(err);
-          errorBox.textContent = "Something went wrong while creating your link. Please try again.";
-          gtagSafe("event", "shorten_error", {
-            event_category: "engagement",
-            error_type: "random_create_failed"
-          });
-        } finally {
-          setLoading(false);
-        }
-        return;
-      }
-
-      // Paid custom link
-      const confirmMsg =
-        `Custom short link "${customAlias}" will cost ₹${basePriceINR}.\n\n` +
-        `Press OK to continue to Razorpay payment, or Cancel to go back.`;
-      const ok = confirm(confirmMsg);
-      if (!ok) {
-        gtagSafe("event", "payment_cancelled_before_checkout", {
-          event_category: "purchase",
-          alias_type: "custom"
-        });
-        return;
-      }
-
-      openCustomLinkPayment(url, customAlias);
-    }
-
-    async function pasteFromClipboard() {
-      try {
-        if (!navigator.clipboard || !navigator.clipboard.readText) {
-          alert("Clipboard access is not supported in this browser.");
-          return;
-        }
-        const text = await navigator.clipboard.readText();
-        if (text) {
-          longUrlInput.value = text;
-          gtagSafe("event", "clipboard_paste", {
-            event_category: "engagement"
-          });
-        } else {
-          alert("Clipboard is empty.");
-        }
-      } catch (e) {
-        console.error(e);
-        alert("Unable to read from clipboard.");
-      }
-    }
-
-    function initEvents() {
-      shortenBtn.addEventListener("click", generateShortLink);
-      pasteBtn.addEventListener("click", pasteFromClipboard);
-
-      qrBtn.addEventListener("click", () => {
-        gtagSafe("event", "qr_button_click", {
-          event_category: "navigation"
-        });
-        window.location.href = "index.html"; // QR generator page
-      });
-
-      [longUrlInput, customInput].forEach((el) => {
-        el.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            generateShortLink();
-          }
-        });
-      });
-    }
-
-    async function initCurrencyInfo() {
-      if (!currencyInfoEl) return;
-      try {
-        const locRes = await fetch("https://ipapi.co/json/");
-        if (!locRes.ok) throw new Error("location fail");
-        const locData = await locRes.json();
-        const userCurrency = locData.currency || "INR";
-        const countryName = locData.country_name || "your region";
-
-        if (userCurrency === "INR") {
-          currencyInfoEl.textContent =
-            `Price where you are (${countryName}): ₹${basePriceINR.toFixed(2)} (INR).`;
-          return;
-        }
-
-        const rateRes = await fetch(
-          `https://api.exchangerate.host/convert?from=INR&to=${userCurrency}&amount=${basePriceINR}`
-        );
-        if (!rateRes.ok) throw new Error("rate fail");
-        const rateData = await rateRes.json();
-        const converted = typeof rateData.result === "number" ? rateData.result : null;
-
-        if (converted != null) {
-          currencyInfoEl.textContent =
-            `Approx. price where you are (${countryName}): ` +
-            `₹${basePriceINR.toFixed(2)} ≈ ${converted.toFixed(2)} ${userCurrency}.`;
-        } else {
-          currencyInfoEl.textContent =
-            `Price: ₹${basePriceINR.toFixed(2)} (INR). Your bank will convert it to your local currency.`;
-        }
-      } catch (e) {
-        console.warn("Currency info failed:", e);
-        currencyInfoEl.textContent =
-          `Price: ₹${basePriceINR.toFixed(2)} (INR). Your bank will convert it to your local currency.`;
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      initEvents();
-      initCurrencyInfo();
-    });
-  </script>
+    document.getElementById("shareButtons").style.display = "block";
+    document.getElementById("shareWhatsApp").href = `https://wa.me/?text=${encodeURIComponent(shortUrl)}`;
+    document.getElementById("shareTelegram").href = `https://t.me/share/url?url=${encodeURIComponent(shortUrl)}`;
+    document.getElementById("shareTwitter").href = `https://twitter.com/intent/tweet?text=${encodeURIComponent('Check this out: ' + shortUrl)}`;
+  } catch (e) {
+    alert("❌ That custom link may already exist.");
+  }
+}
+</script>
 </body>
 </html>
